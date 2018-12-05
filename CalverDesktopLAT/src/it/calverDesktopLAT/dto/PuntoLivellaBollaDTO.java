@@ -11,24 +11,24 @@ public class PuntoLivellaBollaDTO {
 	public int id_misura; 
 	public int rif_tacca;
 	public String semisc;
-	public BigDecimal valore_nominale_tratto= new BigDecimal(0);
-	public BigDecimal valore_nominale_tratto_sec= new BigDecimal(0);
-	public BigDecimal p1_andata = new BigDecimal(0);
-	public BigDecimal p1_ritorno= new BigDecimal(0);
-	public BigDecimal p1_media= new BigDecimal(0);
-	public BigDecimal p1_diff= new BigDecimal(0);
-	public BigDecimal p2_andata= new BigDecimal(0);
-	public BigDecimal p2_ritorno= new BigDecimal(0);
-	public BigDecimal p2_media= new BigDecimal(0);
-	public BigDecimal p2_diff= new BigDecimal(0);
-	public BigDecimal media= new BigDecimal(0);
-	public BigDecimal errore_cum= new BigDecimal(0);
-	public BigDecimal media_corr_sec= new BigDecimal(0);
-	public BigDecimal media_corr_mm= new BigDecimal(0);
-	public BigDecimal div_dex= new BigDecimal(0);
+	public BigDecimal valore_nominale_tratto;
+	public BigDecimal valore_nominale_tratto_sec;
+	public BigDecimal p1_andata ;
+	public BigDecimal p1_ritorno;
+	public BigDecimal p1_media;
+	public BigDecimal p1_diff;
+	public BigDecimal p2_andata;
+	public BigDecimal p2_ritorno;
+	public BigDecimal p2_media;
+	public BigDecimal p2_diff;
+	public BigDecimal media;
+	public BigDecimal errore_cum;
+	public BigDecimal media_corr_sec;
+	public BigDecimal media_corr_mm;
+	public BigDecimal div_dex;
 	public String valore_nominale_tacca;
 	
-	public PuntoLivellaBollaDTO() 
+	/*public PuntoLivellaBollaDTO() 
 	
 	{
 		 valore_nominale_tratto.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA);
@@ -46,7 +46,7 @@ public class PuntoLivellaBollaDTO {
 		 media_corr_sec.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA);
 		 media_corr_mm.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1);
 		 div_dex.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1);
-	}
+	}*/
 
 	public int getId() {
 		return id;

@@ -3037,7 +3037,7 @@ public static void updateMisuraRDP(int idRecord, String descrizioneCampione, Str
 				punto.setP2_media(rs.getBigDecimal("p2_media"));
 				punto.setP2_diff(rs.getBigDecimal("p2_diff"));
 				punto.setMedia(rs.getBigDecimal("media"));
-				punto.setErrore_cum(rs.getBigDecimal("media"));
+				punto.setErrore_cum(rs.getBigDecimal("errore_cum"));
 				punto.setMedia_corr_sec(rs.getBigDecimal("media_corr_sec"));
 				punto.setMedia_corr_mm(rs.getBigDecimal("media_corr_mm"));
 				punto.setDiv_dex(rs.getBigDecimal("div_dex"));
@@ -3060,5 +3060,50 @@ public static void updateMisuraRDP(int idRecord, String descrizioneCampione, Str
 		}
 
 		return listaPunti;
+	}
+	public static void updateRecordPuntoLivellaBolla(PuntoLivellaBollaDTO punto) throws Exception {
+	
+		Connection con =null;
+		PreparedStatement pst= null;
+
+		try{
+			con=getConnection();
+			pst=con.prepareStatement("UPDATE lat_punto_livella SET valore_nominale_tratto=?," + 
+					"valore_nominale_tratto_sec=?,p1_andata=?,p1_ritorno=?,p1_media=?,p1_diff=?," + 
+					"p2_andata=?,p2_ritorno=?,p2_media=?,p2_diff=?,media=?,errore_cum=?,media_corr_sec=?,media_corr_mm=?,div_dex=? WHERE id=? ");
+			
+	
+			pst.setBigDecimal(1, punto.getValore_nominale_tratto());
+			pst.setBigDecimal(2, punto.getValore_nominale_tratto_sec());
+			pst.setBigDecimal(3, punto.getP1_andata());
+			pst.setBigDecimal(4, punto.getP1_ritorno());
+			pst.setBigDecimal(5, punto.getP1_media());
+			pst.setBigDecimal(6, punto.getP1_diff());
+			pst.setBigDecimal(7, punto.getP2_andata());
+			pst.setBigDecimal(8, punto.getP2_ritorno());
+			pst.setBigDecimal(9, punto.getP2_media());
+			pst.setBigDecimal(10, punto.getP2_diff());
+			pst.setBigDecimal(11, punto.getMedia());
+			pst.setBigDecimal(12, punto.getErrore_cum());
+			pst.setBigDecimal(13, punto.getMedia_corr_sec());
+			pst.setBigDecimal(14, punto.getMedia_corr_mm());
+			pst.setBigDecimal(15, punto.getDiv_dex());
+			pst.setInt(16, punto.getId());
+			
+			pst.execute();
+		
+		    
+			  
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+			throw ex;
+		}
+		finally
+		{
+			pst.close();
+			con.close();
+		}
+		
 	}
 }

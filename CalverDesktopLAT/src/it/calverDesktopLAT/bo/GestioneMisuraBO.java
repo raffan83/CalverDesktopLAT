@@ -454,10 +454,23 @@ public class GestioneMisuraBO
 		
 		Double val =new Double(value);
 		Double arc=Math.asin(val/1000);
-		System.out.println(arc);
 		arc=Math.toDegrees(arc);
 		Double toRet=arc*3600;
 		return new BigDecimal(toRet).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA, RoundingMode.HALF_UP);
+	}
+
+	public static BigDecimal getArcosecInv(String value) {
+		Double val=new Double(value);
+		
+		val=val/3600;
+		val=Math.toRadians(val);
+		val=1000*Math.sin(val);
+		return new BigDecimal(val).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2, RoundingMode.HALF_UP);
+	}
+
+	public static void updateRecordPuntoLivellaBolla(PuntoLivellaBollaDTO punto) throws Exception {
+			
+		SQLiteDAO.updateRecordPuntoLivellaBolla(punto);
 	}
 
 }
