@@ -33,7 +33,7 @@ import it.calverDesktopLAT.utl.Utility;
 import net.miginfocom.swing.MigLayout;
 
 public class PannelloLivellaBolla extends JPanel implements TableModelListener,ActionListener  {
-	private JTable tableDX;
+	private JTable tableDX,tableTratto;
 	private String originalValue="";
 	JLabel lblInserimentoNonValido;
 	public PannelloLivellaBolla() {
@@ -70,84 +70,11 @@ public class PannelloLivellaBolla extends JPanel implements TableModelListener,A
 		
 		ArrayList<PuntoLivellaBollaDTO> listaPunti = GestioneMisuraBO.getListaPuntiLivellaBolla(SessionBO.idMisura, "DX");
 		//semDex.setBackground(Color.CYAN);
-		semDex.setLayout(new MigLayout("", "[grow]", "[30px][grow][]"));
+		semDex.setLayout(new MigLayout("", "[grow][]", "[30px][grow][][]"));
 		
 			tableDX = new JTable();
 			tableDX.setDefaultRenderer(Object.class, new MyCellRenderer());
-			DefaultTableModel model = new DefaultTableModel() {
-
-				@Override
-				public Class<?> getColumnClass(int column) {
-					switch (column) {
-					case 0:
-						return String.class;
-					case 1:
-						return String.class;
-					case 2:
-						return String.class;
-					case 3:
-						return String.class;
-					case 4:
-						return String.class;
-					case 5:
-						return String.class;
-					case 6:
-						return String.class;
-					case 7:
-						return String.class;
-					case 8:
-						return String.class;
-					case 9:
-						return String.class;
-					case 10:
-						return String.class;
-					case 11:
-						return String.class;
-					case 12:
-						return String.class;
-					case 13:
-						return String.class;
-					case 14:
-						return String.class;
-					case 15:
-						return String.class;
-					case 16:
-						return String.class;
-					default:
-						return String.class;
-					}
-				}
-				 @Override
-				public boolean isCellEditable(int row, int column) {
-					if(column==0 || column==2|| column==5|| column==6|| column==9|| column==10|| column==11
-							|| column==13|| column==14|| column==15)
-					{
-					return false;
-					}else
-					{
-						return true;
-					}
-				}
-				 
-			};
-
-			model.addColumn("Tratto");
-			model.addColumn("mm/m");
-			model.addColumn("sec");
-			model.addColumn("P1 Andata");
-			model.addColumn("P1 Ritorno");
-			model.addColumn("P1 Media");
-			model.addColumn("P1 Diff");
-			model.addColumn("P2 Andata");
-			model.addColumn("P2 Ritorno");
-			model.addColumn("P2 Media");
-			model.addColumn("P2 Diff");
-			model.addColumn("Media Tratto 0");
-			model.addColumn("Errore Cumm");
-			model.addColumn("AVG sec");
-			model.addColumn("AVG mm/m");
-			model.addColumn("Div Dex mm/m");
-			model.addColumn("index");
+			ModelSemisc model = new ModelSemisc();
 
 			PuntoLivellaBollaDTO punto =null;
 			for (int i = 0; i <listaPunti.size(); i++) {
@@ -190,28 +117,16 @@ public class PannelloLivellaBolla extends JPanel implements TableModelListener,A
 		
 	//	tableDX.setPreferredScrollableViewportSize(new Dimension(900, 780));
 		JScrollPane scrollTab = new JScrollPane(tableDX);
-		semDex.add(scrollTab, "cell 0 1,grow");
+		semDex.add(scrollTab, "cell 0 1 1 2,grow");
 		
-		 lblInserimentoNonValido = new JLabel("* Inserimento non valido");
+		lblInserimentoNonValido = new JLabel("* Inserimento non valido");
 		lblInserimentoNonValido.setForeground(Color.RED);
 		lblInserimentoNonValido.setFont(new Font("Arial", Font.BOLD, 12));
 		lblInserimentoNonValido.setVisible(false);
 		semDex.add(lblInserimentoNonValido, "cell 0 2");
+	
 		
-		/*tableDX.addKeyListener(new KeyAdapter() {
-		    public void keyPressed(KeyEvent e) {
-		   int id = e.getID();
-		    if(id==KeyEvent.KEY_PRESSED && e.getKeyCode()!=38 && e.getKeyCode()!=39 && e.getKeyCode()!=40 && e.getKeyCode()!=37 ) 
-		    {	
-		      int selectedColumn = tableDX.getSelectedColumn();
-		      int selectrow = tableDX.getSelectedRow();
-		      int keyCode = e.getKeyCode();
-	          String c=    KeyEvent.getKeyText(keyCode);
-	          System.out.println(c);
-		      tableDX.getModel().setValueAt(c, selectrow,selectedColumn);
-		    }
-		      }
-	});*/
+		tableTratto = new JTable();
 		
 		
 		return semDex;
@@ -521,7 +436,84 @@ private class ColumnListener implements ListSelectionListener {
         outputSelection();
     }
 }
+class ModelSemisc extends DefaultTableModel {
 
-
-
+	
+	public ModelSemisc() {
+		addColumn("Tratto");
+		addColumn("mm/m");
+		addColumn("sec");
+		addColumn("P1 Andata");
+		addColumn("P1 Ritorno");
+		addColumn("P1 Media");
+		addColumn("P1 Diff");
+		addColumn("P2 Andata");
+		addColumn("P2 Ritorno");
+		addColumn("P2 Media");
+		addColumn("P2 Diff");
+		addColumn("Media Tratto 0");
+		addColumn("Errore Cumm");
+		addColumn("AVG sec");
+		addColumn("AVG mm/m");
+		addColumn("Div Dex mm/m");
+		addColumn("index");
+	}
+	@Override
+	public Class<?> getColumnClass(int column) {
+		switch (column) {
+		case 0:
+			return String.class;
+		case 1:
+			return String.class;
+		case 2:
+			return String.class;
+		case 3:
+			return String.class;
+		case 4:
+			return String.class;
+		case 5:
+			return String.class;
+		case 6:
+			return String.class;
+		case 7:
+			return String.class;
+		case 8:
+			return String.class;
+		case 9:
+			return String.class;
+		case 10:
+			return String.class;
+		case 11:
+			return String.class;
+		case 12:
+			return String.class;
+		case 13:
+			return String.class;
+		case 14:
+			return String.class;
+		case 15:
+			return String.class;
+		case 16:
+			return String.class;
+		default:
+			return String.class;
+		}
+	}
+	
+	@Override
+	public boolean isCellEditable(int row, int column) {
+		if(column==0 || column==2|| column==5|| column==6|| column==9|| column==10|| column==11
+				|| column==13|| column==14|| column==15)
+		{
+		return false;
+		}else
+		{
+			return true;
+		}
+	}
+	 
+	
 }
+}
+
+
