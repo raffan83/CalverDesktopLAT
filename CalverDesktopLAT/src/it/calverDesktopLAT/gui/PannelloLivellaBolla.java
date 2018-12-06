@@ -31,11 +31,17 @@ import it.calverDesktopLAT.dto.PuntoLivellaBollaDTO;
 import it.calverDesktopLAT.utl.Costanti;
 import it.calverDesktopLAT.utl.Utility;
 import net.miginfocom.swing.MigLayout;
+import javax.swing.JTextField;
 
 public class PannelloLivellaBolla extends JPanel implements TableModelListener,ActionListener  {
 	private JTable tableDX,tableTratto;
 	private String originalValue="";
 	JLabel lblInserimentoNonValido;
+	private JTextField s_media_field;
+	private JTextField dev_st_field;
+	private ModelTratto modelTratto;
+	private ModelSemisc model;
+	ArrayList<PuntoLivellaBollaDTO> listaPuntiSX,listaPuntiDX;
 	public PannelloLivellaBolla() {
 		
 		SessionBO.prevPage="PMM";
@@ -52,7 +58,9 @@ public class PannelloLivellaBolla extends JPanel implements TableModelListener,A
 	
 		try 
 		{
-		
+		listaPuntiDX = GestioneMisuraBO.getListaPuntiLivellaBolla(SessionBO.idMisura, "DX");
+		listaPuntiSX = GestioneMisuraBO.getListaPuntiLivellaBolla(SessionBO.idMisura, "SX");
+			
 	//	JScrollPane scrollDX= new JScrollPane(costruisciPanelSemiscalaPositivaDX());
 		tabbedPane.addTab("Semiscala Positiva DX",costruisciPanelSemiscalaPositivaDX());
 	//	tabbedPane.addTab("Semiscala Positiva SX", costruisciPanelSemiscalaPositivaSX());
@@ -65,71 +73,7 @@ public class PannelloLivellaBolla extends JPanel implements TableModelListener,A
 
 	private JPanel costruisciPanelSemiscalaPositivaDX() throws Exception {
 		
-		JPanel semDex= new JPanel();
-		
-		
-		ArrayList<PuntoLivellaBollaDTO> listaPunti = GestioneMisuraBO.getListaPuntiLivellaBolla(SessionBO.idMisura, "DX");
-		//semDex.setBackground(Color.CYAN);
-		semDex.setLayout(new MigLayout("", "[grow][]", "[30px][grow][][]"));
-		
-			tableDX = new JTable();
-			tableDX.setDefaultRenderer(Object.class, new MyCellRenderer());
-			ModelSemisc model = new ModelSemisc();
 
-			PuntoLivellaBollaDTO punto =null;
-			for (int i = 0; i <listaPunti.size(); i++) {
-				
-				punto= listaPunti.get(i);
-				model.addRow(new Object[0]);
-				model.setValueAt(punto.getRif_tacca(), i, 0);
-				model.setValueAt(punto.getValore_nominale_tratto(), i, 1);
-				model.setValueAt(punto.getValore_nominale_tratto_sec(), i, 2);
-				model.setValueAt(punto.getP1_andata(), i, 3);
-				model.setValueAt(punto.getP1_ritorno(), i, 4);
-				model.setValueAt(punto.getP1_media(), i, 5);
-				model.setValueAt(punto.getP1_diff(), i, 6);
-				model.setValueAt(punto.getP2_andata(), i, 7);
-				model.setValueAt(punto.getP2_ritorno(), i, 8);
-				model.setValueAt(punto.getP2_media(), i, 9);
-				model.setValueAt(punto.getP2_diff(), i, 10);
-				model.setValueAt(punto.getMedia(), i, 11);
-				model.setValueAt(punto.getErrore_cum(), i, 12);
-				model.setValueAt(punto.getMedia_corr_sec(), i, 13);
-				model.setValueAt(punto.getMedia_corr_mm(), i, 14);
-				model.setValueAt(punto.getDiv_dex(), i, 15);
-				model.setValueAt(punto.getId(), i, 16);
-							
-			}
-			
-	    model.addTableModelListener(this);
-	    tableDX.getSelectionModel().addListSelectionListener(new RowListener());
-	    tableDX.getColumnModel().getSelectionModel().addListSelectionListener(new ColumnListener());
-	    
-		tableDX.setModel(model);
-		tableDX.setFont(new Font("Arial", Font.PLAIN, 12));
-		tableDX.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
-		tableDX.setRowHeight(25);
-		
-
-		
-		  TableColumn column = tableDX.getColumnModel().getColumn(tableDX.getColumnModel().getColumnIndex("index"));
-		  tableDX.removeColumn(column);
-		
-	//	tableDX.setPreferredScrollableViewportSize(new Dimension(900, 780));
-		JScrollPane scrollTab = new JScrollPane(tableDX);
-		semDex.add(scrollTab, "cell 0 1 1 2,grow");
-		
-		lblInserimentoNonValido = new JLabel("* Inserimento non valido");
-		lblInserimentoNonValido.setForeground(Color.RED);
-		lblInserimentoNonValido.setFont(new Font("Arial", Font.BOLD, 12));
-		lblInserimentoNonValido.setVisible(false);
-		semDex.add(lblInserimentoNonValido, "cell 0 2");
-	
-		
-		tableTratto = new JTable();
-		
-		
-		return semDex;
 	}
 	
 private JPanel costruisciPanelSemiscalaPositivaSX() {
@@ -300,12 +244,36 @@ public void tableChanged(TableModelEvent e) {
     					 if(obj1!=null)
     					 {
     						 model.setValueAt(avgArcsecInv.subtract(new BigDecimal(obj1.toString())), row, 15);
+    						 
+    						 /*Gestione Model Tratto e Medie*/
+    						 
+    						 modelTratto.setValueAt(avgArcsecInv.subtract(new BigDecimal(obj1.toString())), row, 1);
+    						 listaPuntiDX.get(row).setDiv_dex( avgArcsecInv.subtract(new BigDecimal(obj1.toString())));
+    						 s_media_field.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,0).toPlainString());
+    						 
+    						 BigDecimal s_mediaTotale = GestioneMisuraBO.getAverageLivella(listaPuntiDX,listaPuntiSX,2);
+    						 
+    						 for (int i = 0; i <listaPuntiDX.size(); i++) {
+    								PuntoLivellaBollaDTO punto= listaPuntiDX.get(i);
+    								if( punto.getDiv_dex()!=null && punto.getDiv_dex().abs().compareTo(BigDecimal.ZERO)==1) 
+    								{
+    									modelTratto.setValueAt(punto.getDiv_dex().toPlainString(), i, 1);
+    									modelTratto.setValueAt(punto.getDiv_dex().subtract(s_mediaTotale),i,2);
+    								}else 
+    								{
+    									modelTratto.setValueAt("", i, 2);
+    								}
+    								
+    								
+    							}
     					 }
     				 }
     				 
     				 
     			 }
     		 }
+    		 
+    		 
     	 }
     	 
     	 
@@ -419,6 +387,141 @@ private void outputSelection() {
 
 }
 
+private class PannelloDX extends JPanel implements TableModelListener
+{
+	PannelloDX()
+	{
+		JPanel semDex= new JPanel();
+		
+		BigDecimal s_mediaTotale = GestioneMisuraBO.getAverageLivella(listaPuntiDX,listaPuntiSX,2);
+		
+		semDex.setLayout(new MigLayout("", "[grow][][][][]", "[30px][:360px:410px][][][]"));
+		
+			tableDX = new JTable();
+			tableDX.setDefaultRenderer(Object.class, new MyCellRenderer());
+			 model = new ModelSemisc();
+
+			PuntoLivellaBollaDTO punto =null;
+			for (int i = 0; i <listaPuntiDX.size(); i++) {
+				
+				punto= listaPuntiDX.get(i);
+				model.addRow(new Object[0]);
+				model.setValueAt(punto.getRif_tacca(), i, 0);
+				model.setValueAt(punto.getValore_nominale_tratto(), i, 1);
+				model.setValueAt(punto.getValore_nominale_tratto_sec(), i, 2);
+				model.setValueAt(punto.getP1_andata(), i, 3);
+				model.setValueAt(punto.getP1_ritorno(), i, 4);
+				model.setValueAt(punto.getP1_media(), i, 5);
+				model.setValueAt(punto.getP1_diff(), i, 6);
+				model.setValueAt(punto.getP2_andata(), i, 7);
+				model.setValueAt(punto.getP2_ritorno(), i, 8);
+				model.setValueAt(punto.getP2_media(), i, 9);
+				model.setValueAt(punto.getP2_diff(), i, 10);
+				model.setValueAt(punto.getMedia(), i, 11);
+				model.setValueAt(punto.getErrore_cum(), i, 12);
+				model.setValueAt(punto.getMedia_corr_sec(), i, 13);
+				model.setValueAt(punto.getMedia_corr_mm(), i, 14);
+				model.setValueAt(punto.getDiv_dex(), i, 15);
+				model.setValueAt(punto.getId(), i, 16);
+							
+			}
+			
+	    model.addTableModelListener(this);
+	   
+	    tableDX.getSelectionModel().addListSelectionListener(new RowListener());
+	    tableDX.getColumnModel().getSelectionModel().addListSelectionListener(new ColumnListener());
+	    
+		tableDX.setModel(model);
+		tableDX.setFont(new Font("Arial", Font.BOLD, 10));
+		tableDX.getTableHeader().setFont(new Font("Arial", Font.BOLD, 10));
+		tableDX.setRowHeight(25);
+		
+		TableColumn column = tableDX.getColumnModel().getColumn(tableDX.getColumnModel().getColumnIndex("index"));
+		tableDX.removeColumn(column);
+		
+		JScrollPane scrollTab = new JScrollPane(tableDX);
+		semDex.add(scrollTab, "cell 0 1 3 1,growx,height :350:400");
+		
+		/*Tabella Tratto*/
+		
+		tableTratto = new JTable();
+		modelTratto= new ModelTratto();
+		tableTratto.setModel(modelTratto);
+		for (int i = 0; i <listaPuntiDX.size(); i++) {
+			punto= listaPuntiDX.get(i);
+			modelTratto.addRow(new Object[0]);		
+			modelTratto.setValueAt(punto.getRif_tacca(), i, 0);
+			
+			if( punto.getDiv_dex()!=null && punto.getDiv_dex().abs().compareTo(BigDecimal.ZERO)==1) 
+			{
+				modelTratto.setValueAt(punto.getDiv_dex().toPlainString(), i, 1);
+				modelTratto.setValueAt(punto.getDiv_dex().subtract(s_mediaTotale),i,2);
+			}else 
+			{
+				modelTratto.setValueAt("", i, 2);
+			}
+			
+			
+		}
+		
+		tableTratto.setFont(new Font("Arial", Font.BOLD, 10));
+		tableTratto.getTableHeader().setFont(new Font("Arial", Font.BOLD, 10));
+		tableTratto.setRowHeight(25);
+		
+		
+		lblInserimentoNonValido = new JLabel("* Inserimento non valido");
+		lblInserimentoNonValido.setForeground(Color.RED);
+		lblInserimentoNonValido.setFont(new Font("Arial", Font.BOLD, 12));
+		lblInserimentoNonValido.setVisible(false);
+		semDex.add(lblInserimentoNonValido, "cell 0 2");
+		
+		
+		JLabel lblSMedia = new JLabel("s. media");
+		lblSMedia.setFont(new Font("Arial", Font.BOLD, 12));
+		semDex.add(lblSMedia, "flowx,cell 0 3,alignx trailing");
+		
+		JScrollPane scrollTabTratto = new JScrollPane(tableTratto);
+		semDex.add(scrollTabTratto, "cell 4 1,growx,width :150:200,height :350:400");
+		
+		s_media_field = new JTextField();
+		s_media_field.setFont(new Font("Arial", Font.BOLD, 12));
+		s_media_field.setEditable(false);
+		s_media_field.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,0).toPlainString());
+		semDex.add(s_media_field, "cell 1 3");
+		s_media_field.setColumns(10);
+		
+		JLabel lblMmm = new JLabel("mm/m");
+		lblMmm.setFont(new Font("Arial", Font.BOLD, 12));
+		semDex.add(lblMmm, "cell 2 3");
+		
+		JLabel lblDevSt = new JLabel("dev. st");
+		lblDevSt.setFont(new Font("Arial", Font.BOLD, 12));
+		semDex.add(lblDevSt, "cell 0 4,alignx trailing");
+		
+		dev_st_field = new JTextField();
+		dev_st_field.setEditable(false);
+		dev_st_field.setFont(new Font("Arial", Font.BOLD, 12));
+		semDex.add(dev_st_field, "cell 1 4");
+		dev_st_field.setColumns(10);
+		
+		JLabel lblMmm_1 = new JLabel("mm/m");
+		lblMmm_1.setFont(new Font("Arial", Font.BOLD, 12));
+		semDex.add(lblMmm_1, "cell 2 4");
+	
+		
+		
+		
+	//	return semDex;
+	}
+
+	@Override
+	public void tableChanged(TableModelEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+}
 private class RowListener implements ListSelectionListener {
     public void valueChanged(ListSelectionEvent event) {
         if (event.getValueIsAdjusting()) {
@@ -506,6 +609,42 @@ class ModelSemisc extends DefaultTableModel {
 				|| column==13|| column==14|| column==15)
 		{
 		return false;
+		}else
+		{
+			return true;
+		}
+	}
+	 
+	
+}
+class ModelTratto extends DefaultTableModel {
+
+	
+	public ModelTratto() {
+		addColumn("Tratto");
+		addColumn("Valore 1 div. Liv mm/m");
+		addColumn("Scostamento media mm/m");
+		
+	}
+	@Override
+	public Class<?> getColumnClass(int column) {
+		switch (column) {
+		case 0:
+			return String.class;
+		case 1:
+			return String.class;
+		case 2:
+			return String.class;
+		default:
+			return String.class;
+		}
+	}
+	
+	@Override
+	public boolean isCellEditable(int row, int column) {
+		if(column<3)
+		{
+		return true;
 		}else
 		{
 			return true;

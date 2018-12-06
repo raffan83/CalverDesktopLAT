@@ -473,5 +473,60 @@ public class GestioneMisuraBO
 		SQLiteDAO.updateRecordPuntoLivellaBolla(punto);
 	}
 
+	public static BigDecimal getAverageLivella(ArrayList<PuntoLivellaBollaDTO> listaPuntiDX,ArrayList<PuntoLivellaBollaDTO> listaPuntiSX, int type) {
+		
+		BigDecimal media=BigDecimal.ZERO;
+		int index=0;
+		
+		if(type==2) 
+		{
+			for (PuntoLivellaBollaDTO puntoDX : listaPuntiDX) 
+			{
+				if(puntoDX.getDiv_dex()!=null && puntoDX.getDiv_dex().compareTo(BigDecimal.ZERO)==1) 
+				{
+					media=media.add(puntoDX.getDiv_dex());
+					index++;
+				}
+			}
+			for (PuntoLivellaBollaDTO puntoSX : listaPuntiSX ) 
+			{
+				if(puntoSX.getDiv_dex()!=null && puntoSX.getDiv_dex().compareTo(BigDecimal.ZERO)==1) 
+				{
+					media=media.add(puntoSX.getDiv_dex());
+					index++;
+				}
+			}
+			
+			
+		}
+		
+		if(type==1) 
+		{
+			for (PuntoLivellaBollaDTO puntoSX : listaPuntiSX) 
+			{
+				if(puntoSX.getDiv_dex()!=null && puntoSX.getDiv_dex().compareTo(BigDecimal.ZERO)==1) 
+				{
+					media=media.add(puntoSX.getDiv_dex() );
+					index++;
+				}
+			}
+			
+			
+		}
+		
+		if(type==0) 
+		{
+		for (PuntoLivellaBollaDTO puntoDX : listaPuntiDX) 
+		{
+			if(puntoDX.getDiv_dex()!=null && puntoDX.getDiv_dex().compareTo(BigDecimal.ZERO)==1) 
+			{
+				media=media.add(puntoDX.getDiv_dex());
+				index++;
+			}
+		}
+		}
+		return media.divide(new BigDecimal(index),Costanti.RISOLUZIONE_LIVELLA_BOLLA+2, RoundingMode.HALF_UP);
+	}
+
 }
 
