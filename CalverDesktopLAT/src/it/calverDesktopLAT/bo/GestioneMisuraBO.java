@@ -3,6 +3,7 @@ package it.calverDesktopLAT.bo;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -482,17 +483,17 @@ public class GestioneMisuraBO
 		{
 			for (PuntoLivellaBollaDTO puntoDX : listaPuntiDX) 
 			{
-				if(puntoDX.getDiv_dex()!=null && puntoDX.getDiv_dex().compareTo(BigDecimal.ZERO)==1) 
+				if(puntoDX.getDiv_dex()!=null && puntoDX.getDiv_dex().compareTo(BigDecimal.ZERO)!=0) 
 				{
-					media=media.add(puntoDX.getDiv_dex());
+					media=media.add(puntoDX.getDiv_dex().abs());
 					index++;
 				}
 			}
 			for (PuntoLivellaBollaDTO puntoSX : listaPuntiSX ) 
 			{
-				if(puntoSX.getDiv_dex()!=null && puntoSX.getDiv_dex().compareTo(BigDecimal.ZERO)==1) 
+				if(puntoSX.getDiv_dex()!=null && puntoSX.getDiv_dex().compareTo(BigDecimal.ZERO)!=0) 
 				{
-					media=media.add(puntoSX.getDiv_dex());
+					media=media.add(puntoSX.getDiv_dex().abs());
 					index++;
 				}
 			}
@@ -504,9 +505,9 @@ public class GestioneMisuraBO
 		{
 			for (PuntoLivellaBollaDTO puntoSX : listaPuntiSX) 
 			{
-				if(puntoSX.getDiv_dex()!=null && puntoSX.getDiv_dex().compareTo(BigDecimal.ZERO)==1) 
+				if(puntoSX.getDiv_dex()!=null && puntoSX.getDiv_dex().compareTo(BigDecimal.ZERO)!=0) 
 				{
-					media=media.add(puntoSX.getDiv_dex() );
+					media=media.add(puntoSX.getDiv_dex().abs() );
 					index++;
 				}
 			}
@@ -518,14 +519,188 @@ public class GestioneMisuraBO
 		{
 		for (PuntoLivellaBollaDTO puntoDX : listaPuntiDX) 
 		{
-			if(puntoDX.getDiv_dex()!=null && puntoDX.getDiv_dex().compareTo(BigDecimal.ZERO)==1) 
+			if(puntoDX.getDiv_dex()!=null && puntoDX.getDiv_dex().compareTo(BigDecimal.ZERO)!=0) 
 			{
-				media=media.add(puntoDX.getDiv_dex());
+				media=media.add(puntoDX.getDiv_dex().abs());
 				index++;
 			}
 		}
 		}
-		return media.divide(new BigDecimal(index),Costanti.RISOLUZIONE_LIVELLA_BOLLA+2, RoundingMode.HALF_UP);
+		if(media.compareTo(BigDecimal.ZERO)!=0 && index>0)
+		{
+			return media.divide(new BigDecimal(index),Costanti.RISOLUZIONE_LIVELLA_BOLLA+2, RoundingMode.HALF_UP);
+		}
+		else 
+		{
+			return BigDecimal.ZERO.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP);
+		}
+	}
+
+	public static BigDecimal getDevStdLivella(ArrayList<PuntoLivellaBollaDTO> listaPuntiDX, ArrayList<PuntoLivellaBollaDTO> listaPuntiSX, int type) {
+		
+		BigDecimal mediaGlobale =GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,type);
+		
+		BigDecimal media=BigDecimal.ZERO;
+		
+		int index=0;
+		
+		if(type==2) 
+		{
+			for (PuntoLivellaBollaDTO puntoDX : listaPuntiDX) 
+			{
+				if(puntoDX.getDiv_dex()!=null && puntoDX.getDiv_dex().compareTo(BigDecimal.ZERO)!=0) 
+				{
+					 double val = Math.pow(puntoDX.getDiv_dex().abs().subtract(mediaGlobale).doubleValue(), 2D);
+	                 media = media.add(new BigDecimal(val));
+	                 index++;
+	                    
+					
+				}
+			}
+			for (PuntoLivellaBollaDTO puntoSX : listaPuntiSX ) 
+			{
+				if(puntoSX.getDiv_dex()!=null && puntoSX.getDiv_dex().compareTo(BigDecimal.ZERO)!=0) 
+				{
+					double val = Math.pow(puntoSX.getDiv_dex().abs().subtract(mediaGlobale).doubleValue(), 2D);
+	                media = media.add(new BigDecimal(val));
+	                index++;
+				}
+			}
+			
+			
+		}
+		
+		if(type==1) 
+		{
+			for (PuntoLivellaBollaDTO puntoSX : listaPuntiSX) 
+			{
+				if(puntoSX.getDiv_dex()!=null && puntoSX.getDiv_dex().compareTo(BigDecimal.ZERO)!=0) 
+				{
+					double val = Math.pow(puntoSX.getDiv_dex().abs().subtract(mediaGlobale).doubleValue(), 2D);
+	                 media = media.add(new BigDecimal(val));
+	                 index++;
+				}
+			}
+			
+			
+		}
+		
+		if(type==0) 
+		{
+		for (PuntoLivellaBollaDTO puntoDX : listaPuntiDX) 
+		{
+			if(puntoDX.getDiv_dex()!=null && puntoDX.getDiv_dex().compareTo(BigDecimal.ZERO)!=0) 
+			{
+				double val = Math.pow(puntoDX.getDiv_dex().abs().subtract(mediaGlobale).doubleValue(), 2D);
+                media = media.add(new BigDecimal(val));
+                index++;
+			}
+		}
+		}
+		
+		if(media.compareTo(BigDecimal.ZERO)!=0  && index>1)
+		{
+			
+			BigDecimal d=new BigDecimal(1).setScale(10, RoundingMode.HALF_UP).divide(new BigDecimal(index-1).setScale(10, RoundingMode.HALF_UP),RoundingMode.HALF_DOWN);
+			
+			BigDecimal  b = media.multiply(d);
+		
+			Double d1=b.doubleValue();
+			
+			d1=Math.sqrt(d1);
+			return  new BigDecimal(d1).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP);
+		}
+		else 
+		{
+			return BigDecimal.ZERO.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP);
+		}
+		
+	}
+
+	public static BigDecimal getScMaxLivella(ArrayList<PuntoLivellaBollaDTO> listaPuntiDX,ArrayList<PuntoLivellaBollaDTO> listaPuntiSX) {
+		
+		BigDecimal mediaGlobale =GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,2);
+		
+		BigDecimal max=BigDecimal.ZERO;
+		
+		
+			for (PuntoLivellaBollaDTO puntoDX : listaPuntiDX) 
+			{
+				if(puntoDX.getDiv_dex()!=null && puntoDX.getDiv_dex().compareTo(BigDecimal.ZERO)!=0) 
+				{
+					BigDecimal tmp=puntoDX.getDiv_dex().abs().subtract(mediaGlobale).abs();
+	               
+					if(tmp.compareTo(max)>=1) 
+					{
+						max=tmp;
+					}
+	                
+	                    
+					
+				}
+			}
+			for (PuntoLivellaBollaDTO puntoSX : listaPuntiSX ) 
+			{
+				if(puntoSX.getDiv_dex()!=null && puntoSX.getDiv_dex().compareTo(BigDecimal.ZERO)!=0) 
+				{
+					BigDecimal tmp=puntoSX.getDiv_dex().abs().subtract(mediaGlobale).abs();
+		               
+					if(tmp.compareTo(max)>=1) 
+					{
+						max=tmp;
+					}
+				}
+			}
+			
+		
+		
+		return max;
+	}
+
+	public static BigDecimal getIncertezzaLivellaBolla_EM(String _er, String _sensib) {
+		
+		BigDecimal em = null;
+		
+		BigDecimal er=new BigDecimal(_er);
+		
+		BigDecimal sensib=new BigDecimal(_sensib);
+			
+		
+		er=er.divide(new BigDecimal(2).setScale(10, RoundingMode.HALF_DOWN));
+		
+		er=er.multiply(er);
+		
+		sensib=new BigDecimal(Math.pow(sensib.doubleValue(), 2));
+		
+		BigDecimal cost=new BigDecimal(0.039204);
+		
+		
+		sensib=sensib.multiply(cost);
+		
+		er=er.add(sensib);
+		
+		em=new BigDecimal(2).multiply(new BigDecimal(Math.pow(er.doubleValue(), 0.5)));
+		
+		return em;
+	}
+
+	public static BigDecimal getIncertezzaLivellaBolla_UM(String _em, String _scMax) {
+		
+		BigDecimal um = null;
+		
+		BigDecimal em=new BigDecimal(_em);
+		
+		BigDecimal scMax=new BigDecimal(_scMax);
+		
+		scMax= scMax.multiply(scMax);
+		
+		em=em.setScale(10,RoundingMode.HALF_DOWN).divide(new BigDecimal(2).setScale(10, RoundingMode.HALF_DOWN),RoundingMode.HALF_DOWN);
+		
+		em=em.multiply(em);
+		
+		um=new BigDecimal(2).multiply(new BigDecimal(Math.pow(scMax.add(em).doubleValue(), 0.5)));
+		
+		return um;
 	}
 
 }
