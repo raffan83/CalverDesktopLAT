@@ -440,8 +440,8 @@ public class PannelloLivellaBolla extends JPanel  {
 
 				if( punto.getDiv_dex()!=null && punto.getDiv_dex().abs().compareTo(BigDecimal.ZERO)==1) 
 				{
-					modelTratto.setValueAt(punto.getDiv_dex().toPlainString(), i, 1);
-					modelTratto.setValueAt(punto.getDiv_dex().subtract(s_mediaTotale),i,2);
+					modelTratto.setValueAt(punto.getDiv_dex().abs().toPlainString(), i, 1);
+					modelTratto.setValueAt(punto.getDiv_dex().abs().subtract(s_mediaTotale),i,2);
 				}else 
 				{
 					modelTratto.setValueAt("", i, 2);
@@ -649,8 +649,8 @@ public class PannelloLivellaBolla extends JPanel  {
 										PuntoLivellaBollaDTO punto= listaPuntiDX.get(i);
 										if( punto.getDiv_dex()!=null && punto.getDiv_dex().abs().compareTo(BigDecimal.ZERO)==1) 
 										{
-											modelTratto.setValueAt(punto.getDiv_dex().toPlainString(), i, 1);
-											modelTratto.setValueAt(punto.getDiv_dex().subtract(s_mediaTotale),i,2);
+											modelTratto.setValueAt(punto.getDiv_dex().abs().toPlainString(), i, 1);
+											modelTratto.setValueAt(punto.getDiv_dex().abs().subtract(s_mediaTotale),i,2);
 										}else 
 										{
 											modelTratto.setValueAt("", i, 2);
@@ -877,8 +877,8 @@ public class PannelloLivellaBolla extends JPanel  {
 
 				if( punto.getDiv_dex()!=null && punto.getDiv_dex().abs().compareTo(BigDecimal.ZERO)==1) 
 				{
-					modelTratto.setValueAt(punto.getDiv_dex().toPlainString(), i, 1);
-					modelTratto.setValueAt(punto.getDiv_dex().subtract(s_mediaTotale),i,2);
+					modelTratto.setValueAt(punto.getDiv_dex().abs().toPlainString(), i, 1);
+					modelTratto.setValueAt(punto.getDiv_dex().abs().subtract(s_mediaTotale),i,2);
 				}else 
 				{
 					modelTratto.setValueAt("", i, 2);
@@ -1084,7 +1084,7 @@ public class PannelloLivellaBolla extends JPanel  {
 										PuntoLivellaBollaDTO punto= listaPuntiSX.get(i);
 										if( punto.getDiv_dex()!=null && punto.getDiv_dex().abs().compareTo(BigDecimal.ZERO)==1) 
 										{
-											modelTratto.setValueAt(punto.getDiv_dex().toPlainString(), i, 1);
+											modelTratto.setValueAt(punto.getDiv_dex().abs().toPlainString(), i, 1);
 											modelTratto.setValueAt(punto.getDiv_dex().abs().subtract(s_mediaTotale),i,2);
 										}else 
 										{
