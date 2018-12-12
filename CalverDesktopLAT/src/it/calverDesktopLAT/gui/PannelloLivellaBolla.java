@@ -13,8 +13,10 @@ import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
@@ -26,8 +28,11 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
+import it.calverDesktopLAT.bo.GestioneCampioneBO;
 import it.calverDesktopLAT.bo.GestioneMisuraBO;
+import it.calverDesktopLAT.bo.GestioneStrumentoBO;
 import it.calverDesktopLAT.bo.SessionBO;
+import it.calverDesktopLAT.dto.LatMisuraDTO;
 import it.calverDesktopLAT.dto.PuntoLivellaBollaDTO;
 import it.calverDesktopLAT.utl.Costanti;
 import it.calverDesktopLAT.utl.Utility;
@@ -35,6 +40,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 
 public class PannelloLivellaBolla extends JPanel  {
 
@@ -42,11 +48,11 @@ public class PannelloLivellaBolla extends JPanel  {
 	private JTextField textField_media_totale;
 	private JTextField textField_dev_std_totale;
 	private JTextField textField_scmax;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JTextField textField_3;
-	private JTextField textField_4;
+	private JTextField stato;
+	private JTextField ammaccature;
+	private JTextField bolla_trasversale;
+	private JTextField regolazione;
+	private JTextField centraggio;
 	private JTextField incertezza_um;
 	private JTextField incertezza_er;
 	private JTextField incertezza_em;
@@ -55,7 +61,8 @@ public class PannelloLivellaBolla extends JPanel  {
 	private JTextField campo_misura;
 	private JTextField sensibilita;
 	private JTextField campo_misura_sec;
-	public PannelloLivellaBolla() {
+	
+	public PannelloLivellaBolla(int index) {
 
 		SessionBO.prevPage="PMM";
 
@@ -63,18 +70,21 @@ public class PannelloLivellaBolla extends JPanel  {
 		setLayout(new MigLayout("", "[grow][grow][grow][grow][grow]", "[][grow]"));
 		{
 			JLabel lblDevStdTotale = new JLabel("Dev. Std Totale");
+			lblDevStdTotale.setFont(new Font("Arial", Font.BOLD, 14));
 			add(lblDevStdTotale, "flowx,cell 2 0");
 		}
 		{
 			JLabel lblScmax = new JLabel("SCmax");
+			lblScmax.setFont(new Font("Arial", Font.BOLD, 14));
 			add(lblScmax, "flowx,cell 4 0");
 		}
 
 		JScrollPane mainScroll = new JScrollPane();
 		add(mainScroll, "cell 0 1 5 1,grow");
 
+		
+		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		//	tabbedPane.setBackground(Color.ORANGE);
 		mainScroll.setViewportView(tabbedPane);
 
 		try 
@@ -89,28 +99,36 @@ public class PannelloLivellaBolla extends JPanel  {
 			
 		    tabbedPane.addTab("Riferimenti & Incertezza", costruisciPanelRiferimentiIncertezza());
 		    
+		    tabbedPane.setSelectedIndex(index);
+		    
 		    JLabel lblSMediaTotale = new JLabel("S. Media Totale");
+		    lblSMediaTotale.setFont(new Font("Arial", Font.BOLD, 14));
+		    
 		    add(lblSMediaTotale, "flowx,cell 0 0");
 		    {
 		    	textField_media_totale = new JTextField();
-		    	textField_media_totale.setFont(new Font("Arial", Font.BOLD, 12));
+		    	textField_media_totale.setBackground(Color.YELLOW);
+		    	textField_media_totale.setFont(new Font("Arial", Font.BOLD, 14));
 		    	textField_media_totale.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,2).toPlainString());
 		    	textField_media_totale.setEditable(false);
 		    	add(textField_media_totale, "cell 0 0");
 		    	textField_media_totale.setColumns(10);
+		    	
 		    }
 		    {
 		    	textField_dev_std_totale = new JTextField();
+		    	textField_dev_std_totale.setBackground(Color.YELLOW);
 		    	textField_dev_std_totale.setEditable(false);
-		    	textField_dev_std_totale.setFont(new Font("Arial", Font.BOLD, 12));
+		    	textField_dev_std_totale.setFont(new Font("Arial", Font.BOLD, 14));
 		    	textField_dev_std_totale.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,2).toPlainString());
 		    	add(textField_dev_std_totale, "cell 2 0");
 		    	textField_dev_std_totale.setColumns(10);
 		    }
 		    {
 		    	textField_scmax = new JTextField();
+		    	textField_scmax.setBackground(Color.YELLOW);
 		    	textField_scmax.setEditable(false);
-		    	textField_scmax.setFont(new Font("Arial", Font.BOLD, 12));
+		    	textField_scmax.setFont(new Font("Arial", Font.BOLD, 14));
 		    	textField_scmax.setText(GestioneMisuraBO.getScMaxLivella(listaPuntiDX, listaPuntiSX).toPlainString());
 		    	add(textField_scmax, "cell 4 0");
 		    	textField_scmax.setColumns(10);
@@ -127,213 +145,272 @@ public class PannelloLivellaBolla extends JPanel  {
 
 		JPanel semInc= new JPanel();
 		semInc.setBackground(Color.LIGHT_GRAY);
-		semInc.setLayout(new MigLayout("", "[pref!,grow][pref!,grow][grow][grow]", "[pref!,grow][pref!,grow][pref!,grow][pref!,grow][pref!,grow][][30:pref:pref][pref!,grow][][][][][][][][][][][grow][]"));
-		{
-			JLabel lblVerifichePreliminari = new JLabel("Verifiche preliminari");
-			lblVerifichePreliminari.setFont(new Font("Arial", Font.BOLD | Font.ITALIC, 14));
-			semInc.add(lblVerifichePreliminari, "cell 0 0");
-		}
-		{
-			JLabel lblStatoDiConservazione = new JLabel("Stato di conservazione e pulizia:");
-			lblStatoDiConservazione.setFont(new Font("Arial", Font.PLAIN, 12));
-			semInc.add(lblStatoDiConservazione, "cell 0 1,alignx trailing");
-		}
-		{
-			textField = new JTextField();
-			semInc.add(textField, "cell 1 1,width :150:");
-			textField.setColumns(10);
-		}
-		{
-			JLabel lblPresenzeDiFitte = new JLabel("Presenze di fitte e ammaccature");
-			lblPresenzeDiFitte.setFont(new Font("Arial", Font.PLAIN, 12));
-			semInc.add(lblPresenzeDiFitte, "cell 0 2,alignx trailing");
-		}
-		{
-			textField_1 = new JTextField();
-			textField_1.setColumns(10);
-			semInc.add(textField_1, "cell 1 2,growx");
-		}
-		{
-			JLabel lblPresenzaDiBolla = new JLabel("Presenza di Bolla trasversale");
-			lblPresenzaDiBolla.setFont(new Font("Arial", Font.PLAIN, 12));
-			semInc.add(lblPresenzaDiBolla, "cell 0 3,alignx trailing");
-		}
-		{
-			textField_2 = new JTextField();
-			textField_2.setColumns(10);
-			semInc.add(textField_2, "cell 1 3,growx");
-		}
-		{
-			JLabel lblRegolazioneESigilli = new JLabel("Regolazione e Sigilli");
-			lblRegolazioneESigilli.setFont(new Font("Arial", Font.PLAIN, 12));
-			semInc.add(lblRegolazioneESigilli, "cell 0 4,alignx trailing");
-		}
-		{
-			textField_3 = new JTextField();
-			textField_3.setColumns(10);
-			semInc.add(textField_3, "cell 1 4,growx");
-		}
-		{
-			JLabel lblCentraggioRispettoAllasse = new JLabel("Centraggio rispetto all'asse di gravita");
-			semInc.add(lblCentraggioRispettoAllasse, "cell 0 5,alignx trailing");
-		}
-		{
-			textField_4 = new JTextField();
-			textField_4.setColumns(10);
-			semInc.add(textField_4, "cell 1 5,growx");
-		}
-		{
-			JLabel lblCampoMisura = new JLabel("Campo Misura");
-			semInc.add(lblCampoMisura, "cell 0 7,alignx trailing");
-		}
-		{
-			campo_misura = new JTextField();
-			campo_misura.setColumns(10);
-			semInc.add(campo_misura, "flowx,cell 1 7,growx");
-		}
-		{
-			campo_misura_sec = new JTextField();
-			campo_misura_sec.setEditable(false);
-			campo_misura_sec.setColumns(10);
-			semInc.add(campo_misura_sec, "flowx,cell 2 7,alignx center");
-		}
-		{
-			JLabel lblSensibilit = new JLabel("Sensibilit\u00E0:");
-			semInc.add(lblSensibilit, "cell 0 9,alignx trailing");
-		}
-		{
-			sensibilita = new JTextField();
-			sensibilita.setColumns(10);
-			semInc.add(sensibilita, "flowx,cell 1 9,growx");
-		}
-		{
-			JLabel lblIncertezzaAssociataAl = new JLabel("Incertezza associata al riferimento U(Er)");
-			lblIncertezzaAssociataAl.setFont(new Font("Arial", Font.PLAIN, 12));
-			semInc.add(lblIncertezzaAssociataAl, "cell 0 11,alignx trailing");
-		}
-		{
-			incertezza_er = new JTextField();
-			incertezza_er.setEditable(false);
-			incertezza_er.setColumns(10);
-			semInc.add(incertezza_er, "flowx,cell 1 11,growx");
-		}
-		{
-			incertezza_er_sec = new JTextField();
-			incertezza_er_sec.setEditable(false);
-			incertezza_er_sec.setColumns(10);
-			semInc.add(incertezza_er_sec, "flowx,cell 2 11,alignx center");
-		}
-		{
-			JLabel lblIncertezzaEstesaUem = new JLabel("Incertezza Estesa U(Em)");
-			lblIncertezzaEstesaUem.setFont(new Font("Arial", Font.PLAIN, 12));
-			semInc.add(lblIncertezzaEstesaUem, "cell 0 13,alignx trailing");
-		}
-		{
-			incertezza_em = new JTextField();
-			incertezza_em.setEditable(false);
-			incertezza_em.setColumns(10);
-			semInc.add(incertezza_em, "flowx,cell 1 13,growx");
-		}
-		{
-			incertezza_em_sec = new JTextField();
-			incertezza_em_sec.setEditable(false);
-			incertezza_em_sec.setColumns(10);
-			semInc.add(incertezza_em_sec, "flowx,cell 2 13,alignx center");
-		}
-		{
-			JLabel lblIncertezzaDaAssociare = new JLabel("Incertezza da associare al valore medio di");
-			lblIncertezzaDaAssociare.setFont(new Font("Arial", Font.PLAIN, 12));
-			semInc.add(lblIncertezzaDaAssociare, "cell 0 15,alignx trailing");
-		}
-		{
-			incertezza_um = new JTextField();
-			incertezza_um.setEditable(false);
-			incertezza_um.setColumns(10);
-			semInc.add(incertezza_um, "flowx,cell 1 15,growx");
-		}
-		{
-			JLabel lblUnaDivisioneDella = new JLabel("una divisione della scala graduata Um");
-			lblUnaDivisioneDella.setFont(new Font("Arial", Font.PLAIN, 12));
-			semInc.add(lblUnaDivisioneDella, "cell 0 16");
-		}
-		{
-			JButton btnNewButton = new JButton("Calcola");
-			btnNewButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					
-					if(campo_misura.getText().length()>0 && sensibilita.getText().length()>0) 
-					{
-						campo_misura_sec.setText(GestioneMisuraBO.getArcosec(campo_misura.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP).toPlainString());
-						
-						BigDecimal er= (new BigDecimal(campo_misura_sec.getText()).multiply(new BigDecimal("0.002")).add(new BigDecimal("1.5")));
-						
-						incertezza_er_sec.setText(er.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP).toPlainString());						
-						
-						incertezza_er.setText(GestioneMisuraBO.getArcosecInv(incertezza_er_sec.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
-						
-						BigDecimal em=GestioneMisuraBO.getIncertezzaLivellaBolla_EM(incertezza_er.getText(),sensibilita.getText());
-						
-						incertezza_em.setText(em.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_DOWN).toPlainString());
-						
-						incertezza_em_sec.setText(GestioneMisuraBO.getArcosec(incertezza_em.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_DOWN).toPlainString());
-						
-						BigDecimal um=GestioneMisuraBO.getIncertezzaLivellaBolla_UM(incertezza_em.getText(), textField_scmax.getText());
-						
-						incertezza_um.setText(um.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_DOWN).toPlainString());
-						
-					}else 
-					{
-						JOptionPane.showMessageDialog(null,"Compilare \"Campo Misura\" e \"Sensibilità\"","Attenzione",JOptionPane.WARNING_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
+		semInc.setLayout(new MigLayout("", "[pref!,grow][pref!,grow][][grow]", "[pref!,grow][][][pref!,grow][pref!,grow][pref!,grow][pref!,grow][][30:pref:pref][pref!,grow][][][][][][][][][][grow][pref!,grow][]"));
+
+		try{
+			{
+				JLabel lblVerifichePreliminari = new JLabel("Verifiche preliminari");
+				lblVerifichePreliminari.setFont(new Font("Arial", Font.BOLD | Font.ITALIC, 14));
+				semInc.add(lblVerifichePreliminari, "cell 0 0");
+
+				JLabel lblCampioneDiRiferimento = new JLabel("Campione di Riferimento");
+				semInc.add(lblCampioneDiRiferimento, "cell 0 1,alignx trailing");
+
+
+				final JComboBox comboBox_cmpRif = new JComboBox(GestioneCampioneBO.getListaCampioniCompleta());
+				semInc.add(comboBox_cmpRif, "cell 1 1 2 1,growx");
+
+				JLabel lblCampioneDiLavoro = new JLabel("Campione di lavoro");
+				semInc.add(lblCampioneDiLavoro, "cell 0 2,alignx trailing");
+
+
+				final JComboBox comboBox_cmpLav = new JComboBox(GestioneCampioneBO.getListaCampioniCompleta());
+				semInc.add(comboBox_cmpLav, "cell 1 2 2 1,growx");
+
+
+				JLabel lblStatoDiConservazione = new JLabel("Stato di conservazione e pulizia:");
+				lblStatoDiConservazione.setFont(new Font("Arial", Font.PLAIN, 12));
+				semInc.add(lblStatoDiConservazione, "cell 0 3,alignx trailing");
+
+				stato = new JTextField();
+				semInc.add(stato, "cell 1 3 2 1,width :150:");
+				stato.setColumns(10);
+
+				JLabel lblPresenzeDiFitte = new JLabel("Presenze di fitte e ammaccature");
+				lblPresenzeDiFitte.setFont(new Font("Arial", Font.PLAIN, 12));
+				semInc.add(lblPresenzeDiFitte, "cell 0 4,alignx trailing");
+
+				ammaccature = new JTextField();
+				ammaccature.setColumns(10);
+				semInc.add(ammaccature, "cell 1 4 2 1,growx");
+
+				JLabel lblPresenzaDiBolla = new JLabel("Presenza di Bolla trasversale");
+				lblPresenzaDiBolla.setFont(new Font("Arial", Font.PLAIN, 12));
+				semInc.add(lblPresenzaDiBolla, "cell 0 5,alignx trailing");
+
+				bolla_trasversale = new JTextField();
+				bolla_trasversale.setColumns(10);
+				semInc.add(bolla_trasversale, "cell 1 5 2 1,growx");
+
+				JLabel lblRegolazioneESigilli = new JLabel("Regolazione e Sigilli");
+				lblRegolazioneESigilli.setFont(new Font("Arial", Font.PLAIN, 12));
+				semInc.add(lblRegolazioneESigilli, "cell 0 6,alignx trailing");
+
+				regolazione = new JTextField();
+				regolazione.setColumns(10);
+				semInc.add(regolazione, "cell 1 6 2 1,growx");
+
+				JLabel lblCentraggioRispettoAllasse = new JLabel("Centraggio rispetto all'asse di gravita");
+				semInc.add(lblCentraggioRispettoAllasse, "cell 0 7,alignx trailing");
+
+				centraggio = new JTextField();
+				centraggio.setColumns(10);
+				semInc.add(centraggio, "cell 1 7 2 1,growx");
+
+				JLabel lblCampoMisura = new JLabel("Campo Misura");
+				semInc.add(lblCampoMisura, "cell 0 9,alignx trailing");
+
+				campo_misura = new JTextField();
+				campo_misura.setColumns(10);
+				semInc.add(campo_misura, "flowx,cell 1 9,growx");
+
+				campo_misura_sec = new JTextField();
+				campo_misura_sec.setEditable(false);
+				campo_misura_sec.setColumns(10);
+				semInc.add(campo_misura_sec, "flowx,cell 3 9,alignx left");
+
+				JLabel lblSensibilit = new JLabel("Sensibilit\u00E0:");
+				semInc.add(lblSensibilit, "cell 0 11,alignx trailing");
+
+				sensibilita = new JTextField();
+				sensibilita.setColumns(10);
+				semInc.add(sensibilita, "flowx,cell 1 11,growx");
+
+				JLabel lblIncertezzaAssociataAl = new JLabel("Incertezza associata al riferimento U(Er)");
+				lblIncertezzaAssociataAl.setFont(new Font("Arial", Font.PLAIN, 12));
+				semInc.add(lblIncertezzaAssociataAl, "cell 0 13,alignx trailing");
+
+				incertezza_er = new JTextField();
+				incertezza_er.setEditable(false);
+				incertezza_er.setColumns(10);
+				semInc.add(incertezza_er, "flowx,cell 1 13,growx");
+
+				incertezza_er_sec = new JTextField();
+				incertezza_er_sec.setEditable(false);
+				incertezza_er_sec.setColumns(10);
+				semInc.add(incertezza_er_sec, "flowx,cell 3 13,alignx left");
+
+				JLabel lblIncertezzaEstesaUem = new JLabel("Incertezza Estesa U(Em)");
+				lblIncertezzaEstesaUem.setFont(new Font("Arial", Font.PLAIN, 12));
+				semInc.add(lblIncertezzaEstesaUem, "cell 0 15,alignx trailing");
+
+				incertezza_em = new JTextField();
+				incertezza_em.setEditable(false);
+				incertezza_em.setColumns(10);
+				semInc.add(incertezza_em, "flowx,cell 1 15,growx");
+
+				incertezza_em_sec = new JTextField();
+				incertezza_em_sec.setEditable(false);
+				incertezza_em_sec.setColumns(10);
+				semInc.add(incertezza_em_sec, "flowx,cell 3 15,alignx left");
+
+				JLabel lblIncertezzaDaAssociare = new JLabel("Incertezza da associare al valore medio di");
+				lblIncertezzaDaAssociare.setFont(new Font("Arial", Font.PLAIN, 12));
+				semInc.add(lblIncertezzaDaAssociare, "cell 0 17,alignx trailing");
+
+				incertezza_um = new JTextField();
+				incertezza_um.setEditable(false);
+				incertezza_um.setColumns(10);
+				semInc.add(incertezza_um, "flowx,cell 1 17,growx");
+
+				JButton btnSalva = new JButton("Salva");
+				
+				btnSalva.setIcon(new ImageIcon(PannelloLivellaBolla.class.getResource("/image/save.png")));
+				btnSalva.setFont(new Font("Arial", Font.BOLD, 12));
+				semInc.add(btnSalva, "cell 3 20");
+
+				JLabel lblNote = new JLabel("Note:");
+				lblNote.setFont(new Font("Arial", Font.PLAIN, 12));
+				semInc.add(lblNote, "cell 0 20,alignx right");
+
+				final JTextArea textArea = new JTextArea();
+				JScrollPane scrollPaneNote = new JScrollPane(textArea);
+				semInc.add(scrollPaneNote, "cell 1 19 3 1,grow");
+
+				JLabel label_1 = new JLabel("''");
+				semInc.add(label_1, "cell 3 13");
+
+				JLabel label_2 = new JLabel("''");
+				semInc.add(label_2, "cell 3 15");
+
+				JLabel label_3 = new JLabel("''");
+				semInc.add(label_3, "cell 3 9");
+
+				JLabel lblMmm_2 = new JLabel("mm/m");
+				semInc.add(lblMmm_2, "cell 1 9");
+
+				JLabel label_4 = new JLabel("mm/m");
+				semInc.add(label_4, "cell 1 11");
+
+				JLabel label_5 = new JLabel("mm/m");
+				semInc.add(label_5, "cell 1 13");
+
+				JLabel label_6 = new JLabel("mm/m");
+				semInc.add(label_6, "cell 1 15");
+
+				JLabel label_7 = new JLabel("mm/m");
+				semInc.add(label_7, "cell 1 17");
+
+				JLabel lblUnaDivisioneDella = new JLabel("una divisione della scala graduata Um");
+				lblUnaDivisioneDella.setFont(new Font("Arial", Font.PLAIN, 12));
+				semInc.add(lblUnaDivisioneDella, "cell 0 18");
+
+
+
+				JButton btnNewButton = new JButton("Calcola");
+				btnNewButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+
+						if(campo_misura.getText().length()>0 && sensibilita.getText().length()>0) 
+						{
+							campo_misura_sec.setText(GestioneMisuraBO.getArcosec(campo_misura.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP).toPlainString());
+
+							BigDecimal er= (new BigDecimal(campo_misura_sec.getText()).multiply(new BigDecimal("0.002")).add(new BigDecimal("1.5")));
+
+							incertezza_er_sec.setText(er.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP).toPlainString());						
+
+							incertezza_er.setText(GestioneMisuraBO.getArcosecInv(incertezza_er_sec.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
+
+							BigDecimal em=GestioneMisuraBO.getIncertezzaLivellaBolla_EM(incertezza_er.getText(),sensibilita.getText());
+
+							incertezza_em.setText(em.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_DOWN).toPlainString());
+
+							incertezza_em_sec.setText(GestioneMisuraBO.getArcosec(incertezza_em.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_DOWN).toPlainString());
+
+							BigDecimal um=GestioneMisuraBO.getIncertezzaLivellaBolla_UM(incertezza_em.getText(), textField_scmax.getText());
+
+							incertezza_um.setText(um.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_DOWN).toPlainString());
+
+						}else 
+						{
+							JOptionPane.showMessageDialog(null,"Compilare \"Campo Misura\" e \"Sensibilità\"","Attenzione",JOptionPane.WARNING_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
+						}
+
 					}
-					
-				}
-			});
-			btnNewButton.setFont(new Font("Arial", Font.BOLD, 12));
-			btnNewButton.setIcon(new ImageIcon(PannelloLivellaBolla.class.getResource("/image/calcola.png")));
-			semInc.add(btnNewButton, "cell 1 17,alignx left");
-		}
-		{
-			JLabel lblNote = new JLabel("Note:");
-			lblNote.setFont(new Font("Arial", Font.PLAIN, 12));
-			semInc.add(lblNote, "cell 0 18,alignx right");
-		}
-		{
-			JTextArea textArea = new JTextArea();
-			JScrollPane scrollPaneNote = new JScrollPane(textArea);
-			semInc.add(scrollPaneNote, "cell 1 18 3 1,grow");
-			
-		}
-		{
-			JLabel label = new JLabel("''");
-			semInc.add(label, "cell 2 11");
-		}
-		{
-			JLabel label = new JLabel("''");
-			semInc.add(label, "cell 2 13");
-		}
-		{
-			JLabel label = new JLabel("''");
-			semInc.add(label, "cell 2 7");
-		}
-		{
-			JLabel lblMmm_2 = new JLabel("mm/m");
-			semInc.add(lblMmm_2, "cell 1 7");
-		}
-		{
-			JLabel label = new JLabel("mm/m");
-			semInc.add(label, "cell 1 9");
-		}
-		{
-			JLabel label = new JLabel("mm/m");
-			semInc.add(label, "cell 1 11");
-		}
-		{
-			JLabel label = new JLabel("mm/m");
-			semInc.add(label, "cell 1 13");
-		}
-		{
-			JLabel label = new JLabel("mm/m");
-			semInc.add(label, "cell 1 15");
+				});
+				
+				btnSalva.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						
+						try 
+						{
+						boolean check=true;
+						StringBuffer sb = new StringBuffer();
+						
+						LatMisuraDTO lat = new LatMisuraDTO();
+						lat.setId(SessionBO.idMisura);
+						if(comboBox_cmpRif.getSelectedIndex()<0 || comboBox_cmpLav.getSelectedIndex()<0)
+						{
+							sb.append("Selezionare Campioni riferimento/lavoro");
+							check=false;
+						}
+						
+						if(stato.getText().length()<=0)
+						{
+							sb.append("Indicare lo stato dello strumento");
+							check=false;
+						}
+						if(incertezza_er.getText().length()<=0)
+						{
+							sb.append("Calcolare l'incertezza");
+							check=false;
+						}
+						
+						if(check) 
+						{
+							lat.setId(SessionBO.idMisura);
+							lat.setRif_campione(comboBox_cmpRif.getSelectedItem().toString());
+							lat.setRif_campione_lavoro(comboBox_cmpRif.getSelectedItem().toString());
+							
+							lat.setStato(stato.getText());
+							lat.setAmmaccature(ammaccature.getText());
+							lat.setBolla_trasversale(bolla_trasversale.getText());
+							lat.setRegolazione(regolazione.getText());
+							lat.setCentraggio(centraggio.getText());
+							
+							lat.setCampo_misura(new BigDecimal(campo_misura.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
+							lat.setCampo_misura_sec(new BigDecimal(campo_misura.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
+						
+							lat.setSensibilita(new BigDecimal(sensibilita.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
+							
+							lat.setIncertezza_rif(new BigDecimal(incertezza_er.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
+							lat.setIncertezza_sec(new BigDecimal(incertezza_er_sec.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
+						
+							lat.setIncertezza_estesa(new BigDecimal(incertezza_em.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
+							lat.setIncertezza_estesa_sec(new BigDecimal(incertezza_em_sec.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
+						
+							lat.setIncertezza_media(new BigDecimal(incertezza_um.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
+						
+							lat.setNote(textArea.getText());
+							
+							GestioneMisuraBO.updateRecordMisuraLAT(lat);
+						}
+						else 
+						{
+							JOptionPane.showMessageDialog(null,sb,"Attenzione",JOptionPane.WARNING_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
+						}
+					}catch (Exception e1) {
+						e1.printStackTrace();
+					}}
+				});
+				
+				btnNewButton.setFont(new Font("Arial", Font.BOLD, 12));
+				btnNewButton.setIcon(new ImageIcon(PannelloLivellaBolla.class.getResource("/image/calcola.png")));
+				semInc.add(btnNewButton, "cell 1 20,alignx left");
+			}
+
+		}catch (Exception e) {
+			e.printStackTrace();
 		}
 		return semInc;
 	}
@@ -358,13 +435,22 @@ public class PannelloLivellaBolla extends JPanel  {
 				cellComponent.setForeground(Color.BLACK);
 			}
 
+			
+			if(column==16 || column==17) 
+			{
+				cellComponent.setBackground(Color.yellow);
+				cellComponent.setForeground(Color.BLACK);
+			}
+			
+			
 			return cellComponent;
 
+			
 		}
 
 	}
 
-	private class PannelloDX extends JPanel implements TableModelListener
+	private class PannelloDX extends JPanel implements TableModelListener,ActionListener
 	{
 		private JTable tableDX,tableTratto;
 		private String originalValue="";
@@ -374,6 +460,7 @@ public class PannelloLivellaBolla extends JPanel  {
 		JPanel semDex;
 		private ModelTratto modelTratto;
 		private ModelSemisc model;
+		private JMenuItem jmit;
 
 		PannelloDX()
 		{
@@ -408,8 +495,10 @@ public class PannelloLivellaBolla extends JPanel  {
 				model.setValueAt(punto.getMedia_corr_sec(), i, 13);
 				model.setValueAt(punto.getMedia_corr_mm(), i, 14);
 				model.setValueAt(punto.getDiv_dex(), i, 15);
-				model.setValueAt(punto.getId(), i, 16);
-
+				model.setValueAt(punto.getCorr_boll_mm(),i,16);
+				model.setValueAt(punto.getCorr_boll_sec(),i,17);
+				model.setValueAt(punto.getId(), i, 18);
+				
 			}
 
 			model.addTableModelListener(this);
@@ -428,6 +517,13 @@ public class PannelloLivellaBolla extends JPanel  {
 			JScrollPane scrollTab = new JScrollPane(tableDX);
 			semDex.add(scrollTab, "cell 0 1 3 1,growx,height :350:400");
 
+			
+			JPopupMenu popupMenu= new JPopupMenu();
+			jmit= new JMenuItem("Elimina Riga");
+			jmit.addActionListener(this);
+			popupMenu.add(jmit);
+			tableDX.setComponentPopupMenu(popupMenu);
+			
 			/*Tabella Tratto*/
 
 			tableTratto = new JTable();
@@ -501,6 +597,39 @@ public class PannelloLivellaBolla extends JPanel  {
 
 			
 		}
+		
+public void actionPerformed(ActionEvent event) {
+			
+			JMenuItem menu = (JMenuItem) event.getSource();
+			if (menu == jmit) {
+	            eliminaRiga();
+	        }
+		}
+		
+		
+		private void eliminaRiga() {
+			try
+			{
+				int selectedRow = tableDX.getSelectedRow();
+				if(selectedRow!=-1)
+				{
+					int indexPoint=Integer.parseInt(model.getValueAt(selectedRow,18).toString());
+					GestioneMisuraBO.eliminaRigaLivellaABolla(indexPoint);
+					
+					JPanel panelDB =new PannelloLivellaBolla(0);
+					SystemGUI.callPanel(panelDB, "PMT");
+					
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(null, "Selezionare correttamente la riga da eliminare","Attenzione",JOptionPane.WARNING_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
+				}
+			}catch (Exception e) 
+			{
+				e.printStackTrace();
+			}	
+			
+		}
 
 		public JPanel get() {
 			return semDex;
@@ -514,7 +643,7 @@ public class PannelloLivellaBolla extends JPanel  {
 
 
 			TableModel model = (TableModel)e.getSource();
-			int indexPoint=Integer.parseInt(model.getValueAt(row,16).toString());
+			int indexPoint=Integer.parseInt(model.getValueAt(row,18).toString());
 
 			String value = model.getValueAt(row,column).toString();
 
@@ -633,6 +762,10 @@ public class PannelloLivellaBolla extends JPanel  {
 								if(obj1!=null)
 								{
 									model.setValueAt(avgArcsecInv.subtract(new BigDecimal(obj1.toString())), row, 15);
+									
+									model.setValueAt(new BigDecimal(model.getValueAt(row, 14).toString()).subtract(new BigDecimal(model.getValueAt(row, 1).toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1)), row, 16);
+									
+									model.setValueAt(new BigDecimal(model.getValueAt(row, 13).toString()).subtract(new BigDecimal(model.getValueAt(row, 2).toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1)), row, 17);
 
 									/*Gestione Model Tratto e Medie*/
 
@@ -658,6 +791,8 @@ public class PannelloLivellaBolla extends JPanel  {
 
 
 									}
+									
+									
 								}
 					
 								/*aggiorna s media e devstd*/
@@ -695,6 +830,8 @@ public class PannelloLivellaBolla extends JPanel  {
 				punto.setMedia_corr_sec(checkField(model.getValueAt(row, 13),Costanti.RISOLUZIONE_LIVELLA_BOLLA));
 				punto.setMedia_corr_mm(checkField(model.getValueAt(row, 14),Costanti.RISOLUZIONE_LIVELLA_BOLLA+2));
 				punto.setDiv_dex(checkField(model.getValueAt(row, 15),Costanti.RISOLUZIONE_LIVELLA_BOLLA+2));
+				punto.setCorr_boll_mm(checkField(model.getValueAt(row, 16),Costanti.RISOLUZIONE_LIVELLA_BOLLA+3));
+				punto.setCorr_boll_sec(checkField(model.getValueAt(row, 17),Costanti.RISOLUZIONE_LIVELLA_BOLLA+3));
 
 				try 
 				{
@@ -796,12 +933,11 @@ public class PannelloLivellaBolla extends JPanel  {
 				originalValue="";
 			}
 
-
 		}
 
 	}
 	
-	private class PannelloSX extends JPanel implements TableModelListener
+	private class PannelloSX extends JPanel implements TableModelListener,ActionListener
 	{
 		private JTable tableSX,tableTrattoSX;
 		private String originalValue="";
@@ -810,7 +946,8 @@ public class PannelloLivellaBolla extends JPanel  {
 		private JTextField dev_st_field;
 		private ModelTratto modelTratto;
 		private ModelSemisc model;
-		JPanel semSX;
+		private JPanel semSX;
+		private JMenuItem jmit;
 
 		PannelloSX()
 		{
@@ -845,7 +982,9 @@ public class PannelloLivellaBolla extends JPanel  {
 				model.setValueAt(punto.getMedia_corr_sec(), i, 13);
 				model.setValueAt(punto.getMedia_corr_mm(), i, 14);
 				model.setValueAt(punto.getDiv_dex(), i, 15);
-				model.setValueAt(punto.getId(), i, 16);
+				model.setValueAt(punto.getCorr_boll_mm(),i,16);
+				model.setValueAt(punto.getCorr_boll_sec(),i,17);
+				model.setValueAt(punto.getId(), i, 18);
 
 			}
 
@@ -865,6 +1004,14 @@ public class PannelloLivellaBolla extends JPanel  {
 			JScrollPane scrollTab = new JScrollPane(tableSX);
 			semSX.add(scrollTab, "cell 0 1 3 1,growx,height :350:400");
 
+			JPopupMenu popupMenu= new JPopupMenu();
+			jmit= new JMenuItem("Elimina Riga");
+			jmit.addActionListener(this);
+			popupMenu.add(jmit);
+			tableSX.setComponentPopupMenu(popupMenu);
+			
+			
+			
 			/*Tabella Tratto*/
 
 			tableTrattoSX = new JTable();
@@ -934,9 +1081,44 @@ public class PannelloLivellaBolla extends JPanel  {
 
 
 
-
+		
 			
 		}
+
+		
+		public void actionPerformed(ActionEvent event) {
+			
+			JMenuItem menu = (JMenuItem) event.getSource();
+			if (menu == jmit) {
+	            eliminaRiga();
+	        }
+		}
+		
+		
+		private void eliminaRiga() {
+			try
+			{
+				int selectedRow = tableSX.getSelectedRow();
+				if(selectedRow!=-1)
+				{
+					int indexPoint=Integer.parseInt(model.getValueAt(selectedRow,18).toString());
+					GestioneMisuraBO.eliminaRigaLivellaABolla(indexPoint);
+					
+					JPanel panelDB =new PannelloLivellaBolla(1);
+					SystemGUI.callPanel(panelDB, "PMT");
+					
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(null, "Selezionare correttamente la riga da eliminare","Attenzione",JOptionPane.WARNING_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
+				}
+			}catch (Exception e) 
+			{
+				e.printStackTrace();
+			}	
+			
+		}
+
 
 		public JPanel get() {
 			return semSX;
@@ -950,7 +1132,7 @@ public class PannelloLivellaBolla extends JPanel  {
 
 
 			TableModel model = (TableModel)e.getSource();
-			int indexPoint=Integer.parseInt(model.getValueAt(row,16).toString());
+			int indexPoint=Integer.parseInt(model.getValueAt(row,18).toString());
 
 			String value = model.getValueAt(row,column).toString();
 
@@ -977,7 +1159,7 @@ public class PannelloLivellaBolla extends JPanel  {
 
 						BigDecimal pivot= new BigDecimal( model.getValueAt(0,5).toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP);
 
-						for (int i = 0; i < 11; i++) 
+						for (int i = 0; i <= 11; i++) 
 						{
 							Object obj =model.getValueAt(i,5);
 
@@ -1018,7 +1200,7 @@ public class PannelloLivellaBolla extends JPanel  {
 
 						BigDecimal pivot= new BigDecimal( model.getValueAt(0,9).toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP);
 
-						for (int i = 0; i < 11; i++) 
+						for (int i = 0; i <= 11; i++) 
 						{
 							Object obj =model.getValueAt(i,9);
 
@@ -1070,6 +1252,11 @@ public class PannelloLivellaBolla extends JPanel  {
 								{
 									model.setValueAt(avgArcsecInv.subtract(new BigDecimal(obj1.toString())), row, 15);
 
+									model.setValueAt(new BigDecimal(model.getValueAt(row, 14).toString()).subtract(new BigDecimal(model.getValueAt(row, 1).toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1)), row, 16);
+									
+									model.setValueAt(new BigDecimal(model.getValueAt(row, 13).toString()).subtract(new BigDecimal(model.getValueAt(row, 2).toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1)), row, 17);
+
+									
 									/*Gestione Model Tratto e Medie*/
 
 									modelTratto.setValueAt(avgArcsecInv.subtract(new BigDecimal(obj1.toString())), row, 1);
@@ -1128,6 +1315,8 @@ public class PannelloLivellaBolla extends JPanel  {
 				punto.setMedia_corr_sec(checkField(model.getValueAt(row, 13),Costanti.RISOLUZIONE_LIVELLA_BOLLA));
 				punto.setMedia_corr_mm(checkField(model.getValueAt(row, 14),Costanti.RISOLUZIONE_LIVELLA_BOLLA+2));
 				punto.setDiv_dex(checkField(model.getValueAt(row, 15),Costanti.RISOLUZIONE_LIVELLA_BOLLA+2));
+				punto.setCorr_boll_mm(checkField(model.getValueAt(row, 16),Costanti.RISOLUZIONE_LIVELLA_BOLLA+3));
+				punto.setCorr_boll_sec(checkField(model.getValueAt(row, 17),Costanti.RISOLUZIONE_LIVELLA_BOLLA+3));
 
 				try 
 				{
@@ -1254,6 +1443,8 @@ public class PannelloLivellaBolla extends JPanel  {
 			addColumn("AVG sec");
 			addColumn("AVG mm/m");
 			addColumn("Div Dex mm/m");
+			addColumn("corr bolla mm/m");
+			addColumn("corr bolla sec");
 			addColumn("index");
 		}
 		@Override
@@ -1292,6 +1483,10 @@ public class PannelloLivellaBolla extends JPanel  {
 			case 15:
 				return String.class;
 			case 16:
+				return String.class;
+			case 17:
+				return String.class;
+			case 18:
 				return String.class;
 			default:
 				return String.class;

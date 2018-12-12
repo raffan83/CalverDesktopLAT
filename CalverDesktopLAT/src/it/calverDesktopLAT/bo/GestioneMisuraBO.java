@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import it.calverDesktopLAT.dao.SQLiteDAO;
 import it.calverDesktopLAT.dto.DatiEsterniDTO;
+import it.calverDesktopLAT.dto.LatMisuraDTO;
 import it.calverDesktopLAT.dto.MisuraDTO;
 import it.calverDesktopLAT.dto.ProvaMisuraDTO;
 import it.calverDesktopLAT.dto.PuntoLivellaBollaDTO;
@@ -701,6 +702,20 @@ public class GestioneMisuraBO
 		um=new BigDecimal(2).multiply(new BigDecimal(Math.pow(scMax.add(em).doubleValue(), 0.5)));
 		
 		return um;
+	}
+
+	public static void eliminaRigaLivellaABolla(int indexPoint) throws Exception {
+	
+		PuntoLivellaBollaDTO punto = new PuntoLivellaBollaDTO();
+		punto.setId(indexPoint);
+		SQLiteDAO.updateRecordPuntoLivellaBolla(punto);
+		
+	}
+
+	public static void updateRecordMisuraLAT(LatMisuraDTO lat) throws Exception {
+		
+		SQLiteDAO.updateRecordPuntoLivellaBolla(lat);
+		
 	}
 
 }

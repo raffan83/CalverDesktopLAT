@@ -27,6 +27,8 @@ public class PuntoLivellaBollaDTO {
 	public BigDecimal media_corr_mm;
 	public BigDecimal div_dex;
 	public String valore_nominale_tacca;
+	public BigDecimal corr_boll_mm;
+	public BigDecimal corr_boll_sec;
 	
 	/*public PuntoLivellaBollaDTO() 
 	
@@ -206,6 +208,22 @@ public class PuntoLivellaBollaDTO {
 
 	public void setValore_nominale_tacca(String valore_nominale_tacca) {
 		this.valore_nominale_tacca = valore_nominale_tacca;
+	}
+
+	public BigDecimal getCorr_boll_mm() {
+		return corr_boll_mm;
+	}
+
+	public void setCorr_boll_mm(BigDecimal corr_boll_mm) {
+		this.corr_boll_mm = corr_boll_mm;
+	}
+
+	public BigDecimal getCorr_boll_sec() {
+		return corr_boll_sec;
+	}
+
+	public void setCorr_boll_sec(BigDecimal corr_boll_sec) {
+		this.corr_boll_sec = corr_boll_sec;
 	}
 	
 	

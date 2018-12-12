@@ -1249,7 +1249,7 @@ public class PannelloMisuraMaster extends JPanel
 
 					if(SessionBO.indexTableLAT==1) 
 					{
-						JPanel panelDB =new PannelloLivellaBolla();
+						JPanel panelDB =new PannelloLivellaBolla(0);
 						SystemGUI.callPanel(panelDB, "PMT");
 					}
 
