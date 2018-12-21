@@ -718,5 +718,10 @@ public class GestioneMisuraBO
 		
 	}
 
+	public static LatMisuraDTO getMisuraLAT(int idMisura) throws Exception {
+	
+		return SQLiteDAO.getMisuraLAT(idMisura);
+	}
+
 }
 

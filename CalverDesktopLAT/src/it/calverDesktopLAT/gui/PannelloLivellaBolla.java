@@ -305,8 +305,34 @@ public class PannelloLivellaBolla extends JPanel  {
 				lblUnaDivisioneDella.setFont(new Font("Arial", Font.PLAIN, 12));
 				semInc.add(lblUnaDivisioneDella, "cell 0 18");
 
+				LatMisuraDTO misura =GestioneMisuraBO.getMisuraLAT(SessionBO.idMisura);
 
-
+				/*Riempo pannello se il campo riferimenti_incertezza !=null*/
+				if(misura.getIncertezza_rif()!=null) 
+				{
+					comboBox_cmpRif.setSelectedItem(misura.getRif_campione());
+					comboBox_cmpLav.setSelectedItem(misura.getRif_campione_lavoro());
+					
+					stato.setText(misura.getStato());
+					ammaccature.setText(misura.getAmmaccature());
+					bolla_trasversale.setText(misura.getBolla_trasversale());
+					regolazione.setText(misura.getRegolazione());
+					centraggio.setText(misura.getCentraggio());
+					
+					campo_misura.setText(misura.getCampo_misura().toPlainString());
+					campo_misura_sec.setText(misura.getCampo_misura_sec().toPlainString());
+					sensibilita.setText(misura.getSensibilita().toPlainString());
+					
+					incertezza_er.setText(misura.getIncertezza_rif().toString());
+					incertezza_er_sec.setText(misura.getIncertezza_sec().toString());
+					incertezza_em.setText(misura.getIncertezza_estesa().toString());
+					incertezza_em_sec.setText(misura.getIncertezza_estesa_sec().toString());
+					incertezza_um.setText(misura.getIncertezza_media().toString());
+					
+					textArea.setText(misura.getNote());
+				}
+				
+				
 				JButton btnNewButton = new JButton("Calcola");
 				btnNewButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -344,6 +370,11 @@ public class PannelloLivellaBolla extends JPanel  {
 						
 						try 
 						{
+						int scelta=	JOptionPane.showConfirmDialog(null,"Vuoi Salvare i dati ?","Salva",JOptionPane.YES_NO_OPTION,JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/question.png")));
+						
+						if(scelta==0) {
+							
+						
 						boolean check=true;
 						StringBuffer sb = new StringBuffer();
 						
@@ -351,18 +382,18 @@ public class PannelloLivellaBolla extends JPanel  {
 						lat.setId(SessionBO.idMisura);
 						if(comboBox_cmpRif.getSelectedIndex()<0 || comboBox_cmpLav.getSelectedIndex()<0)
 						{
-							sb.append("Selezionare Campioni riferimento/lavoro");
+							sb.append("* Selezionare Campioni riferimento/lavoro \n");
 							check=false;
 						}
 						
 						if(stato.getText().length()<=0)
 						{
-							sb.append("Indicare lo stato dello strumento");
+							sb.append("* Indicare lo stato dello strumento \n");
 							check=false;
 						}
 						if(incertezza_er.getText().length()<=0)
 						{
-							sb.append("Calcolare l'incertezza");
+							sb.append("* Calcolare l'incertezza");
 							check=false;
 						}
 						
@@ -370,7 +401,7 @@ public class PannelloLivellaBolla extends JPanel  {
 						{
 							lat.setId(SessionBO.idMisura);
 							lat.setRif_campione(comboBox_cmpRif.getSelectedItem().toString());
-							lat.setRif_campione_lavoro(comboBox_cmpRif.getSelectedItem().toString());
+							lat.setRif_campione_lavoro(comboBox_cmpLav.getSelectedItem().toString());
 							
 							lat.setStato(stato.getText());
 							lat.setAmmaccature(ammaccature.getText());
@@ -378,27 +409,30 @@ public class PannelloLivellaBolla extends JPanel  {
 							lat.setRegolazione(regolazione.getText());
 							lat.setCentraggio(centraggio.getText());
 							
-							lat.setCampo_misura(new BigDecimal(campo_misura.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
-							lat.setCampo_misura_sec(new BigDecimal(campo_misura.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
+							lat.setCampo_misura(new BigDecimal(campo_misura.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
+							lat.setCampo_misura_sec(new BigDecimal(campo_misura_sec.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
 						
-							lat.setSensibilita(new BigDecimal(sensibilita.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
+							lat.setSensibilita(new BigDecimal(sensibilita.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
 							
-							lat.setIncertezza_rif(new BigDecimal(incertezza_er.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
+							lat.setIncertezza_rif(new BigDecimal(incertezza_er.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
 							lat.setIncertezza_sec(new BigDecimal(incertezza_er_sec.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
 						
-							lat.setIncertezza_estesa(new BigDecimal(incertezza_em.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
+							lat.setIncertezza_estesa(new BigDecimal(incertezza_em.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
 							lat.setIncertezza_estesa_sec(new BigDecimal(incertezza_em_sec.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
 						
-							lat.setIncertezza_media(new BigDecimal(incertezza_um.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
+							lat.setIncertezza_media(new BigDecimal(incertezza_um.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
 						
 							lat.setNote(textArea.getText());
 							
 							GestioneMisuraBO.updateRecordMisuraLAT(lat);
+							
+							JOptionPane.showMessageDialog(null,"Salvataggio Completato","Salva",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/confirm.png")));
 						}
 						else 
 						{
 							JOptionPane.showMessageDialog(null,sb,"Attenzione",JOptionPane.WARNING_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
 						}
+					  }
 					}catch (Exception e1) {
 						e1.printStackTrace();
 					}}

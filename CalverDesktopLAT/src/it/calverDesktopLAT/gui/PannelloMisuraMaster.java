@@ -202,7 +202,7 @@ public class PannelloMisuraMaster extends JPanel
 		JPanel panel = new JPanel();
 		panel.setBorder(new TitledBorder(new LineBorder(Costanti.COLOR_RED, 2, true), "Stampa & Campioni", TitledBorder.LEADING, TitledBorder.TOP, null, Costanti.COLOR_RED));
 		panel.setBackground(Color.WHITE);
-		add(panel, "cell 0 2,width : 150:300");
+	//	add(panel, "cell 0 2,width : 150:300");
 		panel.setLayout(new MigLayout("", "[pref!][grow]", "[][grow]"));
 
 		JLabel lblCertificato = new JLabel("Stampa");
@@ -1179,33 +1179,12 @@ public class PannelloMisuraMaster extends JPanel
 						{
 							btnChiudiMisura.setEnabled(false);
 						}
-
-						ProvaMisuraDTO lista =GestioneMisuraBO.getProvaMisura(SessionBO.idStrumento);
-						boolean check=false;
-
-						if(SessionBO.tipoRapporto.equals("RDP") && lista.getListaTabelle().size()>0)
-						{
-							check=true;
-						}
-						else
-						{
-							check=Utility.contollaPunti(lista.getListaTabelle());
-						}
-
-
-						if(check==true)
-						{
+		
 							BigDecimal temp=new BigDecimal(temperatura);	
 							BigDecimal umd=new BigDecimal(umidita);	
 							GestioneMisuraBO.terminaMisura(SessionBO.idStrumento,temp,umd,sr,firma);
 							JOptionPane.showMessageDialog(null,"Salvataggio effettuato","Salvataggio",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/confirm.png")));
-
-
-
-						}else
-						{
-							JOptionPane.showMessageDialog(null,"Per terminare la misura, tutti i punti devono essere valorizzati","Salvataggio",JOptionPane.ERROR_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
-						}
+						
 					} catch (NumberFormatException e) {
 						JOptionPane.showMessageDialog(null,"I campi temperatura e umidità accettano solo valori numerici","Salvataggio",JOptionPane.ERROR_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
 					}

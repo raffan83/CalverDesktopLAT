@@ -103,7 +103,7 @@ class GuiWorker1 extends SwingWorker<Integer, Integer>{
 
 		URL iconURL = this.getClass().getResource("/image/logo.png");
 
-
+		g.setPreferredSize(new Dimension(800,400));
 		ImageIcon img = new ImageIcon(iconURL);
 		g.setIconImage(img.getImage());
 		
@@ -126,8 +126,9 @@ class GuiWorker1 extends SwingWorker<Integer, Integer>{
 
 
 		StandardDialFrame standarddialframe = new StandardDialFrame();
-		standarddialframe.setBackgroundPaint(Color.lightGray);
-		standarddialframe.setForegroundPaint(Color.darkGray);
+	//	standarddialframe.setBackgroundPaint(Color.red);
+	//	standarddialframe.setForegroundPaint(Color.darkGray);
+		
 		dialplot.setDialFrame(standarddialframe);
 
 		GradientPaint gradientpaint = new GradientPaint(new Point(), new Color(255, 255, 255), new Point(), new Color(0, 170, 220));
@@ -160,7 +161,7 @@ class GuiWorker1 extends SwingWorker<Integer, Integer>{
 		StandardDialScale standarddialscale = new StandardDialScale(s.getMinScale().doubleValue(),maxScale, -120D, -300D,perc.doubleValue(), 0);
 		standarddialscale.setTickRadius(0.88D);
 		standarddialscale.setTickLabelOffset(0.14999999999999999D);
-		standarddialscale.setTickLabelFont(new Font("Dialog", 0, 14));
+		standarddialscale.setTickLabelFont(new Font("Arial", Font.BOLD, 34));
 		dialplot.addScale(0, standarddialscale);
 
 
@@ -189,7 +190,8 @@ class GuiWorker1 extends SwingWorker<Integer, Integer>{
 		jfreechart.setTitle(s.getId_sonda());
 		ChartPanel chartpanel = new ChartPanel(jfreechart);
 		chartpanel.setBorder(new TitledBorder(new LineBorder(new Color(255, 0, 0), 2, true), "DASM", TitledBorder.LEADING, TitledBorder.TOP, null, Color.RED));
-		chartpanel.setPreferredSize(new Dimension(400, 400));
+		chartpanel.setPreferredSize(new Dimension(600, 400));
+		chartpanel.setBackground(Color.cyan);
 		JPanel jpanel = new JPanel();
 		jpanel.setLayout(new MigLayout("", "[150px][100px][150px]", "[23px][23px]"));
 		slider1 = new JSlider(s.getMinScale().intValue(), s.getMaxScale().intValue());

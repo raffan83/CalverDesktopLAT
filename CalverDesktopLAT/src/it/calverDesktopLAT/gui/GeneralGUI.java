@@ -273,8 +273,9 @@ public  class GeneralGUI extends JFrame implements Serializable{
 				if(scelta==0)
 				{
 					
-					boolean control=GestioneDB.controlloMisuraCertificato();
+				//	boolean control=GestioneDB.controlloMisuraCertificato();
 					
+				boolean	control=true;
 					if(control)
 					{
 						GestioneDB.chiudiMisura(Costanti.PATH_DB);

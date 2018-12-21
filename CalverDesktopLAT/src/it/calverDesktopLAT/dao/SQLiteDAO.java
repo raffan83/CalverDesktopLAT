@@ -1,5 +1,7 @@
 package it.calverDesktopLAT.dao;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -14,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
+
+import com.sun.org.apache.xpath.internal.WhitespaceStrippingElementMatcher;
 
 import it.calverDesktopLAT.dto.CampioneDTO;
 import it.calverDesktopLAT.dto.ClassificazioneDTO;
@@ -3120,30 +3124,29 @@ public static void updateMisuraRDP(int idRecord, String descrizioneCampione, Str
 		PreparedStatement pst= null;
 
 		try{
-			con=getConnection();
-			pst=con.prepareStatement("UPDATE lat_punto_livella SET valore_nominale_tratto=?," + 
-					"valore_nominale_tratto_sec=?,p1_andata=?,p1_ritorno=?,p1_media=?,p1_diff=?," + 
-					"p2_andata=?,p2_ritorno=?,p2_media=?,p2_diff=?,media=?,errore_cum=?,media_corr_sec=?,media_corr_mm=?,div_dex=?,corr_boll_mm=?,corr_boll_sec=? WHERE id=? ");
+			con=getConnection();			
 			
+			pst=con.prepareStatement("UPDATE lat_misura SET incertezzaRif=?," + 
+					"incertezzaRif_sec=?,incertezzaEstesa=?,incertezzaEstesa_sec=?,incertezzaMedia=?,campo_misura=?,campo_misura_sec=?," + 
+					"sensibilita=?,stato=?,ammaccature=?,bolla_trasversale=?,regolazione=?,centraggio=?,note=?,id_rif_campione=?,id_rif_campione_lavoro=? WHERE id=? ");
 	
-//			pst.setBigDecimal(1, punto.getValore_nominale_tratto());
-//			pst.setBigDecimal(2, punto.getValore_nominale_tratto_sec());
-//			pst.setBigDecimal(3, punto.getP1_andata());
-//			pst.setBigDecimal(4, punto.getP1_ritorno());
-//			pst.setBigDecimal(5, punto.getP1_media());
-//			pst.setBigDecimal(6, punto.getP1_diff());
-//			pst.setBigDecimal(7, punto.getP2_andata());
-//			pst.setBigDecimal(8, punto.getP2_ritorno());
-//			pst.setBigDecimal(9, punto.getP2_media());
-//			pst.setBigDecimal(10, punto.getP2_diff());
-//			pst.setBigDecimal(11, punto.getMedia());
-//			pst.setBigDecimal(12, punto.getErrore_cum());
-//			pst.setBigDecimal(13, punto.getMedia_corr_sec());
-//			pst.setBigDecimal(14, punto.getMedia_corr_mm());
-//			pst.setBigDecimal(15, punto.getDiv_dex());
-//			pst.setBigDecimal(16, punto.getCorr_boll_mm());
-//			pst.setBigDecimal(17, punto.getCorr_boll_sec());
-//			pst.setInt(18, punto.getId());
+			pst.setBigDecimal(1, lat.getIncertezza_rif());
+			pst.setBigDecimal(2, lat.getIncertezza_sec());
+			pst.setBigDecimal(3, lat.getIncertezza_estesa());
+			pst.setBigDecimal(4,lat.getIncertezza_estesa_sec());
+			pst.setBigDecimal(5,lat.getIncertezza_media());
+			pst.setBigDecimal(6, lat.getCampo_misura());
+			pst.setBigDecimal(7, lat.getCampo_misura_sec());
+			pst.setBigDecimal(8,lat.getSensibilita());
+			pst.setString(9, lat.getStato());
+			pst.setString(10, lat.getAmmaccature());
+			pst.setString(11, lat.getBolla_trasversale());
+			pst.setString(12, lat.getRegolazione());
+			pst.setString(13, lat.getCentraggio());
+			pst.setString(14,lat.getNote() );
+			pst.setString(15,lat.getRif_campione());
+			pst.setString(16,lat.getRif_campione_lavoro());
+			pst.setInt(17, lat.getId());
 			
 			pst.execute();
 		
@@ -3159,6 +3162,59 @@ public static void updateMisuraRDP(int idRecord, String descrizioneCampione, Str
 			pst.close();
 			con.close();
 		}
+		
+	}
+	public static LatMisuraDTO getMisuraLAT(int idMisura) throws Exception {
+		Connection con =null;
+		PreparedStatement pst= null;
+		ResultSet rs=null;
+		LatMisuraDTO misura= null;
+		try{
+			con=getConnection();
+			
+			pst=con.prepareStatement("SELECT * FROM lat_misura where id=?");
+		
+			pst.setInt(1, idMisura);
+			
+			rs=pst.executeQuery();
+			
+			while(rs.next()) 
+			{
+				misura= new LatMisuraDTO();
+				
+				misura.setIncertezza_rif(rs.getBigDecimal("incertezzaRif"));
+				misura.setIncertezza_sec(rs.getBigDecimal("incertezzaRif_sec"));
+				misura.setIncertezza_estesa(rs.getBigDecimal("incertezzaEstesa"));
+				misura.setIncertezza_estesa_sec(rs.getBigDecimal("incertezzaEstesa_sec"));
+				misura.setIncertezza_media(rs.getBigDecimal("incertezzaMedia"));
+				misura.setCampo_misura(rs.getBigDecimal("campo_misura"));
+				misura.setCampo_misura_sec(rs.getBigDecimal("campo_misura_sec"));
+				misura.setSensibilita(rs.getBigDecimal("sensibilita"));
+				misura.setStato(rs.getString("stato"));
+				misura.setAmmaccature(rs.getString("ammaccature"));
+				misura.setBolla_trasversale(rs.getString("bolla_trasversale"));
+				misura.setRegolazione(rs.getString("regolazione"));
+				misura.setCentraggio(rs.getString("centraggio"));
+				misura.setNote(rs.getString("note"));
+				misura.setRif_campione(rs.getString("id_rif_campione"));
+				misura.setRif_campione_lavoro(rs.getString("id_rif_campione_lavoro"));
+			
+			}
+			
+		
+		    
+			  
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+			throw ex;
+		}
+		finally
+		{
+			pst.close();
+			con.close();
+		}
+		return misura;
 		
 	}
 }
