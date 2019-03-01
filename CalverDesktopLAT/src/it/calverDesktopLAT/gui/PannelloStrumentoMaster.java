@@ -516,6 +516,10 @@ public class PannelloStrumentoMaster extends JPanel implements ActionListener {
 										{
 											GestioneMisuraBO.insertPuntiLivellaBolla(idMisura);
 										}
+										else if (indexTableLAT==2) 
+										{
+											GestioneMisuraBO.insertPuntiLivellaElettronica(idMisura);
+										}
 										
 										SessionBO.idMisura=idMisura;
 										panelDB =new PannelloMisuraMaster(id);

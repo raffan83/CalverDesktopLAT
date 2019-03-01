@@ -1,17 +1,16 @@
 package it.calverDesktopLAT.gui;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -20,6 +19,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -30,17 +31,11 @@ import javax.swing.table.TableModel;
 
 import it.calverDesktopLAT.bo.GestioneCampioneBO;
 import it.calverDesktopLAT.bo.GestioneMisuraBO;
-import it.calverDesktopLAT.bo.GestioneStrumentoBO;
 import it.calverDesktopLAT.bo.SessionBO;
 import it.calverDesktopLAT.dto.LatMisuraDTO;
 import it.calverDesktopLAT.dto.PuntoLivellaBollaDTO;
 import it.calverDesktopLAT.utl.Costanti;
-import it.calverDesktopLAT.utl.Utility;
 import net.miginfocom.swing.MigLayout;
-import javax.swing.JTextField;
-import javax.swing.JTextArea;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
 
 public class PannelloLivellaBolla extends JPanel  {
 
@@ -61,6 +56,8 @@ public class PannelloLivellaBolla extends JPanel  {
 	private JTextField campo_misura;
 	private JTextField sensibilita;
 	private JTextField campo_misura_sec;
+	private JComboBox comboBox_cmpRif;
+	private JComboBox comboBox_cmpLav;
 	
 	public PannelloLivellaBolla(int index) {
 
@@ -92,12 +89,13 @@ public class PannelloLivellaBolla extends JPanel  {
 			listaPuntiDX = GestioneMisuraBO.getListaPuntiLivellaBolla(SessionBO.idMisura, "DX");
 			listaPuntiSX = GestioneMisuraBO.getListaPuntiLivellaBolla(SessionBO.idMisura, "SX");
 
-			PannelloDX dx = new PannelloDX();
-			tabbedPane.addTab("Semiscala Positiva DX",dx.get());
-			PannelloSX sx = new PannelloSX();
-			tabbedPane.addTab("Semiscala Positiva SX",sx.get());
+			tabbedPane.addTab("Riferimenti & Incertezza", costruisciPanelRiferimentiIncertezza());
 			
-		    tabbedPane.addTab("Riferimenti & Incertezza", costruisciPanelRiferimentiIncertezza());
+			PannelloDX dx = new PannelloDX();
+			tabbedPane.addTab("Semiscala DX",dx.get());
+			PannelloSX sx = new PannelloSX();
+			tabbedPane.addTab("Semiscala SX",sx.get());
+			
 		    
 		    tabbedPane.setSelectedIndex(index);
 		    
@@ -157,14 +155,14 @@ public class PannelloLivellaBolla extends JPanel  {
 				semInc.add(lblCampioneDiRiferimento, "cell 0 1,alignx trailing");
 
 
-				final JComboBox comboBox_cmpRif = new JComboBox(GestioneCampioneBO.getListaCampioniCompleta());
+				comboBox_cmpRif = new JComboBox(GestioneCampioneBO.getListaCampioniCompleta());
 				semInc.add(comboBox_cmpRif, "cell 1 1 2 1,growx");
 
 				JLabel lblCampioneDiLavoro = new JLabel("Campione di lavoro");
 				semInc.add(lblCampioneDiLavoro, "cell 0 2,alignx trailing");
 
 
-				final JComboBox comboBox_cmpLav = new JComboBox(GestioneCampioneBO.getListaCampioniCompleta());
+				comboBox_cmpLav = new JComboBox(GestioneCampioneBO.getListaCampioniCompleta());
 				semInc.add(comboBox_cmpLav, "cell 1 2 2 1,growx");
 
 
@@ -236,7 +234,7 @@ public class PannelloLivellaBolla extends JPanel  {
 				semInc.add(incertezza_er, "flowx,cell 1 13,growx");
 
 				incertezza_er_sec = new JTextField();
-				incertezza_er_sec.setEditable(false);
+				incertezza_er_sec.setEditable(true);
 				incertezza_er_sec.setColumns(10);
 				semInc.add(incertezza_er_sec, "flowx,cell 3 13,alignx left");
 
@@ -341,10 +339,8 @@ public class PannelloLivellaBolla extends JPanel  {
 						{
 							campo_misura_sec.setText(GestioneMisuraBO.getArcosec(campo_misura.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP).toPlainString());
 
-							BigDecimal er= (new BigDecimal(campo_misura_sec.getText()).multiply(new BigDecimal("0.002")).add(new BigDecimal("1.5")));
-
-							incertezza_er_sec.setText(er.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP).toPlainString());						
-
+							incertezza_er_sec.setText(Costanti.INCERTEZZA_CDT001);
+							
 							incertezza_er.setText(GestioneMisuraBO.getArcosecInv(incertezza_er_sec.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
 
 							BigDecimal em=GestioneMisuraBO.getIncertezzaLivellaBolla_EM(incertezza_er.getText(),sensibilita.getText());
@@ -760,8 +756,17 @@ public void actionPerformed(ActionEvent event) {
 					/*Medie*/
 					Object m1=model.getValueAt(row, 6);
 					Object m2=model.getValueAt(row, 10);	 
-					impostaMedie(m1,m2,model,row);
-
+					BigDecimal mediaTratto=impostaMedie(m1,m2,model,row);
+					
+					/*
+					 *  Calcolo errore Cumulativo
+					 *  
+					 */
+					if(mediaTratto!=null) 
+					{
+						BigDecimal err_cum=GestioneMisuraBO.getErroreCumulativo(mediaTratto,comboBox_cmpRif.getSelectedItem().toString());
+					}
+					
 					if(model.getValueAt(row,12)!=null) 
 					{
 						column=12;
@@ -893,19 +898,21 @@ public void actionPerformed(ActionEvent event) {
 			}
 		}
 
-		private void impostaMedie(Object m1, Object m2 ,TableModel model,int row) {
+		private BigDecimal impostaMedie(Object m1, Object m2 ,TableModel model,int row) {
 
+			BigDecimal mediaTratto=null;
+			
 			if(m1!=null &&m2!=null) 
 			{
 				BigDecimal bd_m1=new BigDecimal(m1.toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP);
 				BigDecimal bd_m2=new BigDecimal(m2.toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP);
 
-				BigDecimal mediaTratto = bd_m1.add(bd_m2).divide(new BigDecimal(2),RoundingMode.HALF_UP);
+			    mediaTratto = bd_m1.add(bd_m2).divide(new BigDecimal(2),RoundingMode.HALF_UP);
 				model.setValueAt(mediaTratto.toPlainString(),row,11);
 
-
+				
 			}
-
+			return mediaTratto;
 		}
 
 		private boolean controllaNumero(TableModel model, String val,int row, int column) {
@@ -1250,7 +1257,21 @@ public void actionPerformed(ActionEvent event) {
 					Object m1=model.getValueAt(row, 6);
 					Object m2=model.getValueAt(row, 10);	 
 					impostaMedie(m1,m2,model,row);
-
+					
+					BigDecimal mediaTratto=impostaMedie(m1,m2,model,row);
+					
+					/*
+					 *  Calcolo errore Cumulativo
+					 */
+					if(mediaTratto!=null) 
+					{
+					BigDecimal err_cum=GestioneMisuraBO.getErroreCumulativo(mediaTratto,comboBox_cmpRif.getSelectedItem().toString());
+					
+						if(err_cum!=null) 
+						{
+							model.setValueAt(err_cum.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP).toPlainString(), row, 12);
+						}
+					}
 					if(model.getValueAt(row,12)!=null) 
 					{
 						column=12;
@@ -1378,18 +1399,19 @@ public void actionPerformed(ActionEvent event) {
 			}
 		}
 
-		private void impostaMedie(Object m1, Object m2 ,TableModel model,int row) {
+		private BigDecimal impostaMedie(Object m1, Object m2 ,TableModel model,int row) {
 
+			BigDecimal mediaTratto=null;
+			
 			if(m1!=null &&m2!=null) 
 			{
 				BigDecimal bd_m1=new BigDecimal(m1.toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP);
 				BigDecimal bd_m2=new BigDecimal(m2.toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP);
 
-				BigDecimal mediaTratto = bd_m1.add(bd_m2).divide(new BigDecimal(2),RoundingMode.HALF_UP);
+				 mediaTratto = bd_m1.add(bd_m2).divide(new BigDecimal(2),RoundingMode.HALF_UP);
 				model.setValueAt(mediaTratto.toPlainString(),row,11);
-
-
 			}
+			return mediaTratto;
 
 		}
 

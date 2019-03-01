@@ -3,7 +3,6 @@ package it.calverDesktopLAT.bo;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -11,7 +10,9 @@ import java.util.ArrayList;
 import it.calverDesktopLAT.dao.SQLiteDAO;
 import it.calverDesktopLAT.dto.DatiEsterniDTO;
 import it.calverDesktopLAT.dto.LatMisuraDTO;
+import it.calverDesktopLAT.dto.LatPuntoLivellaElettronicaDTO;
 import it.calverDesktopLAT.dto.MisuraDTO;
+import it.calverDesktopLAT.dto.ParametroTaraturaDTO;
 import it.calverDesktopLAT.dto.ProvaMisuraDTO;
 import it.calverDesktopLAT.dto.PuntoLivellaBollaDTO;
 import it.calverDesktopLAT.dto.TabellaMisureDTO;
@@ -446,10 +447,62 @@ public class GestioneMisuraBO
 		
 		
 	}
+	
+	public static void insertPuntiLivellaElettronica(int idMisura) throws Exception {
+		
+		LatPuntoLivellaElettronicaDTO punto = null;
+		
+		/*Inserimento parte lineare*/
+		for(int i=0;i<=20;i++) 
+		{
+			punto= new LatPuntoLivellaElettronicaDTO();
+		
+			punto.setId_misura(idMisura);
+			punto.setPunto(i+1);
+			punto.setTipo_prova("L");
+			punto.setIndicazione_iniziale(BigDecimal.ZERO);
+			punto.setIndicazione_iniziale_corr(BigDecimal.ZERO);
+			punto.setInclinazione_cmp_campione(BigDecimal.ZERO);
+			SQLiteDAO.insertListaPuntiLivellaElettronica(punto);
+		}
+	
+		/*
+		 *  Inserimento parte ripetibile
+		 */
+		
+		for(int j=1;j<=5;j++) 
+		{
+			for(int i=0;i<=20;i++) 
+			{
+				punto= new LatPuntoLivellaElettronicaDTO();
+				
+				punto.setId_misura(idMisura);
+				punto.setPunto(i+1);
+				punto.setNumero_prova(j);
+				punto.setTipo_prova("R");
+				punto.setIndicazione_iniziale(BigDecimal.ZERO);
+				punto.setIndicazione_iniziale_corr(BigDecimal.ZERO);
+				punto.setInclinazione_cmp_campione(BigDecimal.ZERO);
+				SQLiteDAO.insertListaPuntiLivellaElettronica(punto);
+			}	
+		}
+		
+		
+	}
 
 	public static ArrayList<PuntoLivellaBollaDTO> getListaPuntiLivellaBolla(int idMisura, String semisc) throws Exception {
 		
 		return SQLiteDAO.getListaPuntiLivellaBolla(idMisura,semisc);
+	}
+	
+	public static ArrayList<LatPuntoLivellaElettronicaDTO> getListaPuntiLivellaElettronicaLineari(int idMisura) throws Exception {
+		
+		return SQLiteDAO.getListaPuntiLivellaElettronicaLineari(idMisura);
+	}
+	
+	public static ArrayList<ArrayList<LatPuntoLivellaElettronicaDTO>> getListaPuntiLivellaElettroniaRipetibili(int idMisura) throws Exception {
+	
+		return SQLiteDAO.getListaPuntiLivellaElettronicaRipetibili(idMisura);
 	}
 
 	public static BigDecimal getArcosec(String value) {
@@ -722,6 +775,97 @@ public class GestioneMisuraBO
 	
 		return SQLiteDAO.getMisuraLAT(idMisura);
 	}
+
+	public static BigDecimal getErroreCumulativo(BigDecimal mediaTratto, String campioneUtilizzato) {
+			
+			BigDecimal errore_cumulativo=null;
+			
+			try
+			{	
+			ArrayList<ParametroTaraturaDTO> listaParametri= GestioneCampioneBO.getParametriTaraturaSelezionato(campioneUtilizzato,campioneUtilizzato);
+			
+			
+			
+			ParametroTaraturaDTO limiteInferiore= null;
+			ParametroTaraturaDTO limiteSuperiore=null;
+		
+				for (int i=0;i<listaParametri.size()-1;i++)
+				{
+					BigDecimal param1= listaParametri.get(i).getValoreTaratura();
+					BigDecimal param2= listaParametri.get(i+1).getValoreTaratura();
+							
+					if((mediaTratto.compareTo(param1)==1 ||mediaTratto.compareTo(param1)==0 )&& (mediaTratto.compareTo(param2)==-1 || mediaTratto.compareTo(param2)==0 ))
+					{
+						
+						listaParametri.get(i).setValore_nominale((listaParametri.get(i).getValore_nominale().setScale(Costanti.SCALA,RoundingMode.HALF_UP)));
+						listaParametri.get(i).setValoreTaratura((listaParametri.get(i).getValoreTaratura().setScale(Costanti.SCALA,RoundingMode.HALF_UP)));
+						
+						if(listaParametri.get(i).getIncertezzaAssoluta()!=null)
+						{
+							listaParametri.get(i).setIncertezzaAssoluta((listaParametri.get(i).getIncertezzaAssoluta().setScale(Costanti.SCALA,RoundingMode.HALF_UP)));
+							
+						}
+						if(listaParametri.get(i).getIncertezzaRelativa()!=null)
+						{
+							listaParametri.get(i).setIncertezzaRelativa((listaParametri.get(i).getIncertezzaRelativa().setScale(Costanti.SCALA,RoundingMode.HALF_UP)));
+						}
+						
+						limiteInferiore=listaParametri.get(i);
+						
+						
+						listaParametri.get(i+1).setValore_nominale((listaParametri.get(i+1).getValore_nominale().setScale(Costanti.SCALA,RoundingMode.HALF_UP)));
+						
+						listaParametri.get(i+1).setValoreTaratura((listaParametri.get(i+1).getValoreTaratura().setScale(Costanti.SCALA,RoundingMode.HALF_UP)));
+						
+						if(listaParametri.get(i+1).getIncertezzaAssoluta()!=null)
+						{
+							listaParametri.get(i+1).setIncertezzaAssoluta((listaParametri.get(i+1).getIncertezzaAssoluta().setScale(Costanti.SCALA,RoundingMode.HALF_UP)));
+							
+						}
+						if(listaParametri.get(i+1).getIncertezzaRelativa()!=null)
+						{
+							listaParametri.get(i+1).setIncertezzaRelativa((listaParametri.get(i+1).getIncertezzaRelativa().setScale(Costanti.SCALA,RoundingMode.HALF_UP)));
+						}
+						
+						limiteSuperiore=listaParametri.get(i+1);
+						break;
+					}
+				}
+				
+			if(limiteInferiore!=null && limiteSuperiore!=null)
+			{
+				
+				BigDecimal correzioneSup=limiteSuperiore.getValoreTaratura().subtract(limiteSuperiore.getValore_nominale()); //0.2
+				
+				BigDecimal correzioneInf=limiteInferiore.getValoreTaratura().subtract(limiteInferiore.getValore_nominale()); //1.3
+				
+				
+				BigDecimal a1=mediaTratto.subtract(limiteInferiore.getValore_nominale());
+				
+				
+				BigDecimal a2=limiteSuperiore.getValore_nominale().subtract(limiteInferiore.getValore_nominale());
+				
+				BigDecimal pt=a1.divide(a2,RoundingMode.HALF_UP);
+				
+				BigDecimal st=correzioneSup.subtract(correzioneInf);
+				
+				errore_cumulativo=pt.multiply(st).add(correzioneInf);
+			}
+			
+			
+			}catch(Exception ex)
+			{
+				ex.printStackTrace();
+			}
+			return errore_cumulativo;
+		
+	}
+
+
+
+	
+
+
 
 }
 

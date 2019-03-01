@@ -11,26 +11,19 @@ import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Vector;
-import java.util.prefs.Preferences;
 
 import javax.imageio.ImageIO;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -51,9 +44,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
 
-import org.apache.commons.io.FilenameUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -1231,7 +1222,12 @@ public class PannelloMisuraMaster extends JPanel
 						JPanel panelDB =new PannelloLivellaBolla(0);
 						SystemGUI.callPanel(panelDB, "PMT");
 					}
-
+					else if(SessionBO.indexTableLAT==2)
+					{
+						JPanel panelDB =new PannelloLivellaElettronica(0);
+						SystemGUI.callPanel(panelDB, "PMT");
+					}
+					
 				}
 				catch (Exception e) 
 				{
