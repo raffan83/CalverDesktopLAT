@@ -35,6 +35,7 @@ public class Costanti {
 	public static final Color COLOR_RED = new Color(215,23,29);
 	public static final Paint COLOR_BLUE = new Color(20,55,200);
 	public static final int RISOLUZIONE_LIVELLA_BOLLA = 2;
+	public static final int RISOLUZIONE_LIVELLA_ELETTRONICA = 2;
 	public static final String INCERTEZZA_CDT001 = "2.3";
 	
 	

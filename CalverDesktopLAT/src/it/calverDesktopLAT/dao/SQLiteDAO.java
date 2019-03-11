@@ -3153,8 +3153,14 @@ public static void updateMisuraRDP(int idRecord, String descrizioneCampione, Str
 				punto.setValore_ritorno_taratura(rs.getBigDecimal("valore_ritorno_taratura"));
 				punto.setValore_ritorno_campione(rs.getBigDecimal("valore_ritorno_campione"));
 				punto.setAndata_scostamento_campione(rs.getBigDecimal("andata_scostamento_campione"));
+				punto.setAndata_correzione_campione(rs.getBigDecimal("andata_correzione_campione"));
 				punto.setRitorno_scostamento_campione(rs.getBigDecimal("ritorno_scostamento_campione"));
+				punto.setRitorno_correzione_campione(rs.getBigDecimal("ritorno_correzione_campione"));
 				punto.setInclinazione_cmp_campione(rs.getBigDecimal("inclinazione_cmp_campione"));
+				punto.setScostamentoA(rs.getBigDecimal("scostamentoA"));
+				punto.setScostamentoB(rs.getBigDecimal("scostamentoB"));
+				punto.setScostamentoMed(rs.getBigDecimal("scostamentoMed"));
+				punto.setScostamentoOff(rs.getBigDecimal("scostamentoOff"));
 				punto.setScarto_tipo(rs.getBigDecimal("scarto_tipo"));
 				
 				
@@ -3175,6 +3181,58 @@ public static void updateMisuraRDP(int idRecord, String descrizioneCampione, Str
 
 		return listaPunti;
 	}
+	
+public static ArrayList<LatPuntoLivellaElettronicaDTO> getListaPuntiLivellaElettronicaIncertezze(int idMisura) throws Exception {
+		
+		Connection con=null;
+		PreparedStatement pst=null;
+		ResultSet rs=null;
+		ArrayList<LatPuntoLivellaElettronicaDTO> listaPunti= new ArrayList<LatPuntoLivellaElettronicaDTO>();
+		
+		
+		try 
+		{
+			con=getConnection();
+			
+			pst=con.prepareStatement("SELECT * FROM lat_punto_livella_elettronica where id_misura=? AND tipo_prova=\'I\' order by punto ASC");
+			
+			pst.setInt(1, idMisura);
+			rs=pst.executeQuery();
+			
+			LatPuntoLivellaElettronicaDTO punto= null;
+			while(rs.next())
+			{
+				punto= new LatPuntoLivellaElettronicaDTO();
+				punto.setId(rs.getInt("id"));
+				punto.setPunto(rs.getInt("punto"));
+				punto.setTipo_prova(rs.getString("tipo_prova"));
+				punto.setValore_nominale(rs.getBigDecimal("valore_nominale"));
+				punto.setInc_ris(rs.getBigDecimal("inc_ris"));
+				punto.setInc_rip(rs.getBigDecimal("inc_rip"));
+				punto.setInc_cmp(rs.getBigDecimal("inc_cmp"));
+				punto.setInc_stab(rs.getBigDecimal("inc_stab"));
+				punto.setInc_est(rs.getBigDecimal("inc_est"));
+				
+			
+				
+				listaPunti.add(punto);
+			}
+			
+		}
+		catch (Exception e) 
+		{
+		 e.printStackTrace();	
+		 throw e;
+		}
+		finally
+		{
+			pst.close();
+			con.close();
+		}
+
+		return listaPunti;
+	}
+
 	public static ArrayList<ArrayList<LatPuntoLivellaElettronicaDTO>> getListaPuntiLivellaElettronicaRipetibili(int idMisura) throws Exception {
 		Connection con=null;
 		PreparedStatement pst=null;
@@ -3215,8 +3273,14 @@ public static void updateMisuraRDP(int idRecord, String descrizioneCampione, Str
 				punto.setValore_ritorno_taratura(rs.getBigDecimal("valore_ritorno_taratura"));
 				punto.setValore_ritorno_campione(rs.getBigDecimal("valore_ritorno_campione"));
 				punto.setAndata_scostamento_campione(rs.getBigDecimal("andata_scostamento_campione"));
+				punto.setAndata_correzione_campione(rs.getBigDecimal("andata_correzione_campione"));
 				punto.setRitorno_scostamento_campione(rs.getBigDecimal("ritorno_scostamento_campione"));
+				punto.setRitorno_correzione_campione(rs.getBigDecimal("ritorno_correzione_campione"));
 				punto.setInclinazione_cmp_campione(rs.getBigDecimal("inclinazione_cmp_campione"));
+				punto.setScostamentoA(rs.getBigDecimal("scostamentoA"));
+				punto.setScostamentoB(rs.getBigDecimal("scostamentoB"));
+				punto.setScostamentoMed(rs.getBigDecimal("scostamentoMed"));
+				punto.setScostamentoOff(rs.getBigDecimal("scostamentoOff"));
 				punto.setScarto_tipo(rs.getBigDecimal("scarto_tipo"));
 				
 				
@@ -3385,6 +3449,104 @@ public static void updateMisuraRDP(int idRecord, String descrizioneCampione, Str
 		}
 		return misura;
 		
+	}
+	public static void updateRecordPuntoLivellaElettronica(LatPuntoLivellaElettronicaDTO punto) throws Exception {
+		
+		Connection con =null;
+		PreparedStatement pst= null;
+
+		try{
+			con=getConnection();			
+			
+			pst=con.prepareStatement("UPDATE lat_punto_livella_elettronica SET indicazione_iniziale=?," + 
+					"indicazione_iniziale_corr=?,valore_nominale=?,valore_andata_taratura=?,valore_andata_campione=?,valore_ritorno_taratura=?,valore_ritorno_campione=?,"+ 
+					"andata_scostamento_campione=?,andata_correzione_campione=?,ritorno_scostamento_campione=?,ritorno_correzione_campione=?,inclinazione_cmp_campione=?,"+
+					"scostamentoA=?,scostamentoB=?,scostamentoMed=?,scostamentoOff=?,scarto_tipo=?,inc_ris=?,inc_rip=?,inc_cmp=?,inc_stab=?,inc_est=? WHERE id=? ");
+	
+			pst.setBigDecimal(1, punto.getIndicazione_iniziale());
+			pst.setBigDecimal(2, punto.getIndicazione_iniziale_corr());
+			pst.setBigDecimal(3, punto.getValore_nominale());
+			pst.setBigDecimal(4,punto.getValore_andata_taratura());
+			pst.setBigDecimal(5,punto.getValore_andata_campione());
+			pst.setBigDecimal(6, punto.getValore_ritorno_taratura());
+			pst.setBigDecimal(7, punto.getValore_ritorno_campione());
+			pst.setBigDecimal(8,punto.getAndata_scostamento_campione());
+			pst.setBigDecimal(9,punto.getAndata_correzione_campione());
+			pst.setBigDecimal(10, punto.getRitorno_scostamento_campione());
+			pst.setBigDecimal(11,punto.getRitorno_correzione_campione());
+			pst.setBigDecimal(12, punto.getInclinazione_cmp_campione());
+			pst.setBigDecimal(13,punto.getScostamentoA());
+			pst.setBigDecimal(14,punto.getScostamentoB());
+			pst.setBigDecimal(15,punto.getScostamentoMed());
+			pst.setBigDecimal(16,punto.getScostamentoOff());
+			pst.setBigDecimal(17, punto.getScarto_tipo());
+			pst.setBigDecimal(18, punto.getInc_ris());
+			pst.setBigDecimal(19, punto.getInc_rip());
+			pst.setBigDecimal(20, punto.getInc_cmp());
+			pst.setBigDecimal(21, punto.getInc_stab());
+			pst.setBigDecimal(22, punto.getInc_est());
+			pst.setInt(23, punto.getId());
+			
+			pst.execute();
+		
+		    
+			  
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+			throw ex;
+		}
+		finally
+		{
+			pst.close();
+			con.close();
+		}
+		
+	}
+	
+	public static ArrayList<ParametroTaraturaDTO> getListaParametriTaraturaSelezionato(String codCampione) throws Exception {
+		Connection con=null;
+		PreparedStatement pst=null;
+		ResultSet rs =null;
+		ArrayList<ParametroTaraturaDTO> toRet=new  ArrayList<ParametroTaraturaDTO>();
+		ParametroTaraturaDTO parametroTar=null;
+		try
+		{
+			con=getConnection();
+			
+			pst=con.prepareStatement("select * FROM tblCampioni WHERE codice=? ORDER BY valore_taratura");
+					
+			pst.setString(1, codCampione);	
+			
+			rs=pst.executeQuery();
+			
+			while(rs.next())
+			{
+				parametroTar= new ParametroTaraturaDTO();
+				parametroTar.setDescrizioneParametro(rs.getString("parametri_taratura"));
+				parametroTar.setDataScadenza(new SimpleDateFormat("yyyy-MM-dd").parse(rs.getString("data_scadenza")));
+				parametroTar.setUm(rs.getString("um"));
+				parametroTar.setUm_fond(rs.getString("um_fond"));
+				parametroTar.setIncertezzaAssoluta(rs.getBigDecimal("incertezza_assoluta"));
+				parametroTar.setIncertezzaRelativa(rs.getBigDecimal("incertezza_relativa"));
+				parametroTar.setValore_nominale(rs.getBigDecimal("valore_nominale"));
+				parametroTar.setValoreTaratura(rs.getBigDecimal("valore_taratura"));
+				parametroTar.setScostamentoPrecedente(rs.getBigDecimal("valore_scostamento_precedente"));
+				parametroTar.setInterpolazione(rs.getInt("interpolazione_permessa"));
+				parametroTar.setRisoluzione(rs.getBigDecimal("divisione_unita_misura"));
+				parametroTar.setTipoGrandezza(rs.getString("tipoGrandezza"));
+				toRet.add(parametroTar);			
+				
+			}
+			
+		}catch (Exception e) {
+			throw e;
+		}finally
+		{
+			pst.close();
+			con.close();
+		}
+		return toRet;
 	}
 
 

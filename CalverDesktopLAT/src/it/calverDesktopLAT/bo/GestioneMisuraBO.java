@@ -15,6 +15,7 @@ import it.calverDesktopLAT.dto.MisuraDTO;
 import it.calverDesktopLAT.dto.ParametroTaraturaDTO;
 import it.calverDesktopLAT.dto.ProvaMisuraDTO;
 import it.calverDesktopLAT.dto.PuntoLivellaBollaDTO;
+import it.calverDesktopLAT.dto.RegLinDTO;
 import it.calverDesktopLAT.dto.TabellaMisureDTO;
 import it.calverDesktopLAT.utl.Costanti;
 import it.calverDesktopLAT.utl.Utility;
@@ -487,6 +488,19 @@ public class GestioneMisuraBO
 			}	
 		}
 		
+		/*Inserimento Incertezze*/
+		for(int i=0;i<=20;i++) 
+		{
+			punto= new LatPuntoLivellaElettronicaDTO();
+		
+			punto.setId_misura(idMisura);
+			punto.setPunto(i+1);
+			punto.setTipo_prova("I");
+			punto.setIndicazione_iniziale(BigDecimal.ZERO);
+			punto.setIndicazione_iniziale_corr(BigDecimal.ZERO);
+			punto.setInclinazione_cmp_campione(BigDecimal.ZERO);
+			SQLiteDAO.insertListaPuntiLivellaElettronica(punto);
+		}
 		
 	}
 
@@ -859,6 +873,73 @@ public class GestioneMisuraBO
 			}
 			return errore_cumulativo;
 		
+	}
+
+	public static void updateRecordPuntoLivellaElettronica(LatPuntoLivellaElettronicaDTO punto) throws Exception {
+		
+		SQLiteDAO.updateRecordPuntoLivellaElettronica(punto);
+	}
+
+	public static ArrayList<RegLinDTO> getListaRegressioneLineare(ArrayList<ParametroTaraturaDTO> listaParametri) {
+	
+		ArrayList<RegLinDTO> listaRegLin = new ArrayList<RegLinDTO>();
+		
+		RegLinDTO regression=null;
+		
+		for (int i = 0; i < listaParametri.size()-1;i++) 
+		{
+			regression= new RegLinDTO();
+			BigDecimal x = listaParametri.get(i).getValoreTaratura().setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA, RoundingMode.HALF_UP);
+			BigDecimal x1 = listaParametri.get(i+1).getValoreTaratura().setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA, RoundingMode.HALF_UP);
+			
+			BigDecimal y=listaParametri.get(i).getValoreTaratura().subtract(listaParametri.get(i).getValore_nominale()).setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA, RoundingMode.HALF_UP);
+			BigDecimal y1=listaParametri.get(i+1).getValoreTaratura().subtract(listaParametri.get(i+1).getValore_nominale()).setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA, RoundingMode.HALF_UP);
+			
+			BigDecimal medX =(x.add(x1)).divide(new BigDecimal(2),RoundingMode.HALF_UP).setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+15, RoundingMode.HALF_UP);
+			BigDecimal medY =(y.add(y1)).divide(new BigDecimal(2),RoundingMode.HALF_UP).setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+15, RoundingMode.HALF_UP);
+			
+			BigDecimal firstSum=(x.subtract(medX)).multiply(y.subtract(medY));
+			BigDecimal secondSum=(x1.subtract(medX)).multiply(y1.subtract(medY));
+			
+			BigDecimal numerator=firstSum.add(secondSum);
+			
+			BigDecimal d1=(x.subtract(medX)).multiply((x.subtract(medX)));
+			BigDecimal d2=(x1.subtract(medX)).multiply((x1.subtract(medX)));
+			
+			BigDecimal m = numerator.divide(d1.add(d2),RoundingMode.HALF_UP);
+			
+			BigDecimal q=medY.subtract(m.multiply(medX));
+			
+			regression.setValore_misurato(x);
+			regression.setValore_riferimento(listaParametri.get(i).getValore_nominale());
+			regression.setScostamento(y);
+			regression.setM(m.setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+14,RoundingMode.HALF_UP));
+			regression.setQ(q.setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+13,RoundingMode.HALF_UP));
+			
+			System.out.println(regression.toString());
+			
+			listaRegLin.add(regression);
+		}
+		
+		RegLinDTO lastReg = new RegLinDTO();
+		int lastIndex=listaParametri.size()-1;
+		
+		BigDecimal x = listaParametri.get(lastIndex).getValoreTaratura().setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA, RoundingMode.HALF_UP);
+		BigDecimal y=listaParametri.get(lastIndex).getValoreTaratura().subtract(listaParametri.get(lastIndex).getValore_nominale()).setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA, RoundingMode.HALF_UP);
+		
+		lastReg.setValore_misurato(x);
+		lastReg.setValore_riferimento(listaParametri.get(lastIndex).getValore_nominale());
+		lastReg.setScostamento(y);
+		lastReg.setM(BigDecimal.ZERO);
+		lastReg.setQ(BigDecimal.ZERO);
+		System.out.println(lastReg.toString());
+		listaRegLin.add(lastReg);
+		return listaRegLin;
+	}
+
+	public static ArrayList<LatPuntoLivellaElettronicaDTO> getListaPuntiLivellaElettronicaIncertezze(int idMisura) throws Exception {
+		// TODO Auto-generated method stub
+		return SQLiteDAO.getListaPuntiLivellaElettronicaIncertezze(idMisura);
 	}
 
 

@@ -14,6 +14,7 @@ public class ParametroTaraturaDTO {
 	BigDecimal risoluzione;
 	BigDecimal incertezzaAssoluta;
 	BigDecimal incertezzaRelativa;
+	BigDecimal scostamentoPrecedente;
 	String tipoGrandezza;
 	int interpolazione;
 	
@@ -22,6 +23,12 @@ public class ParametroTaraturaDTO {
 	}
 	public void setDescrizioneParametro(String descrizioneParametro) {
 		this.descrizioneParametro = descrizioneParametro;
+	}
+	public BigDecimal getScostamentoPrecedente() {
+		return scostamentoPrecedente;
+	}
+	public void setScostamentoPrecedente(BigDecimal scostamentoPrecedente) {
+		this.scostamentoPrecedente = scostamentoPrecedente;
 	}
 	public Date getDataScadenza() {
 		return dataScadenza;

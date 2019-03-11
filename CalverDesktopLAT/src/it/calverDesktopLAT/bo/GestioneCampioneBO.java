@@ -219,4 +219,12 @@ public static String[] getParametriTaraturaTotali(String codiceCampione) throws 
 		}
 		
 	}
+
+
+	public static ArrayList<ParametroTaraturaDTO> getParametriTaratura(String codCampione) throws Exception {
+
+		ArrayList<ParametroTaraturaDTO> listaParametri = SQLiteDAO.getListaParametriTaraturaSelezionato(codCampione);
+		
+		return listaParametri;
+	}
 }
