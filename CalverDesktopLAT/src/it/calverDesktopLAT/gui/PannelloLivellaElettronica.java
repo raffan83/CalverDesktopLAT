@@ -26,6 +26,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -99,7 +101,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 		JScrollPane mainScroll = new JScrollPane();
 		add(mainScroll, "cell 0 1 5 1,grow");
 
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		final JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		mainScroll.setViewportView(tabbedPane);
 
 	
@@ -160,6 +162,18 @@ public class PannelloLivellaElettronica extends JPanel  {
 				
 				tabbedPane.setSelectedIndex(index);
 				
+				
+				  tabbedPane.addChangeListener(new ChangeListener() {
+						public void stateChanged(ChangeEvent e) {
+					    
+					     if(tabbedPane.getSelectedIndex()==3) 
+					     {
+					    	 PannelloGrafico provaGrafico = new PannelloGrafico();
+					    	 
+					    	 tabbedPane.setComponentAt(3, provaGrafico.get());
+					     }
+					     }
+				    });
 			
 				textField_indicazione_iniziale.addActionListener(new ActionListener() {
 					
@@ -305,7 +319,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 				}
 
 				tabellaIncertezze.setModel(model_incertezze);
-				tabellaIncertezze.setFont(new Font("Arial", Font.BOLD, 10));
+				tabellaIncertezze.setFont(new Font("Arial", Font.BOLD, 12));
 				tabellaIncertezze.getTableHeader().setFont(new Font("Arial", Font.BOLD, 10));
 				tabellaIncertezze.setRowHeight(25);
 
@@ -530,27 +544,27 @@ public class PannelloLivellaElettronica extends JPanel  {
 
 			if(column  == 2 ||column==3 || column  == 4 ||column==5 )
 			{
-				cellComponent.setBackground(new Color(255,255,102));
+				cellComponent.setBackground(new Color(255,255,153));
 				cellComponent.setForeground(Color.BLACK);
 			}
 			else if(column  == 6 ||column==7 || column  == 8 ||column==9 )
 			{
-				cellComponent.setBackground(new Color(0,255,0));
+				cellComponent.setBackground(new Color(204,255,153));
 				cellComponent.setForeground(Color.BLACK);
 			}
 			else if(column  == 10 ||column==11 || column  == 12 ||column==13 )
 			{
-				cellComponent.setBackground(new Color(0,0,255));
+				cellComponent.setBackground(new Color(153,255,255));
 				cellComponent.setForeground(Color.BLACK);
 			}
 			else if(column  == 14 ||column==15 || column  == 16 ||column==17 )
 			{
-				cellComponent.setBackground(new Color(125,0,125));
+				cellComponent.setBackground(new Color(255,153,153));
 				cellComponent.setForeground(Color.BLACK);
 			}
 			else if(column  == 18 ||column==19 || column  == 20 ||column==21 )
 			{
-				cellComponent.setBackground(new Color(0,125,0));
+				cellComponent.setBackground(new Color(224,224,224));
 				cellComponent.setForeground(Color.BLACK);
 			}
 			else 
@@ -638,6 +652,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 		{
 			Object andata = model.getValueAt(i, 2);
 			Object sc_andata = model.getValueAt(i, 10);
+			
 			if(andata!=null && andata.toString().length()>0 && sc_andata!=null && sc_andata.toString().length()>0)
 			{
 				lettura_andata.add(new Double(andata.toString()),new Double(sc_andata.toString()));
@@ -646,16 +661,18 @@ public class PannelloLivellaElettronica extends JPanel  {
 			
 			Object ritorno = model.getValueAt(i, 4);
 			Object sc_ritorno = model.getValueAt(i, 11);
+			
 			if(ritorno!=null && ritorno.toString().length()>0 && sc_ritorno!=null && sc_ritorno.toString().length()>0)
 			{
 				lettura_ritorno.add(new Double(ritorno.toString()),new Double(sc_ritorno.toString()));
 				
 			}
+			
 			if(andata!=null && andata.toString().length()>0 && sc_andata!=null && sc_andata.toString().length()>0 &&
 					ritorno!=null && ritorno.toString().length()>0 && sc_ritorno!=null && sc_ritorno.toString().length()>0) 
 			{
-				Double media_g= new Double(andata.toString())+new Double(ritorno.toString())/2;
-				Double media_g_sc= new Double(sc_andata.toString())+new Double(sc_ritorno.toString())/2;
+				Double media_g= (new Double(andata.toString())+new Double(ritorno.toString()))/2;
+				Double media_g_sc= (new Double(sc_andata.toString())+new Double(sc_ritorno.toString()))/2;
 				
 				media.add(media_g,media_g_sc);
 			}
@@ -725,7 +742,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 		
 
 			tableProvaLineare.setModel(modelLin);
-			tableProvaLineare.setFont(new Font("Arial", Font.BOLD, 10));
+			tableProvaLineare.setFont(new Font("Arial", Font.BOLD, 12));
 			tableProvaLineare.getTableHeader().setFont(new Font("Arial", Font.BOLD, 10));
 			tableProvaLineare.setRowHeight(25);
 
@@ -1194,7 +1211,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 			model.addTableModelListener(this);
 			
 			tableProvaRipetibile.setModel(model);
-			tableProvaRipetibile.setFont(new Font("Arial", Font.BOLD, 10));
+			tableProvaRipetibile.setFont(new Font("Arial", Font.BOLD, 12));
 			tableProvaRipetibile.getTableHeader().setFont(new Font("Arial", Font.BOLD, 10));
 			tableProvaRipetibile.setRowHeight(25);
 
