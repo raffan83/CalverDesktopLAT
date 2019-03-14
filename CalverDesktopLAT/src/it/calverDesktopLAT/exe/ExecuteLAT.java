@@ -19,7 +19,7 @@ import it.calverDesktopLAT.gui.FirstAccess;
 import it.calverDesktopLAT.gui.GeneralGUI;
 import it.calverDesktopLAT.utl.Costanti;
 
-public class Execute {
+public class ExecuteLAT {
 
 	/**
 	 * @param args
