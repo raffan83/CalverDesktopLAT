@@ -1227,6 +1227,11 @@ public class PannelloMisuraMaster extends JPanel
 						JPanel panelDB =new PannelloLivellaElettronica(0);
 						SystemGUI.callPanel(panelDB, "PMT");
 					}
+					else if(SessionBO.indexTableLAT==3)
+					{
+						JPanel panelDB =new PannelloMasse(0);
+						SystemGUI.callPanel(panelDB, "PMT");
+					}
 					
 				}
 				catch (Exception e) 

@@ -17,6 +17,7 @@ import it.calverDesktopLAT.bo.GestioneRegistro;
 import it.calverDesktopLAT.bo.SessionBO;
 import it.calverDesktopLAT.gui.FirstAccess;
 import it.calverDesktopLAT.gui.GeneralGUI;
+import it.calverDesktopLAT.gui.InitSplash;
 import it.calverDesktopLAT.utl.Costanti;
 
 public class ExecuteLAT {
@@ -34,7 +35,14 @@ public class ExecuteLAT {
 	            {
 	            	try
 	            	{
-	            		
+	            		final InitSplash fr= new InitSplash();
+	            		 
+	            		fr.setVisible(true);
+  	           	        
+  	           	        InitSplash.setMessage("Inizzializzazione applicazione...", 0);
+  	           	        Thread.sleep(50);
+  	           	        
+  	           	        InitSplash.setMessage("Caricamento chiavi di registro...", 1);
 	            		
 	            		 
 	            		 if(!GestioneRegistro.isConfig()) 
@@ -94,6 +102,11 @@ public class ExecuteLAT {
 	      	        
 	            	g1.setDefaultCloseOperation(3);
 	      	        g1.setVisible(true);
+	      	        
+	      	      InitSplash.setMessage("Avvio Applicazione...", 100);
+	      	      Thread.sleep(500);
+	      	      fr.dispose();
+	            		
 	            		}
 	      	        }
 	            	catch(Exception ex)

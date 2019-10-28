@@ -23,6 +23,7 @@ import it.calverDesktopLAT.dto.CampioneDTO;
 import it.calverDesktopLAT.dto.ClassificazioneDTO;
 import it.calverDesktopLAT.dto.ConversioneDTO;
 import it.calverDesktopLAT.dto.DatiEsterniDTO;
+import it.calverDesktopLAT.dto.LatMassaAMB;
 import it.calverDesktopLAT.dto.LatMisuraDTO;
 import it.calverDesktopLAT.dto.LatPuntoLivellaElettronicaDTO;
 import it.calverDesktopLAT.dto.LuogoVerificaDTO;
@@ -3536,6 +3537,122 @@ public static ArrayList<LatPuntoLivellaElettronicaDTO> getListaPuntiLivellaElett
 				parametroTar.setRisoluzione(rs.getBigDecimal("divisione_unita_misura"));
 				parametroTar.setTipoGrandezza(rs.getString("tipoGrandezza"));
 				toRet.add(parametroTar);			
+				
+			}
+			
+		}catch (Exception e) {
+			throw e;
+		}finally
+		{
+			pst.close();
+			con.close();
+		}
+		return toRet;
+	}
+	public static void insertCondizioniAmbientali(ArrayList<String> listaTempi, int idMisura) throws Exception {
+		
+		Connection con =null;
+		PreparedStatement pst= null;
+
+		try{
+			con=getConnection();
+			con.setAutoCommit(false);
+			
+			pst=con.prepareStatement("INSERT INTO lat_massa_amb(id,id_misura,data_ora,ch1_temperatura,ch2_temperatura," + 
+					"ch3_temperatura,umidita,pressione) VALUES(?,?,?,?,?,?,?,?)");
+			
+			for (int i=0;i<listaTempi.size();i++) {
+				
+			String[] data=listaTempi.get(i).split(";");
+			
+			pst.setInt(1,i+1);
+			pst.setInt(2, idMisura);
+			pst.setString(3, data[0]);
+			pst.setBigDecimal(4, new BigDecimal(data[1].replaceAll(",",".")));
+			pst.setBigDecimal(5, new BigDecimal(data[2].replaceAll(",",".")));
+			pst.setBigDecimal(6, new BigDecimal(data[3].replaceAll(",",".")));
+			pst.setBigDecimal(7, new BigDecimal(data[4].replaceAll(",",".")));
+			pst.setBigDecimal(8,new BigDecimal(data[5].replaceAll(",",".")));
+		
+			pst.execute();
+			
+			}
+			con.commit();
+			  
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+			throw ex;
+		}
+		finally
+		{
+			pst.close();
+			con.close();
+		}
+		
+	}
+	public static void removeCondizioniAmbientali(int idMisura) throws Exception {
+		
+		Connection con =null;
+		PreparedStatement pst= null;
+
+		try{
+			con=getConnection();
+			pst=con.prepareStatement("DELETE FROM lat_massa_amb WHERE id_misura=?");
+			pst.setInt(1, idMisura);
+		
+			pst.execute();
+		
+		    
+			  
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+			throw ex;
+		}
+		finally
+		{
+			pst.close();
+			con.close();
+		}
+		
+		
+	}
+	public static ArrayList<LatMassaAMB> getListaCondizioniAmbientali(int idMisura) throws Exception {
+		Connection con=null;
+		PreparedStatement pst=null;
+		ResultSet rs =null;
+		ArrayList<LatMassaAMB> toRet=new  ArrayList<LatMassaAMB>();
+		LatMassaAMB conAmb=null;
+		try
+		{
+			con=getConnection();
+			
+			pst=con.prepareStatement("select * FROM lat_massa_amb WHERE id_Misura=? ORDER BY id");
+					
+			pst.setInt(1, idMisura);	
+			
+			rs=pst.executeQuery();
+			
+			while(rs.next())
+			{
+				conAmb= new LatMassaAMB();
+				
+				conAmb.setId(rs.getInt("id"));
+				conAmb.setId_misura(idMisura);
+				conAmb.setData_ora(rs.getString("data_ora"));
+				conAmb.setCh1_temperatura(rs.getBigDecimal("ch1_temperatura"));
+				conAmb.setCh2_temperatura(rs.getBigDecimal("ch2_temperatura"));
+				conAmb.setCh3_temperatura(rs.getBigDecimal("ch3_temperatura"));
+				conAmb.setCh1_temperatura_corr(rs.getBigDecimal("ch1_temperatura_corr"));
+				conAmb.setCh2_temperatura_corr(rs.getBigDecimal("ch2_temperatura_corr"));
+				conAmb.setCh3_temperatura_corr(rs.getBigDecimal("ch3_temperatura_corr"));
+				conAmb.setUmidita(rs.getBigDecimal("umidita"));
+				conAmb.setUmidita_corr(rs.getBigDecimal("umidita_corr"));
+				conAmb.setPressione(rs.getBigDecimal("pressione"));
+				conAmb.setPressione_corretta(rs.getBigDecimal("pressione_corretta"));
+				
+				toRet.add(conAmb);			
 				
 			}
 			

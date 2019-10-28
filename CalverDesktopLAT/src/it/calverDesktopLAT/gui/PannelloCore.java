@@ -19,7 +19,7 @@ public class PannelloCore extends JPanel{
 		
 		SessionBO.pannelloCore=this;
 		
-		String imgLocation = "/image/wallpaper_.JPG";
+		String imgLocation = "/image/wallpaper_.jpg";
 		URL imageURL = GeneralGUI.class.getResource(imgLocation);
 		
 		JPanel panel = new BackgroundedFrame(imageURL, g);

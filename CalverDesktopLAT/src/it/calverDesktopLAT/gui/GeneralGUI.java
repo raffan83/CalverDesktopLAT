@@ -58,7 +58,7 @@ public  class GeneralGUI extends JFrame implements Serializable{
 	
 	
 	public GeneralGUI() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
-	setTitle("DasmTar v"+Costanti.VERSION+" ®");
+	setTitle("DasmTar LAT v"+Costanti.VERSION+" ®");
 	
 	g=this;
 	

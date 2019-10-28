@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import it.calverDesktopLAT.dao.SQLiteDAO;
 import it.calverDesktopLAT.dto.DatiEsterniDTO;
+import it.calverDesktopLAT.dto.LatMassaAMB;
 import it.calverDesktopLAT.dto.LatMisuraDTO;
 import it.calverDesktopLAT.dto.LatPuntoLivellaElettronicaDTO;
 import it.calverDesktopLAT.dto.MisuraDTO;
@@ -940,6 +941,24 @@ public class GestioneMisuraBO
 	public static ArrayList<LatPuntoLivellaElettronicaDTO> getListaPuntiLivellaElettronicaIncertezze(int idMisura) throws Exception {
 		// TODO Auto-generated method stub
 		return SQLiteDAO.getListaPuntiLivellaElettronicaIncertezze(idMisura);
+	}
+
+	public static void insertCondizioniAmbientali(ArrayList<String> listaTempi, int idMisura) throws Exception {
+		
+		SQLiteDAO.insertCondizioniAmbientali(listaTempi,idMisura);
+		
+	}
+
+	public static void removeCondizioniAmbientali(int idMisura) throws Exception {
+		
+		SQLiteDAO.removeCondizioniAmbientali(idMisura);
+		
+	}
+
+	public static ArrayList<LatMassaAMB> getListaCondizioniAmbientali(int idMisura) throws Exception {
+		
+		return SQLiteDAO.getListaCondizioniAmbientali(idMisura);
+			
 	}
 
 
