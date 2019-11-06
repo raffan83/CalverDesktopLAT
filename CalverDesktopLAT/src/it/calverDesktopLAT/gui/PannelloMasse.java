@@ -2,6 +2,7 @@ package it.calverDesktopLAT.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,11 +37,14 @@ import org.apache.commons.io.FilenameUtils;
 import it.calverDesktopLAT.bo.GestioneMisuraBO;
 import it.calverDesktopLAT.bo.SessionBO;
 import it.calverDesktopLAT.dto.LatMassaAMB;
+import it.calverDesktopLAT.dto.LatMassaAMB_SONDE;
 import it.calverDesktopLAT.dto.LatMisuraDTO;
 import it.calverDesktopLAT.dto.LatPuntoLivellaElettronicaDTO;
 import it.calverDesktopLAT.dto.ParametroTaraturaDTO;
 import it.calverDesktopLAT.dto.RegLinDTO;
 import net.miginfocom.swing.MigLayout;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 public class PannelloMasse extends JPanel  {
 
@@ -57,6 +61,23 @@ public class PannelloMasse extends JPanel  {
 	ModelCondizioniAmb model_condizionniAmb;
 	ArrayList<String> listaTempi;
 	LatMisuraDTO lat;
+	private JTextField textField_temperatura_media;
+	private JTextField textField_temperatura_media_variazione;
+	private JTextField textField_ur_media;
+	private JTextField textField_ur_media_variazione;
+	private JTextField textField_pressione_media;
+	private JTextField textField_pressione_media_variazione;
+	private JTextField textField_pa_cipm;
+	private JTextField textField_U_pa;
+	private JTextField textField_U_form;
+	private JTextField textField_delta_temp;
+	private JTextField textField_incertezza_temp;
+	private JTextField textField_p0;
+	private JTextField textField_pa_no_cipm;
+	private JTextField textField_delta_ur;
+	private JTextField textField_incertezza_ur;
+	private JTextField textField_delta_press;
+	private JTextField textField_incertezza_press;
 
 	public PannelloMasse(int index) {
 
@@ -64,34 +85,29 @@ public class PannelloMasse extends JPanel  {
 
 		try 
 		{
-			setLayout(new MigLayout("", "[grow][grow][grow][grow][grow]", "[grow]"));
+			this.setLayout(new MigLayout("", "[grow]", "[grow]"));
 
 			JScrollPane mainScroll = new JScrollPane();
-			add(mainScroll, "cell 0 0 5 1,grow");
+			
 
 			final JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-			mainScroll.setViewportView(tabbedPane);
+			
 
-
-
-			listaPuntiLineari = GestioneMisuraBO.getListaPuntiLivellaElettronicaLineari(SessionBO.idMisura);
-			listaPuntiRipetibili = GestioneMisuraBO.getListaPuntiLivellaElettroniaRipetibili(SessionBO.idMisura);
-			listaIncertezze =GestioneMisuraBO.getListaPuntiLivellaElettronicaIncertezze(SessionBO.idMisura);
-
-
-			PannelloMonitoraggioAmb pannelloIncertezze = new PannelloMonitoraggioAmb();
-			tabbedPane.addTab("Monitoraggio Ambientale", pannelloIncertezze.get());
-			/*	PannelloProvaLineare provaLineare = new PannelloProvaLineare();
-				tabbedPane.addTab("Prova Lineare",provaLineare.get());
-				PannelloProvaRipetibile provaRipetibile = new PannelloProvaRipetibile();
-				tabbedPane.addTab("Prova Ripetibilità",provaRipetibile.get());
-
-				PannelloGrafico provaGrafico = new PannelloGrafico();
-				tabbedPane.addTab("Grafico Scostamenti",provaGrafico.get());*/
+			JPanel pannelloMonitoraggioAmb = costruisciPannelloAmbientale();
+			tabbedPane.addTab("Monitoraggio Ambientale", pannelloMonitoraggioAmb);
+		
 
 			tabbedPane.setSelectedIndex(index);
+			
+			double height=(SessionBO.heightFrame*73)/100;
+			double width=(SessionBO.widthFrame*70)/100;
+			
+			tabbedPane.setPreferredSize(new Dimension((int)width-50,(int) height/2));
+			mainScroll.setPreferredSize(new Dimension((int)width-50,(int) height/2));
 
-
+			mainScroll.setViewportView(tabbedPane);
+			
+			add(mainScroll, "cell 0 0,grow");
 
 
 		}catch 
@@ -102,21 +118,20 @@ public class PannelloMasse extends JPanel  {
 
 
 
-	public class PannelloMonitoraggioAmb implements TableModelListener,ActionListener {
+	public JPanel costruisciPannelloAmbientale(){
 
 		JPanel mainPanelMonitoraggioAmb= new JPanel();
 		JTable tabellaCondizioniAmb;
 
-		public PannelloMonitoraggioAmb() throws Exception 
-		{
+		
 			mainPanelMonitoraggioAmb.setBackground(Color.LIGHT_GRAY);
 
 			try {
 
-				mainPanelMonitoraggioAmb.setLayout(new MigLayout("", "[grow][grow]", "[grow][grow]"));
+				mainPanelMonitoraggioAmb.setLayout(new MigLayout("", "[grow][grow]", "[60%][40%]"));
 
 				JPanel pannelloTabCondizioni= new JPanel();
-				pannelloTabCondizioni.setLayout(new MigLayout("", "[grow][grow]", "[:50:][grow]"));
+				pannelloTabCondizioni.setLayout(new MigLayout("", "[grow][pref!,grow]", "[:50:][grow]"));
 
 				JPanel pannelloTabSonde= new JPanel();
 				pannelloTabSonde.setBackground(Color.RED);
@@ -126,6 +141,193 @@ public class PannelloMasse extends JPanel  {
 
 				mainPanelMonitoraggioAmb.add(pannelloTabCondizioni, "cell 0 0 1 2,grow");
 				mainPanelMonitoraggioAmb.add(pannelloValori, "cell 1 0 ,grow");
+				pannelloValori.setLayout(new MigLayout("", "[][grow][][][grow][][][grow][]", "[][][][][][][][][][][][][][][]"));
+				
+				JLabel lblNewLabel = new JLabel("Temp Media");
+				lblNewLabel.setFont(new Font("Arial", Font.BOLD, 14));
+				pannelloValori.add(lblNewLabel, "cell 0 1 2 1,alignx center");
+				
+				JLabel lblUrMedia = new JLabel("UR% Media");
+				lblUrMedia.setFont(new Font("Arial", Font.BOLD, 14));
+				pannelloValori.add(lblUrMedia, "cell 3 1 2 1,alignx center");
+				
+				JLabel lblPressMedia = new JLabel("Press Media");
+				lblPressMedia.setFont(new Font("Arial", Font.BOLD, 14));
+				pannelloValori.add(lblPressMedia, "cell 6 1 2 1,alignx center");
+				
+				JLabel lblC = new JLabel("C\u00B0");
+				lblC.setFont(new Font("Arial", Font.BOLD, 12));
+				pannelloValori.add(lblC, "cell 0 2,alignx trailing");
+				
+				textField_temperatura_media = new JTextField();
+				textField_temperatura_media.setEditable(false);
+				textField_temperatura_media.setFont(new Font("Arial", Font.BOLD, 12));
+				pannelloValori.add(textField_temperatura_media, "cell 1 2");
+				textField_temperatura_media.setColumns(10);
+				
+				JLabel lbldddddd = new JLabel("%");
+				pannelloValori.add(lbldddddd, "cell 3 2,alignx trailing");
+				
+				textField_ur_media = new JTextField();
+				textField_ur_media.setFont(new Font("Arial", Font.BOLD, 12));
+				textField_ur_media.setEditable(false);
+				textField_ur_media.setColumns(10);
+				pannelloValori.add(textField_ur_media, "cell 4 2");
+				
+				JLabel lblMbar = new JLabel("mbar");
+				lblMbar.setFont(new Font("Arial", Font.BOLD, 12));
+				pannelloValori.add(lblMbar, "cell 6 2,alignx trailing");
+				
+				textField_pressione_media = new JTextField();
+				textField_pressione_media.setFont(new Font("Arial", Font.BOLD, 12));
+				textField_pressione_media.setEditable(false);
+				textField_pressione_media.setColumns(10);
+				pannelloValori.add(textField_pressione_media, "cell 7 2");
+				
+				JLabel label = new JLabel("\u00B1");
+				label.setFont(new Font("Arial", Font.BOLD, 12));
+				pannelloValori.add(label, "cell 0 3,alignx trailing");
+				
+				textField_temperatura_media_variazione = new JTextField();
+				textField_temperatura_media_variazione.setFont(new Font("Arial", Font.BOLD, 12));
+				textField_temperatura_media_variazione.setEditable(false);
+				textField_temperatura_media_variazione.setColumns(10);
+				pannelloValori.add(textField_temperatura_media_variazione, "cell 1 3");
+				
+				JLabel label_2 = new JLabel("\u00B1");
+				label_2.setHorizontalAlignment(SwingConstants.RIGHT);
+				label_2.setFont(new Font("Arial", Font.BOLD, 12));
+				pannelloValori.add(label_2, "cell 3 3,alignx trailing");
+				
+				textField_ur_media_variazione = new JTextField();
+				textField_ur_media_variazione.setFont(new Font("Arial", Font.BOLD, 12));
+				textField_ur_media_variazione.setEditable(false);
+				textField_ur_media_variazione.setColumns(10);
+				pannelloValori.add(textField_ur_media_variazione, "cell 4 3");
+				
+				JLabel label_3 = new JLabel("\u00B1");
+				label_3.setFont(new Font("Arial", Font.BOLD, 12));
+				pannelloValori.add(label_3, "cell 6 3,alignx trailing");
+				
+				textField_pressione_media_variazione = new JTextField();
+				textField_pressione_media_variazione.setFont(new Font("Arial", Font.BOLD, 12));
+				textField_pressione_media_variazione.setEditable(false);
+				textField_pressione_media_variazione.setColumns(10);
+				pannelloValori.add(textField_pressione_media_variazione, "cell 7 3");
+				
+				JLabel lbla = new JLabel("\u03C1a");
+				lbla.setFont(new Font("Arial", Font.BOLD | Font.ITALIC, 14));
+				pannelloValori.add(lbla, "cell 0 5");
+				
+				JLabel lblUa = new JLabel("u(\u03C1a)");
+				lblUa.setFont(new Font("Arial", Font.BOLD | Font.ITALIC, 14));
+				pannelloValori.add(lblUa, "cell 0 6");
+				
+				textField_pa_cipm = new JTextField();
+				textField_pa_cipm.setFont(new Font("Arial", Font.BOLD, 12));
+				textField_pa_cipm.setEditable(false);
+				textField_pa_cipm.setColumns(10);
+				pannelloValori.add(textField_pa_cipm, "cell 1 5 7 1");
+				
+				textField_U_pa = new JTextField();
+				textField_U_pa.setFont(new Font("Arial", Font.BOLD, 12));
+				textField_U_pa.setEditable(false);
+				textField_U_pa.setColumns(10);
+				pannelloValori.add(textField_U_pa, "cell 1 6");
+				
+				JLabel lblUform = new JLabel("U form");
+				lblUform.setFont(new Font("Arial", Font.BOLD | Font.ITALIC, 14));
+				pannelloValori.add(lblUform, "cell 0 7,alignx trailing");
+				
+				textField_U_form = new JTextField();
+				textField_U_form.setFont(new Font("Arial", Font.BOLD, 12));
+				textField_U_form.setEditable(false);
+				textField_U_form.setColumns(10);
+				pannelloValori.add(textField_U_form, "cell 1 7");
+				
+				JLabel lblFormulaInUso = new JLabel("Formula in uso se le condizioni non discostano pi\u00F9 del 10%");
+				lblFormulaInUso.setFont(new Font("Arial", Font.BOLD, 12));
+				pannelloValori.add(lblFormulaInUso, "cell 0 9 8 1");
+				
+				JLabel lbltc = new JLabel("\u0394t /\u00B0C");
+				lbltc.setFont(new Font("Arial", Font.BOLD, 12));
+				pannelloValori.add(lbltc, "cell 0 11,alignx trailing");
+				
+				textField_delta_temp = new JTextField();
+				textField_delta_temp.setFont(new Font("Arial", Font.BOLD, 12));
+				textField_delta_temp.setEditable(false);
+				textField_delta_temp.setColumns(10);
+				pannelloValori.add(textField_delta_temp, "cell 1 11");
+				
+				JLabel lblhr = new JLabel("\u0394hr /%");
+				lblhr.setFont(new Font("Arial", Font.BOLD, 12));
+				pannelloValori.add(lblhr, "cell 3 11,alignx trailing");
+				
+				textField_delta_ur = new JTextField();
+				textField_delta_ur.setFont(new Font("Arial", Font.BOLD, 12));
+				textField_delta_ur.setEditable(false);
+				textField_delta_ur.setColumns(10);
+				pannelloValori.add(textField_delta_ur, "cell 4 11");
+				
+				JLabel lblppa = new JLabel("\u0394p /Pa");
+				lblppa.setFont(new Font("Arial", Font.BOLD, 12));
+				pannelloValori.add(lblppa, "cell 6 11,alignx trailing");
+				
+				textField_delta_press = new JTextField();
+				textField_delta_press.setFont(new Font("Arial", Font.BOLD, 12));
+				textField_delta_press.setEditable(false);
+				textField_delta_press.setColumns(10);
+				pannelloValori.add(textField_delta_press, "cell 7 11");
+				
+				JLabel lblUtc = new JLabel("u(t) /\u00B0C");
+				lblUtc.setFont(new Font("Arial", Font.BOLD, 12));
+				pannelloValori.add(lblUtc, "cell 0 12,alignx trailing");
+				
+				textField_incertezza_temp = new JTextField();
+				textField_incertezza_temp.setFont(new Font("Arial", Font.BOLD, 12));
+				textField_incertezza_temp.setEditable(false);
+				textField_incertezza_temp.setColumns(10);
+				pannelloValori.add(textField_incertezza_temp, "cell 1 12");
+				
+				JLabel lblUhr = new JLabel("u(hr) /%");
+				lblUhr.setFont(new Font("Arial", Font.BOLD, 12));
+				pannelloValori.add(lblUhr, "cell 3 12,alignx trailing");
+				
+				textField_incertezza_ur = new JTextField();
+				textField_incertezza_ur.setFont(new Font("Arial", Font.BOLD, 12));
+				textField_incertezza_ur.setEditable(false);
+				textField_incertezza_ur.setColumns(10);
+				pannelloValori.add(textField_incertezza_ur, "cell 4 12");
+				
+				JLabel lblUppa = new JLabel("u(p) /Pa");
+				lblUppa.setFont(new Font("Arial", Font.BOLD, 12));
+				pannelloValori.add(lblUppa, "cell 6 12,alignx trailing");
+				
+				textField_incertezza_press = new JTextField();
+				textField_incertezza_press.setFont(new Font("Arial", Font.BOLD, 12));
+				textField_incertezza_press.setEditable(false);
+				textField_incertezza_press.setColumns(10);
+				pannelloValori.add(textField_incertezza_press, "cell 7 12");
+				
+				JLabel label_5 = new JLabel("\u03C10");
+				label_5.setFont(new Font("Arial", Font.BOLD | Font.ITALIC, 14));
+				pannelloValori.add(label_5, "cell 0 13,alignx trailing");
+				
+				textField_p0 = new JTextField();
+				textField_p0.setFont(new Font("Arial", Font.BOLD, 12));
+				textField_p0.setEditable(false);
+				textField_p0.setColumns(10);
+				pannelloValori.add(textField_p0, "cell 1 13");
+				
+				JLabel lbla_1 = new JLabel("\u03C1a");
+				lbla_1.setFont(new Font("Arial", Font.BOLD | Font.ITALIC, 14));
+				pannelloValori.add(lbla_1, "cell 0 14,alignx trailing");
+				
+				textField_pa_no_cipm = new JTextField();
+				textField_pa_no_cipm.setFont(new Font("Arial", Font.BOLD, 12));
+				textField_pa_no_cipm.setEditable(false);
+				textField_pa_no_cipm.setColumns(10);
+				pannelloValori.add(textField_pa_no_cipm, "cell 1 14");
 				mainPanelMonitoraggioAmb.add(pannelloTabSonde, "cell 1 1,grow");
 
 
@@ -217,24 +419,73 @@ public class PannelloMasse extends JPanel  {
 								}
 
 
+								ArrayList<LatMassaAMB_SONDE> listaCorrezzioniSonde_tmp_1=GestioneMisuraBO.getListaCorrezioniSondeLAT(1);
+								ArrayList<LatMassaAMB_SONDE> listaCorrezzioniSonde_tmp_2=GestioneMisuraBO.getListaCorrezioniSondeLAT(2);
+								ArrayList<LatMassaAMB_SONDE> listaCorrezzioniSonde_tmp_3=GestioneMisuraBO.getListaCorrezioniSondeLAT(3);
+								ArrayList<LatMassaAMB_SONDE> listaCorrezzioniSonde_umidita=GestioneMisuraBO.getListaCorrezioniSondeLAT(5);
+								ArrayList<LatMassaAMB_SONDE> listaCorrezzioniSonde_pressione=GestioneMisuraBO.getListaCorrezioniSondeLAT(4);
+								
 								for (int i = 0; i <listaTempi.size(); i++) {
 
 									String[] data=listaTempi.get(i).split(";");
 
 									model_condizionniAmb.addRow(new Object[0]);
-									model_condizionniAmb.setValueAt(data[0], i, 0);
-									model_condizionniAmb.setValueAt(data[1], i, 1);
-									model_condizionniAmb.setValueAt(data[2], i, 2);
-									model_condizionniAmb.setValueAt(data[3], i, 3);
-									model_condizionniAmb.setValueAt(data[4], i, 7);
-									model_condizionniAmb.setValueAt(data[5], i, 9);
-									model_condizionniAmb.setValueAt(i+1, i, 11);
+									model_condizionniAmb.setValueAt(data[0].replaceAll(",", "."), i, 0);
+									model_condizionniAmb.setValueAt(data[1].replaceAll(",", "."), i, 1);
+									model_condizionniAmb.setValueAt(data[2].replaceAll(",", "."), i, 2);
+									model_condizionniAmb.setValueAt(data[3].replaceAll(",", "."), i, 3);
+									
+									BigDecimal correzione = getCorrezioneSonda(data[1],listaCorrezzioniSonde_tmp_1);
+									model_condizionniAmb.setValueAt(correzione.toPlainString(), i, 4);
+									
+									 correzione = getCorrezioneSonda(data[2],listaCorrezzioniSonde_tmp_2);
+									model_condizionniAmb.setValueAt(correzione.toPlainString(), i, 5);
+									
+									 correzione = getCorrezioneSonda(data[3],listaCorrezzioniSonde_tmp_3);
+									model_condizionniAmb.setValueAt(correzione.toPlainString(), i, 6);
+									
+									model_condizionniAmb.setValueAt(data[4].replaceAll(",", "."), i, 7);
+									
+									correzione = getCorrezioneSonda(data[4],listaCorrezzioniSonde_umidita);
+								    model_condizionniAmb.setValueAt(correzione.toPlainString(), i,8);
+								    model_condizionniAmb.setValueAt(data[5].replaceAll(",", "."), i, 9);
+								    
+									correzione = getCorrezioneSonda(data[5],listaCorrezzioniSonde_pressione);
+								    model_condizionniAmb.setValueAt(correzione.toPlainString(), i,10);
+								    model_condizionniAmb.setValueAt(i+1, i, 11);
 
-
+								    
 									
 								}
-								GestioneMisuraBO.insertCondizioniAmbientali(listaTempi,SessionBO.idMisura);
+						//		GestioneMisuraBO.insertCondizioniAmbientali(listaTempi,SessionBO.idMisura);
+							
+							    BigDecimal mediaTemperatura_1=BigDecimal.ZERO;
+							    BigDecimal mediaTemperatura_2=BigDecimal.ZERO;
+							    BigDecimal mediaTemperatura_3=BigDecimal.ZERO;
+							    BigDecimal mediaUHR=BigDecimal.ZERO;
+							    BigDecimal mediaPressione=BigDecimal.ZERO;
+							   
+							    for (int y = 0; y < rowCount; y++) {
+									
+							    	mediaTemperatura_1=mediaTemperatura_1.add(new BigDecimal(model_condizionniAmb.getValueAt(y, 4).toString()));
+							    	mediaTemperatura_2=mediaTemperatura_2.add(new BigDecimal(model_condizionniAmb.getValueAt(y, 5).toString()));
+							    	mediaTemperatura_3=mediaTemperatura_3.add(new BigDecimal(model_condizionniAmb.getValueAt(y, 6).toString()));
+							    	mediaUHR=mediaUHR.add(new BigDecimal(model_condizionniAmb.getValueAt(y, 8).toString()));
+							    	mediaPressione=mediaPressione.add(new BigDecimal(model_condizionniAmb.getValueAt(y, 10).toString()));
+								}
+							    
+							    BigDecimal size=new BigDecimal(rowCount);
+							    
+							    BigDecimal medTemp =(mediaTemperatura_1.divide(size,RoundingMode.HALF_UP)).add(mediaTemperatura_2.divide(size,RoundingMode.HALF_UP)).add(mediaTemperatura_3.divide(size,RoundingMode.HALF_UP));
+							    medTemp=medTemp.divide(new BigDecimal(3),RoundingMode.HALF_UP).setScale(2,RoundingMode.HALF_UP);
+							    
+							    
+							    textField_temperatura_media.setText(medTemp.toPlainString());
+							    
 							}
+							
+							
+							
 						} catch (Exception e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
@@ -243,6 +494,41 @@ public class PannelloMasse extends JPanel  {
 
 
 
+					}
+
+					private BigDecimal getCorrezioneSonda(String data,ArrayList<LatMassaAMB_SONDE> listaCorrezzioniSonde) {
+						
+						BigDecimal correzione=BigDecimal.ZERO;
+						try 
+						{
+						BigDecimal pivot =new BigDecimal(data.replaceAll(",", "."));
+						
+						for (int i = 0; i < listaCorrezzioniSonde.size()-1; i++) 
+						{
+							
+							LatMassaAMB_SONDE sondaINF= listaCorrezzioniSonde.get(i);
+							LatMassaAMB_SONDE sondaSUP= listaCorrezzioniSonde.get(i+1);
+							
+							
+							BigDecimal limiteInferiore=sondaINF.getIndicazione();
+							BigDecimal limiteSuperiore=sondaSUP.getIndicazione();
+							
+							if(pivot.doubleValue()>=limiteInferiore.doubleValue() && pivot.doubleValue()<=limiteSuperiore.doubleValue()) 
+							{
+								correzione= pivot.multiply(BigDecimal.ONE.subtract(sondaINF.getReg_lin_m())).subtract(sondaINF.getReg_lin_q());
+							
+								correzione=correzione.setScale(4, RoundingMode.HALF_UP);
+								
+							}
+						}
+							
+						}catch (Exception e) 
+						{
+							e.printStackTrace();
+							return BigDecimal.ZERO;
+						}
+						
+						return correzione;
 					}
 				});
 
@@ -275,10 +561,10 @@ public class PannelloMasse extends JPanel  {
 				tabellaCondizioniAmb.setRowHeight(25);
 
 
-				model_condizionniAmb.addTableModelListener(this);
+			//	model_condizionniAmb.addTableModelListener(this);
 
 				TableColumn column = tabellaCondizioniAmb.getColumnModel().getColumn(tabellaCondizioniAmb.getColumnModel().getColumnIndex("index"));
-				//	tabellaCondizioniAmb.removeColumn(column);
+			    tabellaCondizioniAmb.removeColumn(column);
 
 				JScrollPane scrollTab = new JScrollPane(tabellaCondizioniAmb);
 				pannelloTabCondizioni.add(scrollTab, "cell 0 1,grow");
@@ -286,6 +572,8 @@ public class PannelloMasse extends JPanel  {
 
 
 				LatMisuraDTO misura =GestioneMisuraBO.getMisuraLAT(SessionBO.idMisura);
+				
+				return mainPanelMonitoraggioAmb;
 
 				/*Riempo pannello se il campo riferimenti_incertezza !=null*/
 				//				if(misura.getRif_campione()!=null) 
@@ -377,52 +665,21 @@ public class PannelloMasse extends JPanel  {
 			}
 			//						}
 			//				});
+			return mainPanelMonitoraggioAmb;
 
 		}	
 
 
 
-		public Component get() {
-			return mainPanelMonitoraggioAmb;
-		}
+	
 
 
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-
-		}
+	
 
 
 
-		@Override
-		public void tableChanged(TableModelEvent e) {
-			//				int row = e.getFirstRow();
-			//				try 
-			//				{
-			//				TableModel model = (TableModel)e.getSource();
-			//				
-			//				int indexPoint=Integer.parseInt(model.getValueAt(row,7).toString());
-			//
-			//				LatPuntoLivellaElettronicaDTO punto = new LatPuntoLivellaElettronicaDTO();
-			//				punto.setId(indexPoint);
-			//				punto.setValore_nominale(checkField(model.getValueAt(row, 1),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+1));
-			//				punto.setInc_ris(checkField(model.getValueAt(row, 2),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+1));
-			//				punto.setInc_rip(checkField(model.getValueAt(row, 3),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+1));
-			//				punto.setInc_cmp(checkField(model.getValueAt(row, 4),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+1));
-			//				punto.setInc_stab(checkField(model.getValueAt(row, 5),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+1));
-			//				punto.setInc_est(checkField(model.getValueAt(row, 6),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+1));
-			//				
-			//				GestioneMisuraBO.updateRecordPuntoLivellaElettronica(punto);
-			//			
-			//				
-			//				
-			//				
-			//				{}}catch (Exception ex) {
-			//					ex.printStackTrace();
-			//				}
-
-		}
+	
 
 		private BigDecimal checkField(Object valueAt, int risoluzioneLivellaBolla) {
 
@@ -439,78 +696,9 @@ public class PannelloMasse extends JPanel  {
 		}
 	}
 
-	public class MyCellRenderer extends javax.swing.table.DefaultTableCellRenderer {
 
 
-
-		public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table, java.lang.Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-
-			final java.awt.Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-
-			if (row%2==0) 
-			{
-				cellComponent.setBackground(new Color(255,255,255));
-				cellComponent.setForeground(Color.BLACK);
-
-			}
-			else
-			{
-				cellComponent.setBackground(Color.LIGHT_GRAY);
-				cellComponent.setForeground(Color.BLACK);
-			}
-
-			return cellComponent;
-
-
-		}
-	}
-
-	public class MyCellRendererRipetibilita extends javax.swing.table.DefaultTableCellRenderer {
-
-
-
-		public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table, java.lang.Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-
-			final java.awt.Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-
-			if(column  == 2 ||column==3 || column  == 4 ||column==5 )
-			{
-				cellComponent.setBackground(new Color(255,255,153));
-				cellComponent.setForeground(Color.BLACK);
-			}
-			else if(column  == 6 ||column==7 || column  == 8 ||column==9 )
-			{
-				cellComponent.setBackground(new Color(204,255,153));
-				cellComponent.setForeground(Color.BLACK);
-			}
-			else if(column  == 10 ||column==11 || column  == 12 ||column==13 )
-			{
-				cellComponent.setBackground(new Color(153,255,255));
-				cellComponent.setForeground(Color.BLACK);
-			}
-			else if(column  == 14 ||column==15 || column  == 16 ||column==17 )
-			{
-				cellComponent.setBackground(new Color(255,153,153));
-				cellComponent.setForeground(Color.BLACK);
-			}
-			else if(column  == 18 ||column==19 || column  == 20 ||column==21 )
-			{
-				cellComponent.setBackground(new Color(224,224,224));
-				cellComponent.setForeground(Color.BLACK);
-			}
-			else 
-			{
-				cellComponent.setBackground(Color.white);
-				cellComponent.setForeground(Color.BLACK);
-			}
-
-			return cellComponent;
-
-
-		}
-	}
+	
 
 	/*	public class PannelloGrafico {
 
@@ -1515,6 +1703,85 @@ public class PannelloMasse extends JPanel  {
 
 	}
 	 */
+	
+	 class MyCellRenderer extends javax.swing.table.DefaultTableCellRenderer {
+
+
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table, java.lang.Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+
+			final java.awt.Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+
+			if (row%2==0) 
+			{
+				cellComponent.setBackground(new Color(255,255,255));
+				cellComponent.setForeground(Color.BLACK);
+
+			}
+			else
+			{
+				cellComponent.setBackground(Color.LIGHT_GRAY);
+				cellComponent.setForeground(Color.BLACK);
+			}
+
+			return cellComponent;
+
+
+		}
+	}
+	
+	  class MyCellRendererRipetibilita extends javax.swing.table.DefaultTableCellRenderer {
+
+
+
+			public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table, java.lang.Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+
+				final java.awt.Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+
+				if(column  == 2 ||column==3 || column  == 4 ||column==5 )
+				{
+					cellComponent.setBackground(new Color(255,255,153));
+					cellComponent.setForeground(Color.BLACK);
+				}
+				else if(column  == 6 ||column==7 || column  == 8 ||column==9 )
+				{
+					cellComponent.setBackground(new Color(204,255,153));
+					cellComponent.setForeground(Color.BLACK);
+				}
+				else if(column  == 10 ||column==11 || column  == 12 ||column==13 )
+				{
+					cellComponent.setBackground(new Color(153,255,255));
+					cellComponent.setForeground(Color.BLACK);
+				}
+				else if(column  == 14 ||column==15 || column  == 16 ||column==17 )
+				{
+					cellComponent.setBackground(new Color(255,153,153));
+					cellComponent.setForeground(Color.BLACK);
+				}
+				else if(column  == 18 ||column==19 || column  == 20 ||column==21 )
+				{
+					cellComponent.setBackground(new Color(224,224,224));
+					cellComponent.setForeground(Color.BLACK);
+				}
+				else 
+				{
+					cellComponent.setBackground(Color.white);
+					cellComponent.setForeground(Color.BLACK);
+				}
+
+				return cellComponent;
+
+
+			}
+		}
+	 
 	class ModelCondizioniAmb extends DefaultTableModel {
 
 
@@ -1575,6 +1842,6 @@ public class PannelloMasse extends JPanel  {
 
 
 	}
-}
+
 
 

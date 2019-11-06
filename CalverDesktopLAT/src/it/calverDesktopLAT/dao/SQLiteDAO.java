@@ -24,6 +24,7 @@ import it.calverDesktopLAT.dto.ClassificazioneDTO;
 import it.calverDesktopLAT.dto.ConversioneDTO;
 import it.calverDesktopLAT.dto.DatiEsterniDTO;
 import it.calverDesktopLAT.dto.LatMassaAMB;
+import it.calverDesktopLAT.dto.LatMassaAMB_SONDE;
 import it.calverDesktopLAT.dto.LatMisuraDTO;
 import it.calverDesktopLAT.dto.LatPuntoLivellaElettronicaDTO;
 import it.calverDesktopLAT.dto.LuogoVerificaDTO;
@@ -3653,6 +3654,45 @@ public static ArrayList<LatPuntoLivellaElettronicaDTO> getListaPuntiLivellaElett
 				conAmb.setPressione_corretta(rs.getBigDecimal("pressione_corretta"));
 				
 				toRet.add(conAmb);			
+				
+			}
+			
+		}catch (Exception e) {
+			throw e;
+		}finally
+		{
+			pst.close();
+			con.close();
+		}
+		return toRet;
+	}
+	public static ArrayList<LatMassaAMB_SONDE> getListaCorrezioniSondeLAT(int id_tipo) throws Exception {
+		Connection con=null;
+		PreparedStatement pst=null;
+		ResultSet rs =null;
+		ArrayList<LatMassaAMB_SONDE> toRet=new  ArrayList<LatMassaAMB_SONDE>();
+		LatMassaAMB_SONDE corrSonda=null;
+		try
+		{
+			con=getConnection();
+			
+			pst=con.prepareStatement("select * FROM lat_massa_amb_sonde WHERE ID_TIPO=? ORDER BY NUMERO");
+			pst.setInt(1, id_tipo);		
+			
+			rs=pst.executeQuery();
+			
+			while(rs.next())
+			{
+				corrSonda= new LatMassaAMB_SONDE();
+				
+				corrSonda.setId_tipo(rs.getInt("ID_TIPO"));
+				corrSonda.setNumero(rs.getInt("NUMERO"));
+				corrSonda.setIndicazione(rs.getBigDecimal("INDICAZIONE"));
+				corrSonda.setErrore(rs.getBigDecimal("ERRORE"));
+				corrSonda.setReg_lin_m(rs.getBigDecimal("REG_LIN_M"));
+				corrSonda.setReg_lin_q(rs.getBigDecimal("REG_LIN_Q"));
+				
+				toRet.add(corrSonda);			
 				
 			}
 			

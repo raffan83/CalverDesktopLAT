@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import it.calverDesktopLAT.dao.SQLiteDAO;
 import it.calverDesktopLAT.dto.DatiEsterniDTO;
 import it.calverDesktopLAT.dto.LatMassaAMB;
+import it.calverDesktopLAT.dto.LatMassaAMB_SONDE;
 import it.calverDesktopLAT.dto.LatMisuraDTO;
 import it.calverDesktopLAT.dto.LatPuntoLivellaElettronicaDTO;
 import it.calverDesktopLAT.dto.MisuraDTO;
@@ -959,6 +960,12 @@ public class GestioneMisuraBO
 		
 		return SQLiteDAO.getListaCondizioniAmbientali(idMisura);
 			
+	}
+
+	public static ArrayList<LatMassaAMB_SONDE> getListaCorrezioniSondeLAT(int id_tipo) throws Exception {
+		
+		return SQLiteDAO.getListaCorrezioniSondeLAT(id_tipo);
+
 	}
 
 
