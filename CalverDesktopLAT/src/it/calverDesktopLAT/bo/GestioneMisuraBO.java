@@ -687,6 +687,63 @@ public class GestioneMisuraBO
 		
 	}
 
+	
+	public static BigDecimal getDevStd(ArrayList<BigDecimal> lista, BigDecimal mediaGlobale,int scala) {
+
+		BigDecimal media=BigDecimal.ZERO;
+
+		int index=0;
+		
+		if(mediaGlobale==null) 
+		{
+			int indexMediaGlolbale=0;
+			
+			BigDecimal avg=new BigDecimal(0);
+			
+			for (BigDecimal number : lista) 
+			{
+				avg=avg.add(number);
+				indexMediaGlolbale++;
+			}
+			
+			mediaGlobale=avg.divide(new BigDecimal(indexMediaGlolbale),RoundingMode.HALF_UP);
+		}
+		
+	
+		mediaGlobale.setScale(scala,RoundingMode.HALF_UP);
+		
+			for (BigDecimal number : lista) 
+			{
+				if(number!=null && number.compareTo(BigDecimal.ZERO)!=0) 
+				{
+					 double val = Math.pow(number.abs().subtract(mediaGlobale).doubleValue(), 2D);
+	                 media = media.add(new BigDecimal(val));
+	                 index++;
+	                    
+					
+				}
+			}
+		
+		if(media.compareTo(BigDecimal.ZERO)!=0  && index>1)
+		{
+			
+			BigDecimal d=new BigDecimal(1).setScale(10, RoundingMode.HALF_UP).divide(new BigDecimal(index-1).setScale(10, RoundingMode.HALF_UP),RoundingMode.HALF_DOWN);
+			
+			BigDecimal  b = media.multiply(d);
+		
+			Double d1=b.doubleValue();
+			
+			d1=Math.sqrt(d1);
+			
+			return  new BigDecimal(d1).setScale(scala,RoundingMode.HALF_UP);
+		}
+		else 
+		{
+			return BigDecimal.ZERO.setScale(scala,RoundingMode.HALF_UP);
+		}
+		
+	}
+	
 	public static BigDecimal getScMaxLivella(ArrayList<PuntoLivellaBollaDTO> listaPuntiDX,ArrayList<PuntoLivellaBollaDTO> listaPuntiSX) {
 		
 		BigDecimal mediaGlobale =GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,2);

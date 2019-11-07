@@ -35,6 +35,7 @@ import javax.swing.table.TableColumn;
 import org.apache.commons.io.FilenameUtils;
 
 import it.calverDesktopLAT.bo.GestioneMisuraBO;
+import it.calverDesktopLAT.bo.GestioneRegistro;
 import it.calverDesktopLAT.bo.SessionBO;
 import it.calverDesktopLAT.dto.LatMassaAMB;
 import it.calverDesktopLAT.dto.LatMassaAMB_SONDE;
@@ -42,6 +43,7 @@ import it.calverDesktopLAT.dto.LatMisuraDTO;
 import it.calverDesktopLAT.dto.LatPuntoLivellaElettronicaDTO;
 import it.calverDesktopLAT.dto.ParametroTaraturaDTO;
 import it.calverDesktopLAT.dto.RegLinDTO;
+import it.calverDesktopLAT.utl.Costanti;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -348,11 +350,19 @@ public class PannelloMasse extends JPanel  {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 
-						JFileChooser jfc = new JFileChooser();
+						 String last_path="";
+		    				
+		    				if(GestioneRegistro.esixt(Costanti.COD_LAST_PATH))
+		    				{
+		    					last_path=GestioneRegistro.getStringValue(Costanti.COD_LAST_PATH);
+		    				}
+		    				
+						JFileChooser jfc = new JFileChooser(last_path);
 
 						javax.swing.filechooser.FileFilter docFilter = new it.calverDesktopLAT.utl.FileTypeFilter(".pdf", "Documento PDF");
 						jfc.addChoosableFileFilter(docFilter);
 						jfc.showOpenDialog(GeneralGUI.g);
+						
 						File f= jfc.getSelectedFile();
 						if(f!=null)
 						{
@@ -380,7 +390,7 @@ public class PannelloMasse extends JPanel  {
 							}
 							else
 							{
-								JOptionPane.showMessageDialog(null,"Il sistema può caricare solo file in formato PDF","Exstension Error",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
+								JOptionPane.showMessageDialog(null,"Il sistema può caricare solo file in formato CSV","Exstension Error",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
 							}
 
 						}
@@ -425,6 +435,14 @@ public class PannelloMasse extends JPanel  {
 								ArrayList<LatMassaAMB_SONDE> listaCorrezzioniSonde_umidita=GestioneMisuraBO.getListaCorrezioniSondeLAT(5);
 								ArrayList<LatMassaAMB_SONDE> listaCorrezzioniSonde_pressione=GestioneMisuraBO.getListaCorrezioniSondeLAT(4);
 								
+								
+								ArrayList<BigDecimal> listaValori_temp=new ArrayList<>();
+								ArrayList<BigDecimal> listaValori_uhr=new ArrayList<>();
+								ArrayList<BigDecimal> listaValori_press=new ArrayList<>();
+							    BigDecimal mediaTemperatura=BigDecimal.ZERO;
+							    BigDecimal mediaUHR=BigDecimal.ZERO;
+							    BigDecimal mediaPressione=BigDecimal.ZERO;
+							    
 								for (int i = 0; i <listaTempi.size(); i++) {
 
 									String[] data=listaTempi.get(i).split(";");
@@ -436,21 +454,31 @@ public class PannelloMasse extends JPanel  {
 									model_condizionniAmb.setValueAt(data[3].replaceAll(",", "."), i, 3);
 									
 									BigDecimal correzione = getCorrezioneSonda(data[1],listaCorrezzioniSonde_tmp_1);
+									listaValori_temp.add(correzione);
+									mediaTemperatura=mediaTemperatura.add(correzione);
 									model_condizionniAmb.setValueAt(correzione.toPlainString(), i, 4);
-									
-									 correzione = getCorrezioneSonda(data[2],listaCorrezzioniSonde_tmp_2);
+						
+									correzione = getCorrezioneSonda(data[2],listaCorrezzioniSonde_tmp_2);
+									listaValori_temp.add(correzione);
+									mediaTemperatura=mediaTemperatura.add(correzione);
 									model_condizionniAmb.setValueAt(correzione.toPlainString(), i, 5);
 									
-									 correzione = getCorrezioneSonda(data[3],listaCorrezzioniSonde_tmp_3);
+									correzione = getCorrezioneSonda(data[3],listaCorrezzioniSonde_tmp_3);
+									listaValori_temp.add(correzione);
+									mediaTemperatura=mediaTemperatura.add(correzione);
 									model_condizionniAmb.setValueAt(correzione.toPlainString(), i, 6);
 									
 									model_condizionniAmb.setValueAt(data[4].replaceAll(",", "."), i, 7);
 									
 									correzione = getCorrezioneSonda(data[4],listaCorrezzioniSonde_umidita);
+									listaValori_uhr.add(correzione);
+									mediaUHR=mediaUHR.add(correzione);
 								    model_condizionniAmb.setValueAt(correzione.toPlainString(), i,8);
 								    model_condizionniAmb.setValueAt(data[5].replaceAll(",", "."), i, 9);
 								    
 									correzione = getCorrezioneSonda(data[5],listaCorrezzioniSonde_pressione);
+									listaValori_press.add(correzione);
+									mediaPressione=mediaPressione.add(correzione);
 								    model_condizionniAmb.setValueAt(correzione.toPlainString(), i,10);
 								    model_condizionniAmb.setValueAt(i+1, i, 11);
 
@@ -459,28 +487,34 @@ public class PannelloMasse extends JPanel  {
 								}
 						//		GestioneMisuraBO.insertCondizioniAmbientali(listaTempi,SessionBO.idMisura);
 							
-							    BigDecimal mediaTemperatura_1=BigDecimal.ZERO;
-							    BigDecimal mediaTemperatura_2=BigDecimal.ZERO;
-							    BigDecimal mediaTemperatura_3=BigDecimal.ZERO;
-							    BigDecimal mediaUHR=BigDecimal.ZERO;
-							    BigDecimal mediaPressione=BigDecimal.ZERO;
-							   
-							    for (int y = 0; y < rowCount; y++) {
-									
-							    	mediaTemperatura_1=mediaTemperatura_1.add(new BigDecimal(model_condizionniAmb.getValueAt(y, 4).toString()));
-							    	mediaTemperatura_2=mediaTemperatura_2.add(new BigDecimal(model_condizionniAmb.getValueAt(y, 5).toString()));
-							    	mediaTemperatura_3=mediaTemperatura_3.add(new BigDecimal(model_condizionniAmb.getValueAt(y, 6).toString()));
-							    	mediaUHR=mediaUHR.add(new BigDecimal(model_condizionniAmb.getValueAt(y, 8).toString()));
-							    	mediaPressione=mediaPressione.add(new BigDecimal(model_condizionniAmb.getValueAt(y, 10).toString()));
-								}
-							    
-							    BigDecimal size=new BigDecimal(rowCount);
-							    
-							    BigDecimal medTemp =(mediaTemperatura_1.divide(size,RoundingMode.HALF_UP)).add(mediaTemperatura_2.divide(size,RoundingMode.HALF_UP)).add(mediaTemperatura_3.divide(size,RoundingMode.HALF_UP));
-							    medTemp=medTemp.divide(new BigDecimal(3),RoundingMode.HALF_UP).setScale(2,RoundingMode.HALF_UP);
-							    
-							    
+							    BigDecimal size=new BigDecimal(model_condizionniAmb.getRowCount());
+
+							    BigDecimal medTemp =(mediaTemperatura.divide(size.multiply(new BigDecimal(3)),RoundingMode.HALF_UP));
 							    textField_temperatura_media.setText(medTemp.toPlainString());
+							    
+							    BigDecimal medUHR =(mediaUHR.divide(size,RoundingMode.HALF_UP));
+							    textField_ur_media.setText(medUHR.setScale(1,RoundingMode.HALF_UP).toPlainString());
+							    
+							    BigDecimal medPress=(mediaPressione.divide(size,RoundingMode.HALF_UP));
+							    textField_pressione_media.setText(medPress.setScale(1,RoundingMode.HALF_UP).toPlainString());
+							    
+							    double variazioneTemperatura= getVariazione(listaValori_temp,1);
+							    
+							    double variazioneUHR= getVariazione(listaValori_uhr,2);
+	
+							    double variazionePress= getVariazione(listaValori_press,3);
+							    
+							    textField_temperatura_media_variazione.setText(""+new BigDecimal(variazioneTemperatura).setScale(1,RoundingMode.HALF_UP));
+							    
+							    textField_ur_media_variazione.setText(""+new BigDecimal(variazioneUHR).setScale(1,RoundingMode.HALF_UP));
+							    
+							    textField_pressione_media_variazione.setText(""+new BigDecimal(variazionePress).setScale(1,RoundingMode.HALF_UP));
+							    
+							   
+							    BigDecimal densita_aria=getDensita(medTemp,medUHR,medPress);
+							    
+							    textField_pa_cipm.setText(densita_aria.setScale(9,RoundingMode.HALF_UP).toPlainString());
+							    
 							    
 							}
 							
@@ -490,46 +524,10 @@ public class PannelloMasse extends JPanel  {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
-
-
-
-
 					}
 
-					private BigDecimal getCorrezioneSonda(String data,ArrayList<LatMassaAMB_SONDE> listaCorrezzioniSonde) {
-						
-						BigDecimal correzione=BigDecimal.ZERO;
-						try 
-						{
-						BigDecimal pivot =new BigDecimal(data.replaceAll(",", "."));
-						
-						for (int i = 0; i < listaCorrezzioniSonde.size()-1; i++) 
-						{
-							
-							LatMassaAMB_SONDE sondaINF= listaCorrezzioniSonde.get(i);
-							LatMassaAMB_SONDE sondaSUP= listaCorrezzioniSonde.get(i+1);
-							
-							
-							BigDecimal limiteInferiore=sondaINF.getIndicazione();
-							BigDecimal limiteSuperiore=sondaSUP.getIndicazione();
-							
-							if(pivot.doubleValue()>=limiteInferiore.doubleValue() && pivot.doubleValue()<=limiteSuperiore.doubleValue()) 
-							{
-								correzione= pivot.multiply(BigDecimal.ONE.subtract(sondaINF.getReg_lin_m())).subtract(sondaINF.getReg_lin_q());
-							
-								correzione=correzione.setScale(4, RoundingMode.HALF_UP);
-								
-							}
-						}
-							
-						}catch (Exception e) 
-						{
-							e.printStackTrace();
-							return BigDecimal.ZERO;
-						}
-						
-						return correzione;
-					}
+					
+
 				});
 
 				ArrayList<LatMassaAMB> listaAmb=GestioneMisuraBO.getListaCondizioniAmbientali(SessionBO.idMisura);
@@ -569,117 +567,109 @@ public class PannelloMasse extends JPanel  {
 				JScrollPane scrollTab = new JScrollPane(tabellaCondizioniAmb);
 				pannelloTabCondizioni.add(scrollTab, "cell 0 1,grow");
 
-
-
-				LatMisuraDTO misura =GestioneMisuraBO.getMisuraLAT(SessionBO.idMisura);
-				
 				return mainPanelMonitoraggioAmb;
 
-				/*Riempo pannello se il campo riferimenti_incertezza !=null*/
-				//				if(misura.getRif_campione()!=null) 
-				//				{
-				//					comboBox_cmpRif.setSelectedItem(misura.getRif_campione());
-				//					campo_misura.setText(misura.getCampo_misura().toPlainString());
-				//					sensibilita.setText(misura.getSensibilita().toPlainString());
-				//					
-				//					listaParametri=GestioneCampioneBO.getParametriTaratura(comboBox_cmpRif.getSelectedItem().toString());
-				//					
-				//					regressioneLineare= GestioneMisuraBO.getListaRegressioneLineare(listaParametri);
-				//					 
-				//					if(misura.getIncertezza_estesa()!=null)
-				//					{
-				//						incertezza_em.setText(misura.getIncertezza_estesa().toPlainString());
-				//					}
-				//					
-				//					
-				//					textArea.setText(misura.getNote());
-				//				}
-				//				
-
-				//				comboBox_cmpRif.addActionListener(new ActionListener() {
-				//					
-				//					@Override
-				//					public void actionPerformed(ActionEvent e) {
-				//						try 
-				//						{
-				//							ArrayList<ParametroTaraturaDTO> listaParametri=GestioneCampioneBO.getParametriTaratura(comboBox_cmpRif.getSelectedItem().toString());
-				//							
-				//							regressioneLineare= GestioneMisuraBO.getListaRegressioneLineare(listaParametri);
-				//							
-				//						}catch (Exception ex1) 
-				//						{
-				//							
-				//							ex1.printStackTrace();
-				//						}
-				//						
-				//					}
-				//				});
-
-
-				//				btnSalva.addActionListener(new ActionListener() {
-				//					public void actionPerformed(ActionEvent e) {
-				//						
-				//						try 
-				//						{
-				//						int scelta=	JOptionPane.showConfirmDialog(null,"Vuoi Salvare i dati ?","Salva",JOptionPane.YES_NO_OPTION,JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/question.png")));
-				//						
-				//						if(scelta==0) 
-				//						
-				//						{
-				//							boolean check=true;
-				//							StringBuffer sb = new StringBuffer();
-				//							
-				//							lat = new LatMisuraDTO();
-				//							lat.setId(SessionBO.idMisura);
-				//							if(comboBox_cmpRif.getSelectedIndex()<0 )
-				//							{
-				//								sb.append("* Selezionare Campioni riferimento/lavoro \n");
-				//								check=false;
-				//							}
-				//							if(sensibilita.getText().length()<=0)
-				//							{
-				//								sb.append("* Indicare Risoluzione  \n");
-				//								check=false;
-				//							}
-				//							if(check) 
-				//							{
-				//								lat.setId(SessionBO.idMisura);
-				//								lat.setRif_campione(comboBox_cmpRif.getSelectedItem().toString());
-				//								
-				//								lat.setCampo_misura(new BigDecimal(campo_misura.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
-				//								
-				//								lat.setSensibilita(new BigDecimal(sensibilita.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
-				//								
-				//								lat.setNote(textArea.getText());
-				//								
-				//								GestioneMisuraBO.updateRecordMisuraLAT(lat);
-				//								
-				//								JOptionPane.showMessageDialog(null,"Salvataggio Completato","Salva",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/confirm.png")));
-				//							}
-				//							
-				//						}
-				//						
+						
 			}catch (Exception e1) 
 			{
 				e1.printStackTrace();
 			}
-			//						}
-			//				});
+			
 			return mainPanelMonitoraggioAmb;
 
 		}	
 
+	private double getVariazione(ArrayList<BigDecimal> listaValori, int type ) {
+		
+		
+		   BigDecimal devStd=GestioneMisuraBO.getDevStd(listaValori, null, 4);
+			
+		    double part_1 = Math.pow(devStd.doubleValue(), 2);
+		    
+		    double part_2=0;
+		    
+		    double part_3=0;
+		    
+		    if(type==1) 
+		    {
+			     part_2 = Math.pow((3*Costanti.RISOLUZIONE_RSG30_TEMP_RIS)/Math.sqrt(12),2);
+			    
+			     part_3 = Math.pow((3*(Costanti.RISOLUZIONE_RSG30_TEMP_RIS_U/2)),2);
+		    
+		    }
+		    if(type==2) 
+		    {
+			     part_2 = Math.pow(Costanti.RISOLUZIONE_RSG30_UR_RIS/Math.sqrt(12),2);
+			    
+			     part_3 = Math.pow(Costanti.RISOLUZIONE_RSG30_UR_RIS_U/2,2);
+		    
+		    }
+		    
+		    if(type==3) 
+		    {
+			     part_2 = Math.pow(Costanti.RISOLUZIONE_RSG30_PRESS_RIS/Math.sqrt(12),2);
+			    
+			     part_3 = Math.pow(Costanti.RISOLUZIONE_RSG30_PRESS_RIS_U/2,2);
+		    
+		    }
+		    
+		    double variazione_temp=2*Math.sqrt(part_1+part_2+part_3);
+		    
+		    return variazione_temp;
+	}
+
+	private BigDecimal getCorrezioneSonda(String data,ArrayList<LatMassaAMB_SONDE> listaCorrezzioniSonde) {
+		
+		BigDecimal correzione=BigDecimal.ZERO;
+		try 
+		{
+		BigDecimal pivot =new BigDecimal(data.replaceAll(",", "."));
+		
+		for (int i = 0; i < listaCorrezzioniSonde.size()-1; i++) 
+		{
+			
+			LatMassaAMB_SONDE sondaINF= listaCorrezzioniSonde.get(i);
+			LatMassaAMB_SONDE sondaSUP= listaCorrezzioniSonde.get(i+1);
+			
+			
+			BigDecimal limiteInferiore=sondaINF.getIndicazione();
+			BigDecimal limiteSuperiore=sondaSUP.getIndicazione();
+			
+			if(pivot.doubleValue()>limiteInferiore.doubleValue() && pivot.doubleValue()<=limiteSuperiore.doubleValue()) 
+			{
+				correzione= pivot.multiply(BigDecimal.ONE.subtract(sondaINF.getReg_lin_m())).subtract(sondaINF.getReg_lin_q());
+			
+				correzione=correzione.setScale(2, RoundingMode.HALF_UP);
+				
+			}
+		}
+			
+		}catch (Exception e) 
+		{
+			e.printStackTrace();
+			return BigDecimal.ZERO;
+		}
+		
+		return correzione;
+	}
 
 
-	
-
-
-
-	
-
-
-
-	
+	private BigDecimal getDensita(BigDecimal medTemp, BigDecimal medUHR, BigDecimal medPress) {
+		
+		BigDecimal pa=BigDecimal.ZERO;
+		
+		BigDecimal part_1=new BigDecimal(0.34848).multiply(medPress);
+		
+		double exp=Math.exp(new BigDecimal(0.0612).multiply(medTemp).doubleValue());
+		
+		BigDecimal part_2=new BigDecimal(0.009024).multiply(medUHR.multiply(new BigDecimal(exp)));
+		
+		pa=(part_1.subtract(part_2)).divide(new BigDecimal(273.15).add(medTemp),RoundingMode.HALF_UP);
+		
+		pa.setScale(9,RoundingMode.HALF_UP);
+		
+		return pa;
+	}
 
 		private BigDecimal checkField(Object valueAt, int risoluzioneLivellaBolla) {
 

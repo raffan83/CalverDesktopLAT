@@ -37,6 +37,12 @@ public class Costanti {
 	public static final int RISOLUZIONE_LIVELLA_BOLLA = 2;
 	public static final int RISOLUZIONE_LIVELLA_ELETTRONICA = 2;
 	public static final String INCERTEZZA_CDT001 = "2.3";
+	public static final double RISOLUZIONE_RSG30_TEMP_RIS = 0.01;
+	public static final double RISOLUZIONE_RSG30_TEMP_RIS_U = 0.05;
+	public static final double RISOLUZIONE_RSG30_UR_RIS = 0.1;
+	public static final double RISOLUZIONE_RSG30_UR_RIS_U = 1.8;
+	public static final double RISOLUZIONE_RSG30_PRESS_RIS = 0.1;
+	public static final double RISOLUZIONE_RSG30_PRESS_RIS_U = 0.51;
 	
 	
 }
