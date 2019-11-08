@@ -136,10 +136,10 @@ public class PannelloMasse extends JPanel  {
 				pannelloTabCondizioni.setLayout(new MigLayout("", "[grow][pref!,grow]", "[:50:][grow]"));
 
 				JPanel pannelloTabSonde= new JPanel();
-				pannelloTabSonde.setBackground(Color.RED);
+				
 
 				JPanel pannelloValori= new JPanel();
-				pannelloValori.setBackground(Color.YELLOW);
+
 
 				mainPanelMonitoraggioAmb.add(pannelloTabCondizioni, "cell 0 0 1 2,grow");
 				mainPanelMonitoraggioAmb.add(pannelloValori, "cell 1 0 ,grow");
@@ -489,14 +489,30 @@ public class PannelloMasse extends JPanel  {
 							
 							    BigDecimal size=new BigDecimal(model_condizionniAmb.getRowCount());
 
-							    BigDecimal medTemp =(mediaTemperatura.divide(size.multiply(new BigDecimal(3)),RoundingMode.HALF_UP));
+							    /*Valori associati ai Valori medi di Temperatura / Umidità / Pressione*/
+							    
+							    BigDecimal medTemp =(mediaTemperatura.setScale(5).divide(size.multiply(new BigDecimal(3)),RoundingMode.HALF_UP));
 							    textField_temperatura_media.setText(medTemp.toPlainString());
 							    
-							    BigDecimal medUHR =(mediaUHR.divide(size,RoundingMode.HALF_UP));
+							    BigDecimal medUHR =(mediaUHR.setScale(5).divide(size,RoundingMode.HALF_UP));
 							    textField_ur_media.setText(medUHR.setScale(1,RoundingMode.HALF_UP).toPlainString());
 							    
-							    BigDecimal medPress=(mediaPressione.divide(size,RoundingMode.HALF_UP));
+							    BigDecimal medPress=(mediaPressione.setScale(5).divide(size,RoundingMode.HALF_UP));
 							    textField_pressione_media.setText(medPress.setScale(1,RoundingMode.HALF_UP).toPlainString());
+							    
+							    BigDecimal deltaT=medTemp.subtract(new BigDecimal(20.00000));
+							    
+							    BigDecimal deltaUr=medUHR.subtract(new BigDecimal(50.00000));
+							    
+							    BigDecimal deltaP=(medPress.subtract(new BigDecimal(1000))).multiply(new BigDecimal(100));
+		
+							    textField_delta_temp.setText(deltaT.setScale(5,RoundingMode.HALF_UP).toPlainString());
+							    
+							    textField_delta_ur.setText(deltaUr.setScale(5,RoundingMode.HALF_UP).toPlainString());
+							    
+							    textField_delta_press.setText(deltaP.setScale(5,RoundingMode.HALF_UP).toPlainString());
+							   
+							    /* Valori associati a +/- Media Temperatura/Umidità/Pressione*/
 							    
 							    double variazioneTemperatura= getVariazione(listaValori_temp,1);
 							    
@@ -511,9 +527,20 @@ public class PannelloMasse extends JPanel  {
 							    textField_pressione_media_variazione.setText(""+new BigDecimal(variazionePress).setScale(1,RoundingMode.HALF_UP));
 							    
 							   
+							    /*pa [kg/m3]*/
 							    BigDecimal densita_aria=getDensita(medTemp,medUHR,medPress);
 							    
+							  
+							    BigDecimal uForm = densita_aria.multiply(new BigDecimal(2)).multiply(new BigDecimal(0.0001));
+							    
+							    BigDecimal u=getIncertezzaDensita(medTemp,medUHR,medPress,uForm);
+							    
 							    textField_pa_cipm.setText(densita_aria.setScale(9,RoundingMode.HALF_UP).toPlainString());
+							    
+							    textField_U_form.setText(uForm.setScale(5,RoundingMode.HALF_UP).toPlainString());
+							    
+							    textField_U_pa.setText(u.setScale(4,RoundingMode.HALF_UP).toPlainString());
+							    
 							    
 							    
 							}
@@ -525,8 +552,6 @@ public class PannelloMasse extends JPanel  {
 							e1.printStackTrace();
 						}
 					}
-
-					
 
 				});
 
@@ -670,6 +695,82 @@ public class PannelloMasse extends JPanel  {
 		
 		return pa;
 	}
+	
+	private BigDecimal getIncertezzaDensita(BigDecimal medTemp, BigDecimal medUHR,BigDecimal medPress, BigDecimal uForm) 
+	{
+		BigDecimal incertezza = null;
+		
+		
+		BigDecimal derivataPressione=getDerivataPressione(medTemp);
+		
+		BigDecimal derivataTemperatura= getDerivataTemperatura(medTemp,medUHR,medPress);
+		
+		BigDecimal derivataUHR=getDerivataUmidita(medTemp);
+		
+		BigDecimal uT=new BigDecimal(Costanti.RISOLUZIONE_RSG30_TEMP_RIS_U/2);
+
+		BigDecimal uP=new BigDecimal((Costanti.RISOLUZIONE_RSG30_PRESS_RIS_U*100)/2);
+		
+		BigDecimal uR=new BigDecimal(Costanti.RISOLUZIONE_RSG30_UR_RIS_U/2);
+		
+		textField_incertezza_temp.setText(uT.setScale(3,RoundingMode.HALF_UP).toPlainString());
+		
+		textField_incertezza_press.setText(uP.setScale(1,RoundingMode.HALF_UP).toPlainString());
+		
+		textField_incertezza_ur.setText(uR.setScale(1,RoundingMode.HALF_UP).toPlainString());
+		
+		
+		BigDecimal u_part_1=new BigDecimal(Math.pow(derivataPressione.multiply(uP).doubleValue(),2));
+		
+		BigDecimal u_part_2=new BigDecimal(Math.pow(derivataTemperatura.multiply(uT).doubleValue(),2));
+		
+		BigDecimal u_part_3=new BigDecimal(Math.pow(derivataUHR.multiply(uR).doubleValue(),2));
+		
+		BigDecimal u_part_4=new BigDecimal(Math.pow(uForm.doubleValue(),2));
+		
+		incertezza=new BigDecimal (Math.sqrt(u_part_1.doubleValue()+u_part_2.doubleValue()+u_part_3.doubleValue()+u_part_4.doubleValue()));
+		
+		return incertezza;
+	}
+	
+
+		private BigDecimal getDerivataUmidita(BigDecimal medTemp) {
+		
+			BigDecimal derivataUHR=new BigDecimal(-0.009024).multiply(new BigDecimal(Math.exp(0.0612*medTemp.doubleValue())));
+			
+			derivataUHR=derivataUHR.divide(new BigDecimal(273.15).add(medTemp),RoundingMode.HALF_UP);
+			
+		return derivataUHR;
+	}
+
+
+
+		private BigDecimal getDerivataTemperatura(BigDecimal medTemp, BigDecimal medUHR, BigDecimal medPress) {
+		
+			BigDecimal derivataTemperatura_part_1=new BigDecimal(-0.009024).multiply(medUHR).multiply(new BigDecimal(Math.exp(0.0612*medTemp.doubleValue())).multiply(new BigDecimal(0.0612)));
+			
+			derivataTemperatura_part_1=derivataTemperatura_part_1.divide(new BigDecimal(273.15).add(medTemp),RoundingMode.HALF_UP);
+			
+			BigDecimal derivataTemperartura_part_2=(new BigDecimal(0.34848).multiply(medPress)).subtract(new BigDecimal(0.09024).multiply(medUHR).multiply(new BigDecimal(Math.exp(0.0612*medTemp.doubleValue()))));
+			
+			derivataTemperartura_part_2=derivataTemperartura_part_2.divide(new BigDecimal(Math.pow(new BigDecimal(273.15).add(medTemp).doubleValue(), 2)),RoundingMode.HALF_UP);
+			
+			return derivataTemperatura_part_1.subtract(derivataTemperartura_part_2);
+			
+	}
+
+
+
+		private BigDecimal getDerivataPressione(BigDecimal medTemp) {
+			
+		BigDecimal derivataPressione = new BigDecimal(0.34848).divide(new BigDecimal(273.15).add(medTemp),RoundingMode.HALF_UP);
+			
+		derivataPressione=derivataPressione.divide(new BigDecimal(100),RoundingMode.HALF_UP);	
+			
+		return derivataPressione;
+	}
+
+
 
 		private BigDecimal checkField(Object valueAt, int risoluzioneLivellaBolla) {
 
