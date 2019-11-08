@@ -751,7 +751,7 @@ public class PannelloMasse extends JPanel  {
 			
 			derivataTemperatura_part_1=derivataTemperatura_part_1.divide(new BigDecimal(273.15).add(medTemp),RoundingMode.HALF_UP);
 			
-			BigDecimal derivataTemperartura_part_2=(new BigDecimal(0.34848).multiply(medPress)).subtract(new BigDecimal(0.09024).multiply(medUHR).multiply(new BigDecimal(Math.exp(0.0612*medTemp.doubleValue()))));
+			BigDecimal derivataTemperartura_part_2=(new BigDecimal(0.34848).multiply(medPress)).subtract(new BigDecimal(0.009024).multiply(medUHR).multiply(new BigDecimal(Math.exp(0.0612*medTemp.doubleValue()))));
 			
 			derivataTemperartura_part_2=derivataTemperartura_part_2.divide(new BigDecimal(Math.pow(new BigDecimal(273.15).add(medTemp).doubleValue(), 2)),RoundingMode.HALF_UP);
 			
