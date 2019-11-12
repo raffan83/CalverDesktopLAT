@@ -24,6 +24,7 @@ import it.calverDesktopLAT.dto.ClassificazioneDTO;
 import it.calverDesktopLAT.dto.ConversioneDTO;
 import it.calverDesktopLAT.dto.DatiEsterniDTO;
 import it.calverDesktopLAT.dto.LatMassaAMB;
+import it.calverDesktopLAT.dto.LatMassaAMB_DATA;
 import it.calverDesktopLAT.dto.LatMassaAMB_SONDE;
 import it.calverDesktopLAT.dto.LatMisuraDTO;
 import it.calverDesktopLAT.dto.LatPuntoLivellaElettronicaDTO;
@@ -3550,7 +3551,7 @@ public static ArrayList<LatPuntoLivellaElettronicaDTO> getListaPuntiLivellaElett
 		}
 		return toRet;
 	}
-	public static void insertCondizioniAmbientali(ArrayList<String> listaTempi, int idMisura) throws Exception {
+	public static void insertCondizioniAmbientali(ArrayList<LatMassaAMB> listaValoriAmbientali, int idMisura) throws Exception {
 		
 		Connection con =null;
 		PreparedStatement pst= null;
@@ -3559,21 +3560,26 @@ public static ArrayList<LatPuntoLivellaElettronicaDTO> getListaPuntiLivellaElett
 			con=getConnection();
 			con.setAutoCommit(false);
 			
-			pst=con.prepareStatement("INSERT INTO lat_massa_amb(id,id_misura,data_ora,ch1_temperatura,ch2_temperatura," + 
-					"ch3_temperatura,umidita,pressione) VALUES(?,?,?,?,?,?,?,?)");
+			pst=con.prepareStatement("INSERT INTO lat_massa_amb(id_misura,data_ora,ch1_temperatura,ch2_temperatura," + 
+					"ch3_temperatura,umidita,pressione,CH1_TEMPERATURA_CORR,CH2_TEMPERATURA_CORR,CH3_TEMPERATURA_CORR,UMIDITA_CORR,PRESSIONE_CORRETTA) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)");
 			
-			for (int i=0;i<listaTempi.size();i++) {
+			LatMassaAMB data=null;
+			for (int i=0;i<listaValoriAmbientali.size();i++) {
 				
-			String[] data=listaTempi.get(i).split(";");
+			data=listaValoriAmbientali.get(i);
 			
-			pst.setInt(1,i+1);
-			pst.setInt(2, idMisura);
-			pst.setString(3, data[0]);
-			pst.setBigDecimal(4, new BigDecimal(data[1].replaceAll(",",".")));
-			pst.setBigDecimal(5, new BigDecimal(data[2].replaceAll(",",".")));
-			pst.setBigDecimal(6, new BigDecimal(data[3].replaceAll(",",".")));
-			pst.setBigDecimal(7, new BigDecimal(data[4].replaceAll(",",".")));
-			pst.setBigDecimal(8,new BigDecimal(data[5].replaceAll(",",".")));
+			pst.setInt(1, idMisura);
+			pst.setString(2,data.getData_ora());
+			pst.setBigDecimal(3,data.getCh1_temperatura());
+			pst.setBigDecimal(4,data.getCh2_temperatura());
+			pst.setBigDecimal(5,data.getCh3_temperatura());
+			pst.setBigDecimal(6,data.getUmidita());
+			pst.setBigDecimal(7,data.getPressione());
+			pst.setBigDecimal(8,data.getCh1_temperatura_corr());
+			pst.setBigDecimal(9,data.getCh2_temperatura_corr());
+			pst.setBigDecimal(10,data.getCh3_temperatura_corr());
+			pst.setBigDecimal(11,data.getUmidita_corr());
+			pst.setBigDecimal(12,data.getPressione_corretta());
 		
 			pst.execute();
 			
@@ -3592,6 +3598,125 @@ public static ArrayList<LatPuntoLivellaElettronicaDTO> getListaPuntiLivellaElett
 		}
 		
 	}
+	
+	public static void insertCondizioniAmbientaliDati(LatMassaAMB_DATA datiCalcolati) throws Exception {
+	
+		Connection con =null;
+		PreparedStatement pst= null;
+
+		try{
+			con=getConnection();
+			con.setAutoCommit(false);
+			
+			pst=con.prepareStatement("INSERT INTO lat_massa_amb_data(id_misura,temperatura,umidita,pressione,INCERTEZZATEMPERATURA,INCERTEZZAUMINIDTA,INCERTEZZAPRESSIONE,MEDIA_TEMPERATURA,MEDIA_UMIDITA,MEDIA_PRESSIONE,"
+																   +"MEDIA_TEMPERATURA_MARGINE,MEDIA_UMIDITA_MARGINE,MEDIA_PRESSIONE_MARGINE,DENSITA_ARIA_CIMP,DERIVATA_TEMPERATURA_CIMP,DERIVATA_PRESSIONE_CIMP,DERIVATA_UMIDITA_CIMP,"
+																   +"INCERTEZZA_DENSITA_ARIA_CIMP,INCERTEZZA_FORM_DENSITA_ARIA_CIMP,DENSITA_ARIA_P0,DENSITA_ARIA,DELTA_TEMPERATURA,DELTA_UMIDITA,DELTA_PRESSIONE,INCERETZZA_SONDA_CAMPIONE,INCERTEZZA_SONDA_UMIDITA,INCERTEZZA_SONDA_PRESSIONE) "
+																   + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			
+			
+			pst.setInt(1, datiCalcolati.getId_misura());
+			pst.setBigDecimal(2,null);
+			pst.setBigDecimal(3,null);
+			pst.setBigDecimal(4,null);
+			pst.setBigDecimal(5,datiCalcolati.getIncertezzaTemperatura());
+			pst.setBigDecimal(6,datiCalcolati.getIncertezzaUminidta());
+			pst.setBigDecimal(7,datiCalcolati.getIncertezzaPressione());
+			pst.setBigDecimal(8,datiCalcolati.getMedia_temperatura());
+			pst.setBigDecimal(9,datiCalcolati.getMedia_umidita());
+			pst.setBigDecimal(10,datiCalcolati.getMedia_pressione());
+			pst.setBigDecimal(11,datiCalcolati.getMedia_temperatura_margine());
+			pst.setBigDecimal(12,datiCalcolati.getMedia_umidita_margine());
+			pst.setBigDecimal(13,datiCalcolati.getMedia_pressione_margine());
+			pst.setBigDecimal(14,datiCalcolati.getDensita_aria_cimp());
+			pst.setBigDecimal(15,datiCalcolati.getDerivata_temperatura_cimp());
+			pst.setBigDecimal(16,datiCalcolati.getDerivata_pressione_cimp());
+			pst.setBigDecimal(17,datiCalcolati.getDerivata_umidita_cimp());
+			pst.setBigDecimal(18,datiCalcolati.getIncertezza_densita_aria_cimp());
+			pst.setBigDecimal(19,datiCalcolati.getIncertezza_form_densita_aria_cimp());
+			pst.setBigDecimal(20,null);
+			pst.setBigDecimal(21,datiCalcolati.getDensita_aria());
+			pst.setBigDecimal(22,datiCalcolati.getDelta_temperatura());
+			pst.setBigDecimal(23,datiCalcolati.getDelta_umidita());
+			pst.setBigDecimal(24,datiCalcolati.getDelta_pressione());
+			pst.setBigDecimal(25,null);
+			pst.setBigDecimal(26,null);
+			pst.setBigDecimal(27,null);
+		
+			pst.execute();
+			con.commit();
+			  
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+			throw ex;
+		}
+		finally
+		{
+			pst.close();
+			con.close();
+		}
+		
+	}
+	
+	public static LatMassaAMB_DATA getCondizioniAmbientaliDati(int idMisura) throws Exception {
+		
+		Connection con =null;
+		PreparedStatement pst= null;
+		ResultSet rs;
+		LatMassaAMB_DATA datiCalcolati;
+		try{
+			con=getConnection();
+			
+			pst=con.prepareStatement("SELECT * FROM lat_massa_amb_data WHERE ID_MISURA=?");
+			
+			pst.setInt(1, idMisura);
+			
+			rs= pst.executeQuery();
+			
+			datiCalcolati= new LatMassaAMB_DATA();
+			
+			
+		while(rs.next()) 
+		{	
+			datiCalcolati.setId_misura(idMisura);
+			datiCalcolati.setIncertezzaTemperatura(rs.getBigDecimal("INCERTEZZATEMPERATURA"));
+			datiCalcolati.setIncertezzaUminidta(rs.getBigDecimal("INCERTEZZAUMINIDTA"));
+			datiCalcolati.setIncertezzaPressione(rs.getBigDecimal("INCERTEZZAPRESSIONE"));
+			datiCalcolati.setMedia_temperatura(rs.getBigDecimal("MEDIA_TEMPERATURA"));
+			datiCalcolati.setMedia_umidita(rs.getBigDecimal("MEDIA_UMIDITA"));
+			datiCalcolati.setMedia_pressione(rs.getBigDecimal("MEDIA_PRESSIONE"));
+			datiCalcolati.setMedia_temperatura_margine(rs.getBigDecimal("MEDIA_TEMPERATURA_MARGINE"));
+			datiCalcolati.setMedia_umidita_margine(rs.getBigDecimal("MEDIA_UMIDITA_MARGINE"));
+			datiCalcolati.setMedia_pressione_margine(rs.getBigDecimal("MEDIA_PRESSIONE_MARGINE"));
+			datiCalcolati.setDensita_aria_cimp(rs.getBigDecimal("DENSITA_ARIA_CIMP"));
+		    datiCalcolati.setDerivata_temperatura_cimp(rs.getBigDecimal("DERIVATA_TEMPERATURA_CIMP"));
+			datiCalcolati.setDerivata_pressione_cimp(rs.getBigDecimal("DERIVATA_PRESSIONE_CIMP"));
+			datiCalcolati.setDerivata_umidita_cimp(rs.getBigDecimal("DERIVATA_UMIDITA_CIMP"));
+			datiCalcolati.setIncertezza_densita_aria_cimp(rs.getBigDecimal("INCERTEZZA_DENSITA_ARIA_CIMP"));
+		    datiCalcolati.setIncertezza_form_densita_aria_cimp(rs.getBigDecimal("INCERTEZZA_FORM_DENSITA_ARIA_CIMP"));
+			datiCalcolati.setDensita_aria(rs.getBigDecimal("DENSITA_ARIA"));
+			datiCalcolati.setDelta_temperatura(rs.getBigDecimal("DELTA_TEMPERATURA"));
+			datiCalcolati.setDelta_umidita(rs.getBigDecimal("DELTA_UMIDITA"));
+			datiCalcolati.setDelta_pressione(rs.getBigDecimal("DELTA_PRESSIONE"));
+
+		}
+			  
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+			throw ex;
+		}
+		finally
+		{
+			pst.close();
+			con.close();
+		}
+		
+		return datiCalcolati;
+		
+	}
+	
+	
 	public static void removeCondizioniAmbientali(int idMisura) throws Exception {
 		
 		Connection con =null;
@@ -3705,6 +3830,30 @@ public static ArrayList<LatPuntoLivellaElettronicaDTO> getListaPuntiLivellaElett
 		}
 		return toRet;
 	}
+	public static void removeCondizioniAmbientaliDati(int idMisura) throws Exception {
+	
+		Connection con =null;
+		PreparedStatement pst= null;
 
+		try{
+			con=getConnection();
+			pst=con.prepareStatement("DELETE FROM lat_massa_amb_data WHERE id_misura=?");
+			pst.setInt(1, idMisura);
+		
+			pst.execute();
+		
+		    
+			  
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+			throw ex;
+		}
+		finally
+		{
+			pst.close();
+			con.close();
+		}
+	}
 
 }

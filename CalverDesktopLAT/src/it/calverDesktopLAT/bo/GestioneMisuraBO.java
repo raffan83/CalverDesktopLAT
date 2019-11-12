@@ -7,9 +7,12 @@ import java.math.RoundingMode;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.sqlite.SQLite;
+
 import it.calverDesktopLAT.dao.SQLiteDAO;
 import it.calverDesktopLAT.dto.DatiEsterniDTO;
 import it.calverDesktopLAT.dto.LatMassaAMB;
+import it.calverDesktopLAT.dto.LatMassaAMB_DATA;
 import it.calverDesktopLAT.dto.LatMassaAMB_SONDE;
 import it.calverDesktopLAT.dto.LatMisuraDTO;
 import it.calverDesktopLAT.dto.LatPuntoLivellaElettronicaDTO;
@@ -1001,15 +1004,17 @@ public class GestioneMisuraBO
 		return SQLiteDAO.getListaPuntiLivellaElettronicaIncertezze(idMisura);
 	}
 
-	public static void insertCondizioniAmbientali(ArrayList<String> listaTempi, int idMisura) throws Exception {
+	public static void insertCondizioniAmbientali(ArrayList<LatMassaAMB> listaValoriAmbientali, int idMisura) throws Exception {
 		
-		SQLiteDAO.insertCondizioniAmbientali(listaTempi,idMisura);
+		SQLiteDAO.insertCondizioniAmbientali(listaValoriAmbientali,idMisura);
 		
 	}
 
 	public static void removeCondizioniAmbientali(int idMisura) throws Exception {
 		
 		SQLiteDAO.removeCondizioniAmbientali(idMisura);
+		
+		SQLiteDAO.removeCondizioniAmbientaliDati(idMisura);
 		
 	}
 
@@ -1025,7 +1030,17 @@ public class GestioneMisuraBO
 
 	}
 
+	public static void insertCondizioniAmbientaliDati(LatMassaAMB_DATA datiCalcolati) throws Exception {
+		
+		SQLiteDAO.insertCondizioniAmbientaliDati(datiCalcolati);
+		
+	}
 
+	public static LatMassaAMB_DATA getCondizioniAmbientaliDati(int idMisura) throws Exception {
+		
+		return SQLiteDAO.getCondizioniAmbientaliDati(idMisura);
+		
+	}
 
 	
 
