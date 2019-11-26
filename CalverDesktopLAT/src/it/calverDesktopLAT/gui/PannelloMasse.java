@@ -53,6 +53,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
 
 public class PannelloMasse extends JPanel  {
 
@@ -147,7 +148,7 @@ public class PannelloMasse extends JPanel  {
 
 			JPanel pannelloInserimentoValori= new JPanel();
 			pannelloInserimentoValori.setBackground(Color.WHITE);
-			pannelloInserimentoValori.setLayout(new MigLayout("", "[][::10px][][::10px][][::10px][][::10px][][::10px][][grow]", "[grow][][grow][][grow][][grow][][grow][][grow][][grow]"));
+			pannelloInserimentoValori.setLayout(new MigLayout("", "[][::10px][][::10px][][::10px][][::10px][][::10px][][grow]", "[grow][][grow][][grow][][grow][][grow][][grow][20px:20px][grow]"));
 			mainPanelEffettoMagnetico.add(pannelloInserimentoValori, "cell 0 0,grow");
 
 			JLabel lblComparatore = new JLabel("Comparatore");
@@ -157,6 +158,11 @@ public class PannelloMasse extends JPanel  {
 			JComboBox comboBox_comparatore = new JComboBox(GestioneCampioneBO.getListaCampioniCompleta());
 			comboBox_comparatore.setFont(new Font("Arial", Font.PLAIN, 14));
 			pannelloInserimentoValori.add(comboBox_comparatore, "cell 2 0,growx");
+			
+			JCheckBox chckbxSegnoDistintivo = new JCheckBox("Segno Distintivo");
+			chckbxSegnoDistintivo.setBackground(Color.WHITE);
+			chckbxSegnoDistintivo.setFont(new Font("Arial", Font.BOLD, 14));
+			pannelloInserimentoValori.add(chckbxSegnoDistintivo, "cell 4 0,alignx right");
 
 			JLabel lblCampione = new JLabel("Campione");
 			lblCampione.setFont(new Font("Arial", Font.BOLD, 14));
@@ -247,7 +253,7 @@ public class PannelloMasse extends JPanel  {
 			JButton btnCalcolaInserisci = new JButton("Calcola & Inserisci");
 			btnCalcolaInserisci.setIcon(new ImageIcon(PannelloMasse.class.getResource("/image/calcola.png")));
 			btnCalcolaInserisci.setFont(new Font("Arial", Font.BOLD, 14));
-			pannelloInserimentoValori.add(btnCalcolaInserisci, "cell 0 12 7 1,alignx center");
+			pannelloInserimentoValori.add(btnCalcolaInserisci, "cell 0 12 11 1,alignx center");
 
 			JPanel pannelloTabEffettoMag= new JPanel();
 			pannelloTabEffettoMag.setBackground(Color.WHITE);
