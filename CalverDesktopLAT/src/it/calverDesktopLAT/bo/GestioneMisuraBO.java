@@ -530,7 +530,7 @@ public class GestioneMisuraBO
 		Double arc=Math.asin(val/1000);
 		arc=Math.toDegrees(arc);
 		Double toRet=arc*3600;
-		return new BigDecimal(toRet).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA, RoundingMode.HALF_UP);
+		return new BigDecimal(toRet)/*.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA, RoundingMode.HALF_UP)*/;
 	}
 
 	public static BigDecimal getArcosecInv(String value) {
@@ -539,7 +539,7 @@ public class GestioneMisuraBO
 		val=val/3600;
 		val=Math.toRadians(val);
 		val=1000*Math.sin(val);
-		return new BigDecimal(val).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2, RoundingMode.HALF_UP);
+		return new BigDecimal(val)/*.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2, RoundingMode.HALF_UP)*/;
 	}
 
 	public static void updateRecordPuntoLivellaBolla(PuntoLivellaBollaDTO punto) throws Exception {
@@ -601,11 +601,11 @@ public class GestioneMisuraBO
 		}
 		if(media.compareTo(BigDecimal.ZERO)!=0 && index>0)
 		{
-			return media.divide(new BigDecimal(index),Costanti.RISOLUZIONE_LIVELLA_BOLLA+2, RoundingMode.HALF_UP);
+			return media.divide(new BigDecimal(index), RoundingMode.HALF_UP);
 		}
 		else 
 		{
-			return BigDecimal.ZERO.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP);
+			return BigDecimal.ZERO;
 		}
 	}
 
@@ -681,11 +681,11 @@ public class GestioneMisuraBO
 			Double d1=b.doubleValue();
 			
 			d1=Math.sqrt(d1);
-			return  new BigDecimal(d1).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP);
+			return  new BigDecimal(d1);
 		}
 		else 
 		{
-			return BigDecimal.ZERO.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP);
+			return BigDecimal.ZERO;
 		}
 		
 	}
@@ -787,11 +787,10 @@ public class GestioneMisuraBO
 		return max;
 	}
 
-	public static BigDecimal getIncertezzaLivellaBolla_EM(String _er, String _sensib) {
+	public static BigDecimal getIncertezzaLivellaBolla_EM(BigDecimal er, String _sensib) {
 		
 		BigDecimal em = null;
 		
-		BigDecimal er=new BigDecimal(_er);
 		
 		BigDecimal sensib=new BigDecimal(_sensib);
 			

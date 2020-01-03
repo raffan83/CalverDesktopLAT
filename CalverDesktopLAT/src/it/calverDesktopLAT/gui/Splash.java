@@ -104,7 +104,7 @@ public class Splash extends SwingWorker<Integer, Integer>
     //	g.setTitle("Attendere...");
     	g.setPreferredSize(new Dimension(200, 200));
     	
-    	String imgLocation = "/image/splash.gif";
+    	String imgLocation = "/image/Splash.gif";
 		URL imageURL = GeneralGUI.class.getResource(imgLocation);
 		
     	lab = new JLabel(new ImageIcon(imageURL));

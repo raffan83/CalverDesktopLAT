@@ -343,13 +343,13 @@ public class PannelloLivellaBolla extends JPanel  {
 							
 							incertezza_er.setText(GestioneMisuraBO.getArcosecInv(incertezza_er_sec.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
 
-							BigDecimal em=GestioneMisuraBO.getIncertezzaLivellaBolla_EM(incertezza_er.getText(),sensibilita.getText());
+							BigDecimal em=GestioneMisuraBO.getIncertezzaLivellaBolla_EM(GestioneMisuraBO.getArcosecInv(incertezza_er_sec.getText()),sensibilita.getText());
 
 							incertezza_em.setText(em.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_DOWN).toPlainString());
 
-							incertezza_em_sec.setText(GestioneMisuraBO.getArcosec(incertezza_em.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_DOWN).toPlainString());
+							incertezza_em_sec.setText(GestioneMisuraBO.getArcosec(em.toPlainString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_DOWN).toPlainString());
 
-							BigDecimal um=GestioneMisuraBO.getIncertezzaLivellaBolla_UM(incertezza_em.getText(), textField_scmax.getText());
+							BigDecimal um=GestioneMisuraBO.getIncertezzaLivellaBolla_UM(em.toPlainString(), textField_scmax.getText());
 
 							incertezza_um.setText(um.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_DOWN).toPlainString());
 
@@ -681,7 +681,7 @@ public void actionPerformed(ActionEvent event) {
 			{
 				if(column==1) 
 				{
-					model.setValueAt(GestioneMisuraBO.getArcosec(value), row, 2);
+					model.setValueAt(GestioneMisuraBO.getArcosec(value).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), row, 2);
 				}
 				if(column==3 ||column==4)
 				{
@@ -765,8 +765,12 @@ public void actionPerformed(ActionEvent event) {
 					if(mediaTratto!=null) 
 					{
 						BigDecimal err_cum=GestioneMisuraBO.getErroreCumulativo(mediaTratto,comboBox_cmpRif.getSelectedItem().toString());
-					}
 					
+					if(err_cum!=null) 
+					{
+						model.setValueAt(err_cum.toPlainString(), row, 12);
+					}
+					}
 					if(model.getValueAt(row,12)!=null) 
 					{
 						column=12;
@@ -779,17 +783,22 @@ public void actionPerformed(ActionEvent event) {
 
 					if(col12!=null) 
 					{
-						BigDecimal erroreCum= new BigDecimal(col12.toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA, RoundingMode.HALF_UP);
+						BigDecimal erroreCum= new BigDecimal(col12.toString()).setScale(20);
 
 						Object obj =model.getValueAt(row, 11);
 						if(obj!=null) 
 						{
-							BigDecimal mediaTratto= new BigDecimal(obj.toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA, RoundingMode.HALF_UP);
+							BigDecimal due=new BigDecimal(2).setScale(20);
+							
+							BigDecimal m1=new BigDecimal(model.getValueAt(row, 6).toString()).setScale(20);
+							BigDecimal m2=new BigDecimal(model.getValueAt(row, 10).toString()).setScale(20);
+							BigDecimal mediaTratto=m1.add(m2).divide(due,RoundingMode.HALF_UP);
+							
 
 							model.setValueAt(mediaTratto.subtract(erroreCum).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), row,13);
 
-							BigDecimal avgArcsecInv=GestioneMisuraBO.getArcosecInv(mediaTratto.subtract(erroreCum).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP).toPlainString());
-							model.setValueAt(avgArcsecInv.toPlainString(), row,14);
+							BigDecimal avgArcsecInv=GestioneMisuraBO.getArcosecInv(mediaTratto.subtract(erroreCum).toPlainString());
+							model.setValueAt(avgArcsecInv.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString(), row,14);
 
 							if(row==0) 
 							{
@@ -800,20 +809,30 @@ public void actionPerformed(ActionEvent event) {
 
 								if(obj1!=null)
 								{
-									model.setValueAt(avgArcsecInv.subtract(new BigDecimal(obj1.toString())), row, 15);
+								
 									
-									model.setValueAt(new BigDecimal(model.getValueAt(row, 14).toString()).subtract(new BigDecimal(model.getValueAt(row, 1).toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1)), row, 16);
+									model.setValueAt(avgArcsecInv.subtract(new BigDecimal(obj1.toString())).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP), row, 15);
 									
-									model.setValueAt(new BigDecimal(model.getValueAt(row, 13).toString()).subtract(new BigDecimal(model.getValueAt(row, 2).toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1)), row, 17);
+									model.setValueAt((avgArcsecInv.subtract(new BigDecimal(model.getValueAt(row, 1).toString())).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1,RoundingMode.HALF_UP)), row, 16);
+									
+									
+									BigDecimal indicazione_bolla=GestioneMisuraBO.getArcosec(model.getValueAt(row, 1).toString());								
+									
+									model.setValueAt((mediaTratto.subtract(erroreCum)).subtract(indicazione_bolla).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1,RoundingMode.HALF_UP), row, 17);
+									
 
 									/*Gestione Model Tratto e Medie*/
 
-									modelTratto.setValueAt(avgArcsecInv.subtract(new BigDecimal(obj1.toString())), row, 1);
+									BigDecimal val_1_div=avgArcsecInv.subtract(new BigDecimal(obj1.toString()));
+									
+									val_1_div=val_1_div.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP);
+									
+									modelTratto.setValueAt(val_1_div, row, 1);
 								
 									listaPuntiDX.get(row).setDiv_dex( avgArcsecInv.subtract(new BigDecimal(obj1.toString())));
 									
-									s_media_field.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,0).toPlainString());
-									dev_st_field.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,0).toPlainString());
+									s_media_field.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,0).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
+									dev_st_field.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,0).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
 									
 									BigDecimal s_mediaTotale = GestioneMisuraBO.getAverageLivella(listaPuntiDX,listaPuntiSX,2);
 
@@ -821,8 +840,8 @@ public void actionPerformed(ActionEvent event) {
 										PuntoLivellaBollaDTO punto= listaPuntiDX.get(i);
 										if( punto.getDiv_dex()!=null && punto.getDiv_dex().abs().compareTo(BigDecimal.ZERO)==1) 
 										{
-											modelTratto.setValueAt(punto.getDiv_dex().abs().toPlainString(), i, 1);
-											modelTratto.setValueAt(punto.getDiv_dex().abs().subtract(s_mediaTotale),i,2);
+											modelTratto.setValueAt((punto.getDiv_dex().abs()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString(), i, 1);
+											modelTratto.setValueAt((punto.getDiv_dex().abs()).subtract(s_mediaTotale).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP),i,2);
 										}else 
 										{
 											modelTratto.setValueAt("", i, 2);
@@ -836,9 +855,9 @@ public void actionPerformed(ActionEvent event) {
 					
 								/*aggiorna s media e devstd*/
 								
-								textField_media_totale.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,2).toPlainString());
-								textField_dev_std_totale.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,2).toPlainString());
-								textField_scmax.setText(GestioneMisuraBO.getScMaxLivella(listaPuntiDX, listaPuntiSX).toPlainString());
+								textField_media_totale.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,2).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
+								textField_dev_std_totale.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,2).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
+								textField_scmax.setText(GestioneMisuraBO.getScMaxLivella(listaPuntiDX, listaPuntiSX).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
 								
 						
 							}
@@ -904,11 +923,11 @@ public void actionPerformed(ActionEvent event) {
 			
 			if(m1!=null &&m2!=null) 
 			{
-				BigDecimal bd_m1=new BigDecimal(m1.toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP);
-				BigDecimal bd_m2=new BigDecimal(m2.toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP);
+				BigDecimal bd_m1=new BigDecimal(m1.toString()).setScale(20);
+				BigDecimal bd_m2=new BigDecimal(m2.toString()).setScale(20);
 
 			    mediaTratto = bd_m1.add(bd_m2).divide(new BigDecimal(2),RoundingMode.HALF_UP);
-				model.setValueAt(mediaTratto.toPlainString(),row,11);
+				model.setValueAt(mediaTratto.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP).toPlainString(),row,11);
 
 				
 			}
@@ -1181,7 +1200,7 @@ public void actionPerformed(ActionEvent event) {
 			{
 				if(column==1) 
 				{
-					model.setValueAt(GestioneMisuraBO.getArcosec(value), row, 2);
+					model.setValueAt(GestioneMisuraBO.getArcosec(value).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), row, 2);
 				}
 				if(column==3 ||column==4)
 				{
@@ -1284,17 +1303,24 @@ public void actionPerformed(ActionEvent event) {
 
 					if(col12!=null) 
 					{
-						BigDecimal erroreCum= new BigDecimal(col12.toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA, RoundingMode.HALF_UP);
+						BigDecimal erroreCum= new BigDecimal(col12.toString()).setScale(20);
 
 						Object obj =model.getValueAt(row, 11);
 						if(obj!=null) 
 						{
-							BigDecimal mediaTratto= new BigDecimal(obj.toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA, RoundingMode.HALF_UP);
+							
+							
+							BigDecimal due=new BigDecimal(2).setScale(20);
+							
+							BigDecimal m1=new BigDecimal(model.getValueAt(row, 6).toString()).setScale(20);
+							BigDecimal m2=new BigDecimal(model.getValueAt(row, 10).toString()).setScale(20);
+							BigDecimal mediaTratto=m1.add(m2).divide(due,RoundingMode.HALF_UP);
+							
 
 							model.setValueAt(mediaTratto.subtract(erroreCum).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), row,13);
 
-							BigDecimal avgArcsecInv=GestioneMisuraBO.getArcosecInv(mediaTratto.subtract(erroreCum).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP).toPlainString());
-							model.setValueAt(avgArcsecInv.toPlainString(), row,14);
+							BigDecimal avgArcsecInv=GestioneMisuraBO.getArcosecInv(mediaTratto.subtract(erroreCum).toPlainString());
+							model.setValueAt(avgArcsecInv.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString(), row,14);
 
 							if(row==0) 
 							{
@@ -1305,19 +1331,29 @@ public void actionPerformed(ActionEvent event) {
 
 								if(obj1!=null)
 								{
-									model.setValueAt(avgArcsecInv.subtract(new BigDecimal(obj1.toString())), row, 15);
-
-									model.setValueAt(new BigDecimal(model.getValueAt(row, 14).toString()).subtract(new BigDecimal(model.getValueAt(row, 1).toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1)), row, 16);
 									
-									model.setValueAt(new BigDecimal(model.getValueAt(row, 13).toString()).subtract(new BigDecimal(model.getValueAt(row, 2).toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1)), row, 17);
-
+									model.setValueAt(avgArcsecInv.subtract(new BigDecimal(obj1.toString())).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP), row, 15);
+									
+									model.setValueAt((avgArcsecInv.subtract(new BigDecimal(model.getValueAt(row, 1).toString())).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1,RoundingMode.HALF_UP)), row, 16);
+									
+									
+									BigDecimal indicazione_bolla=GestioneMisuraBO.getArcosec(model.getValueAt(row, 1).toString());								
+									
+									model.setValueAt((mediaTratto.subtract(erroreCum)).subtract(indicazione_bolla).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1,RoundingMode.HALF_UP), row, 17);
+									
 									
 									/*Gestione Model Tratto e Medie*/
 
-									modelTratto.setValueAt(avgArcsecInv.subtract(new BigDecimal(obj1.toString())), row, 1);
+									BigDecimal val_1_div=avgArcsecInv.subtract(new BigDecimal(obj1.toString()));
+									
+									val_1_div=val_1_div.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP);
+									
+									modelTratto.setValueAt(val_1_div, row, 1);
+									
+							
 									listaPuntiSX.get(row).setDiv_dex( avgArcsecInv.subtract(new BigDecimal(obj1.toString())));
-									s_media_field.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,1).toPlainString());
-									dev_st_field.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,1).toPlainString());
+									s_media_field.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,1).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
+									dev_st_field.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,1).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
 
 									BigDecimal s_mediaTotale = GestioneMisuraBO.getAverageLivella(listaPuntiDX,listaPuntiSX,2);
 									
@@ -1326,8 +1362,8 @@ public void actionPerformed(ActionEvent event) {
 										PuntoLivellaBollaDTO punto= listaPuntiSX.get(i);
 										if( punto.getDiv_dex()!=null && punto.getDiv_dex().abs().compareTo(BigDecimal.ZERO)==1) 
 										{
-											modelTratto.setValueAt(punto.getDiv_dex().abs().toPlainString(), i, 1);
-											modelTratto.setValueAt(punto.getDiv_dex().abs().subtract(s_mediaTotale),i,2);
+											modelTratto.setValueAt((punto.getDiv_dex().abs()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString(), i, 1);
+											modelTratto.setValueAt((punto.getDiv_dex().abs().subtract(s_mediaTotale)).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP),i,2);
 										}else 
 										{
 											modelTratto.setValueAt("", i, 2);
@@ -1339,9 +1375,9 @@ public void actionPerformed(ActionEvent event) {
 								
 								/*aggiorna s media e devstd*/
 								
-								textField_media_totale.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,2).toPlainString());
-								textField_dev_std_totale.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,2).toPlainString());
-								textField_scmax.setText(GestioneMisuraBO.getScMaxLivella(listaPuntiDX, listaPuntiSX).toPlainString());
+								textField_media_totale.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,2).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
+								textField_dev_std_totale.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,2).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
+								textField_scmax.setText(GestioneMisuraBO.getScMaxLivella(listaPuntiDX, listaPuntiSX).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
 							}
 
 

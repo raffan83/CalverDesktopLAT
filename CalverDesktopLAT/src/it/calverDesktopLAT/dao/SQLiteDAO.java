@@ -1040,7 +1040,7 @@ public static void updateMisuraRDP(int idRecord, String descrizioneCampione, Str
 		{
 			con=getConnection();
 			
-			pst=con.prepareStatement("select distinct(codice) from tblCampioni ");
+			pst=con.prepareStatement("select distinct(codice) from tblCampioni where codice like '%CDT%' ORDER BY codice ASC");
 			
 
 			
@@ -2884,9 +2884,15 @@ public static void updateMisuraRDP(int idRecord, String descrizioneCampione, Str
 			
 			while(rs.next())
 			{
-				if(rs.getString("rif_tipoStrumento").indexOf(id_tipoStrumento)>-1) 
-				{
-					indexMasterTable=rs.getInt("id");
+				String[] listType=rs.getString("rif_tipoStrumento").split(";");
+				
+				for (String rif : listType) {
+					
+					if(rif.equals(id_tipoStrumento)) 
+					{
+						indexMasterTable=rs.getInt("id");
+					}
+					
 				}
 			}
 		}
