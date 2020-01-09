@@ -118,7 +118,7 @@ public class PannelloLivellaBolla extends JPanel  {
 		    	textField_dev_std_totale.setBackground(Color.YELLOW);
 		    	textField_dev_std_totale.setEditable(false);
 		    	textField_dev_std_totale.setFont(new Font("Arial", Font.BOLD, 14));
-		    	textField_dev_std_totale.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,2).toPlainString());
+		    	textField_dev_std_totale.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,2).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
 		    	add(textField_dev_std_totale, "cell 2 0");
 		    	textField_dev_std_totale.setColumns(10);
 		    }
@@ -482,7 +482,7 @@ public class PannelloLivellaBolla extends JPanel  {
 
 	private class PannelloDX extends JPanel implements TableModelListener,ActionListener
 	{
-		private JTable tableDX,tableTratto;
+		private RXTable tableDX,tableTratto;
 		private String originalValue="";
 		JLabel lblInserimentoNonValido;
 		private JTextField s_media_field;
@@ -500,7 +500,8 @@ public class PannelloLivellaBolla extends JPanel  {
 
 			semDex.setLayout(new MigLayout("", "[grow][][][][]", "[30px][:360px:410px][][][]"));
 
-			tableDX = new JTable();
+			tableDX = new RXTable();
+			tableDX.setSelectAllForEdit(true);
 			tableDX.setDefaultRenderer(Object.class, new MyCellRenderer());
 			model = new ModelSemisc();
 
@@ -556,7 +557,8 @@ public class PannelloLivellaBolla extends JPanel  {
 			
 			/*Tabella Tratto*/
 
-			tableTratto = new JTable();
+			tableTratto = new RXTable();
+			tableTratto.setSelectAllForEdit(true);
 			modelTratto= new ModelTratto();
 			tableTratto.setModel(modelTratto);
 			for (int i = 0; i <listaPuntiDX.size(); i++) {
@@ -999,7 +1001,7 @@ public void actionPerformed(ActionEvent event) {
 	
 	private class PannelloSX extends JPanel implements TableModelListener,ActionListener
 	{
-		private JTable tableSX,tableTrattoSX;
+		private RXTable tableSX,tableTrattoSX;
 		private String originalValue="";
 		JLabel lblInserimentoNonValido;
 		private JTextField s_media_field;
@@ -1017,7 +1019,8 @@ public void actionPerformed(ActionEvent event) {
 
 			semSX.setLayout(new MigLayout("", "[grow][][][][]", "[30px][:360px:410px][][][]"));
 
-			tableSX = new JTable();
+			tableSX = new RXTable();
+			tableSX.setSelectAllForEdit(true);
 			tableSX.setDefaultRenderer(Object.class, new MyCellRenderer());
 			model = new ModelSemisc();
 
@@ -1074,7 +1077,8 @@ public void actionPerformed(ActionEvent event) {
 			
 			/*Tabella Tratto*/
 
-			tableTrattoSX = new JTable();
+			tableTrattoSX = new RXTable();
+			tableTrattoSX.setSelectAllForEdit(true);
 			modelTratto= new ModelTratto();
 			tableTrattoSX.setModel(modelTratto);
 			for (int i = 0; i <listaPuntiSX.size(); i++) {

@@ -5,10 +5,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ObjectStreamException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -20,16 +18,14 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -39,18 +35,10 @@ import javax.swing.table.TableModel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.CategoryLabelPositions;
-import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.block.BlockBorder;
-import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.chart.title.TextTitle;
-import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -60,15 +48,11 @@ import it.calverDesktopLAT.bo.SessionBO;
 import it.calverDesktopLAT.bo.Statistic;
 import it.calverDesktopLAT.dto.LatMisuraDTO;
 import it.calverDesktopLAT.dto.LatPuntoLivellaElettronicaDTO;
-import it.calverDesktopLAT.dto.MisuraDTO;
 import it.calverDesktopLAT.dto.ParametroTaraturaDTO;
-import it.calverDesktopLAT.dto.ProvaMisuraDTO;
 import it.calverDesktopLAT.dto.RegLinDTO;
 import it.calverDesktopLAT.dto.TabellaMisureDTO;
 import it.calverDesktopLAT.utl.Costanti;
 import net.miginfocom.swing.MigLayout;
-import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
 
 public class PannelloLivellaElettronica extends JPanel  {
 
@@ -89,6 +73,11 @@ public class PannelloLivellaElettronica extends JPanel  {
 	ModelIncertezze model_incertezze;
 	ModelProvaLineare modelLin;
 	LatMisuraDTO lat;
+	
+	private boolean isSelectAllForMouseEvent = false;
+	private boolean isSelectAllForActionEvent = false;
+	private boolean isSelectAllForKeyEvent = false;
+
 	
 	public PannelloLivellaElettronica(int index) {
 
@@ -211,6 +200,8 @@ public class PannelloLivellaElettronica extends JPanel  {
 						
 					}
 				});
+				
+				
 
 		}catch 
 		(Exception e) {
@@ -447,6 +438,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 			}
 
 
+			
 
 			@Override
 			public void tableChanged(TableModelEvent e) {
@@ -692,13 +684,14 @@ public class PannelloLivellaElettronica extends JPanel  {
 	
 	private class PannelloProvaLineare extends JPanel implements TableModelListener
 	{
-		private JTable tableProvaLineare;
+		private RXTable tableProvaLineare;
 		private String originalValue="";
 		JLabel lblInserimentoNonValido;
 		JPanel semDex;
 		
 		private JMenuItem jmit;
 
+		
 		PannelloProvaLineare()
 		{
 			semDex= new JPanel();
@@ -706,7 +699,9 @@ public class PannelloLivellaElettronica extends JPanel  {
 
 			semDex.setLayout(new MigLayout("", "[grow]", "[grow]"));
 
-			tableProvaLineare = new JTable();
+			tableProvaLineare = new RXTable();
+			tableProvaLineare.setSelectAllForEdit(true);
+			
 			tableProvaLineare.setDefaultRenderer(Object.class, new MyCellRenderer());
 			modelLin = new ModelProvaLineare();
 
@@ -757,15 +752,17 @@ public class PannelloLivellaElettronica extends JPanel  {
 			semDex.add(scrollTab, "cell 0 0 ,grow,height :450:500");
 
 			
-			
-			
+	
 		
 		}
+	
 		
 		public JPanel get() {
 			return semDex;
 		}
 
+		
+		
 		@Override
 		public void tableChanged(TableModelEvent e) {
 
@@ -1040,16 +1037,20 @@ public class PannelloLivellaElettronica extends JPanel  {
 			}
 		}
 
+		
 		@Override
 		   public boolean isCellEditable(int row, int column) {
 	            if (column <6) {
-	            	System.out.println(column);
+	            
 	                return true;
 	            }
 	            else {
 	                return false;
 	            }
 	        }
+		
+		
+	
 	}
 	
 	class ModelProvaRipetibile extends DefaultTableModel {
@@ -1150,7 +1151,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 	
 	private class PannelloProvaRipetibile extends JPanel implements TableModelListener,ActionListener
 	{
-		private JTable tableProvaRipetibile;
+		private RXTable tableProvaRipetibile;
 		JLabel lblInserimentoNonValido;
 		private String originalValue="";
 		JPanel semDex;
@@ -1164,7 +1165,8 @@ public class PannelloLivellaElettronica extends JPanel  {
 
 			semDex.setLayout(new MigLayout("", "[grow]", "[grow]"));
 
-			tableProvaRipetibile = new JTable();
+			tableProvaRipetibile = new RXTable();
+			tableProvaRipetibile.setSelectAllForEdit(true);
 			tableProvaRipetibile.setDefaultRenderer(Object.class, new MyCellRendererRipetibilita());
 			model = new ModelProvaRipetibile();
 
@@ -1361,6 +1363,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 					
 					BigDecimal val=(sc1.subtract(listaParam.getScostamentoPrecedente()).abs()).divide(new BigDecimal("3.46410161513775"),RoundingMode.HALF_UP);
 					
+			
 					if(val.compareTo(inc_stab)>0)
 					{
 						inc_stab=val;
