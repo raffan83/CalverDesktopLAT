@@ -273,9 +273,8 @@ public  class GeneralGUI extends JFrame implements Serializable{
 				if(scelta==0)
 				{
 					
-				//	boolean control=GestioneDB.controlloMisuraCertificato();
+				boolean control=GestioneDB.controlloMisuraCertificato();
 					
-				boolean	control=true;
 					if(control)
 					{
 						GestioneDB.chiudiMisura(Costanti.PATH_DB);
@@ -283,7 +282,7 @@ public  class GeneralGUI extends JFrame implements Serializable{
 					}
 					else
 					{
-						JOptionPane.showMessageDialog(null,"Sono presenti misure terminate senza il corrispondente certificato","Stampa Certificati",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
+						JOptionPane.showMessageDialog(null,"Non sono presenti misure terminate","Nessuna misura",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
 					}
 				}
 			

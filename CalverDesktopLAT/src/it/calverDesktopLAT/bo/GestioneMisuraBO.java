@@ -7,8 +7,6 @@ import java.math.RoundingMode;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.sqlite.SQLite;
-
 import it.calverDesktopLAT.dao.SQLiteDAO;
 import it.calverDesktopLAT.dto.DatiEsterniDTO;
 import it.calverDesktopLAT.dto.LatMassaAMB;
@@ -1039,6 +1037,24 @@ public class GestioneMisuraBO
 		
 		return SQLiteDAO.getCondizioniAmbientaliDati(idMisura);
 		
+	}
+
+	public static void updateIndicazioniTestata(LatPuntoLivellaElettronicaDTO punto, int idMisura) throws Exception {
+		
+		SQLiteDAO.updateIndicazioniTestata( punto,idMisura);
+		
+	}
+
+	public static void eliminaRigaLivellaElettronica(int indexPoint, LatPuntoLivellaElettronicaDTO punto) throws Exception {
+	
+		punto.setId(indexPoint);
+		SQLiteDAO.updateRecordPuntoLivellaElettronica(punto);
+		
+	}
+
+	public static int getIdTabellaIncertezza(int idMisura, String idPunto) throws Exception {
+		
+		return SQLiteDAO.getIdTabellaIncertezza(idMisura, idPunto);
 	}
 
 	

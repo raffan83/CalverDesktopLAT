@@ -2499,14 +2499,14 @@ public static void updateMisuraRDP(int idRecord, String descrizioneCampione, Str
 
 		try {
 			con =getConnection();
-			pst=con.prepareStatement("SELECT * FROM tblMisure a, tblStrumenti b where a.id_str=b.id AND (b.nCertificato='' OR b.nCertificato is null) AND statoMisura=1");
+			pst=con.prepareStatement("SELECT * FROM tblMisure WHERE statoMisura=1");
 		
 			rs=pst.executeQuery();
 			
 			while(rs.next())
 			{
 				
-				return false;
+				return true;
 			}
 			
 		} catch (Exception e) 
@@ -2514,9 +2514,13 @@ public static void updateMisuraRDP(int idRecord, String descrizioneCampione, Str
 			e.printStackTrace();
 			throw e;
 			
+		}finally 
+		{
+			pst.close();
+			con.close();
 		}
 		
-		return true;
+		return false;
 	}
 
 
@@ -3860,6 +3864,70 @@ public static ArrayList<LatPuntoLivellaElettronicaDTO> getListaPuntiLivellaElett
 			pst.close();
 			con.close();
 		}
+	}
+	public static void updateIndicazioniTestata(LatPuntoLivellaElettronicaDTO punto, int idMisura) throws Exception {
+	
+		Connection con =null;
+		PreparedStatement pst= null;
+
+		try{
+			con=getConnection();			
+			
+			pst=con.prepareStatement("UPDATE lat_punto_livella_elettronica SET indicazione_iniziale=?," + 
+					"indicazione_iniziale_corr=?,inclinazione_cmp_campione=? WHERE id_misura=? ");
+	
+			pst.setBigDecimal(1, punto.getIndicazione_iniziale());
+			pst.setBigDecimal(2, punto.getIndicazione_iniziale_corr());
+			pst.setBigDecimal(3, punto.getInclinazione_cmp_campione());
+			pst.setInt(4,idMisura);
+			
+			pst.execute();
+		
+		    
+			  
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+			throw ex;
+		}
+		finally
+		{
+			pst.close();
+			con.close();
+		}
+		
+	}
+	public static int getIdTabellaIncertezza(int idMisura, String idPunto) throws Exception {
+		Connection con =null;
+		PreparedStatement pst= null;
+		ResultSet rs=null;
+
+		try{
+			con=getConnection();			
+			
+			pst=con.prepareStatement("SELECT id FROM lat_punto_livella_elettronica WHERE id_misura=? AND punto=? AND tipo_prova=\'I\'");
+			
+			pst.setInt(1, idMisura);
+			pst.setInt(2, Integer.parseInt(idPunto));
+			
+			rs=pst.executeQuery();
+		
+		    while(rs.next()) 
+		    {
+		    	return rs.getInt("id");
+		    }
+			  
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+			throw ex;
+		}
+		finally
+		{
+			pst.close();
+			con.close();
+		}
+		return 0;
 	}
 
 }

@@ -18,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
@@ -50,7 +51,6 @@ import it.calverDesktopLAT.dto.LatMisuraDTO;
 import it.calverDesktopLAT.dto.LatPuntoLivellaElettronicaDTO;
 import it.calverDesktopLAT.dto.ParametroTaraturaDTO;
 import it.calverDesktopLAT.dto.RegLinDTO;
-import it.calverDesktopLAT.dto.TabellaMisureDTO;
 import it.calverDesktopLAT.utl.Costanti;
 import net.miginfocom.swing.MigLayout;
 
@@ -459,7 +459,6 @@ public class PannelloLivellaElettronica extends JPanel  {
 				punto.setInc_est(checkField(model.getValueAt(row, 6),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+1));
 				
 				GestioneMisuraBO.updateRecordPuntoLivellaElettronica(punto);
-			
 				
 				
 				
@@ -682,7 +681,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 	}
 	
 	
-	private class PannelloProvaLineare extends JPanel implements TableModelListener
+	private class PannelloProvaLineare extends JPanel implements TableModelListener,ActionListener
 	{
 		private RXTable tableProvaLineare;
 		private String originalValue="";
@@ -710,7 +709,14 @@ public class PannelloLivellaElettronica extends JPanel  {
 
 				punto= listaPuntiLineari.get(i);
 				modelLin.addRow(new Object[0]);
-				modelLin.setValueAt(punto.getPunto(), i, 0);
+				if(punto.getPunto()!=11) 
+				{
+					modelLin.setValueAt(punto.getPunto(), i, 0);
+				}
+				else 
+				{
+					modelLin.setValueAt("11 (ZERO)", i, 0);
+				}
 				modelLin.setValueAt(punto.getValore_nominale(), i, 1);
 				modelLin.setValueAt(punto.getValore_andata_taratura(), i, 2);
 				modelLin.setValueAt(punto.getValore_andata_campione(), i, 3);
@@ -727,6 +733,13 @@ public class PannelloLivellaElettronica extends JPanel  {
 				modelLin.setValueAt(punto.getId(), i, 14);
 				
 			}
+			
+			JPopupMenu popupMenu= new JPopupMenu();
+			jmit= new JMenuItem("Elimina Riga");
+			jmit.addActionListener(this);
+			popupMenu.add(jmit);
+			tableProvaLineare.setComponentPopupMenu(popupMenu);
+			
 			
 			if(modelLin.getValueAt( 10, 12)!=null && modelLin.getValueAt( 10, 12).toString().length()>0) 
 			{
@@ -781,20 +794,21 @@ public class PannelloLivellaElettronica extends JPanel  {
 			if(controllaNumero(model,value,row,column))
 			{
 				
-				if(column==3) 
-				{
-					scostamento_andata(row);
+		//		if(column==3) 
+		//		{
+		//		scostamento_andata(row);
 					
-					if(model.getValueAt(row,5)!=null && model.getValueAt(row,5).toString().length()>0) 
-					{
-						column=5;
-					}
-				}
+		//			if(model.getValueAt(row,5)!=null && model.getValueAt(row,5).toString().length()>0) 
+		//			{
+		//				column=5;
+			//		}
+		//		}
 				if(column==5) 
 				{
+					scostamento_andata(row);
 					scostamento_ritorno(row);
 					scostamento_medio(row);
-				}
+				
 
 				LatPuntoLivellaElettronicaDTO punto = new LatPuntoLivellaElettronicaDTO();
 				punto.setId(indexPoint);
@@ -816,7 +830,8 @@ public class PannelloLivellaElettronica extends JPanel  {
 				punto.setScostamentoOff(checkField(model.getValueAt(row, 13),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA-1));
 				
 				GestioneMisuraBO.updateRecordPuntoLivellaElettronica(punto);
-				
+				GestioneMisuraBO.updateIndicazioniTestata(punto,SessionBO.idMisura);
+				}	
 			}
 			} catch (Exception e2) 
 			{
@@ -978,6 +993,47 @@ public class PannelloLivellaElettronica extends JPanel  {
 
 
 
+		}
+
+
+		@Override
+       public void actionPerformed(ActionEvent event) {
+			
+			JMenuItem menu = (JMenuItem) event.getSource();
+			if (menu == jmit) {
+	            eliminaRiga();
+	        }
+		}
+		
+		
+		private void eliminaRiga() {
+			try
+			{
+				int selectedRow = tableProvaLineare.getSelectedRow();
+				if(selectedRow!=-1)
+				{
+					int indexPoint=Integer.parseInt(modelLin.getValueAt(selectedRow,14).toString());
+					
+					LatPuntoLivellaElettronicaDTO punto = new LatPuntoLivellaElettronicaDTO();
+					punto.setIndicazione_iniziale(checkField(textField_indicazione_iniziale.getText(),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA));
+					punto.setIndicazione_iniziale_corr(checkField(textField_indicazione_corretta.getText(),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA));
+					punto.setInclinazione_cmp_campione(checkField(textField_inclinazione_cmp.getText(),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA));
+					
+					GestioneMisuraBO.eliminaRigaLivellaElettronica(indexPoint,punto);
+					
+					JPanel panelDB =new PannelloLivellaElettronica(1);
+					SystemGUI.callPanel(panelDB, "PMT");
+					
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(null, "Selezionare correttamente la riga da eliminare","Attenzione",JOptionPane.WARNING_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
+				}
+			}catch (Exception e) 
+			{
+				e.printStackTrace();
+			}	
+			
 		}
 		
 	}
@@ -1215,6 +1271,13 @@ public class PannelloLivellaElettronica extends JPanel  {
 
 
 			model.addTableModelListener(this);
+			
+			JPopupMenu popupMenu= new JPopupMenu();
+			jmit= new JMenuItem("Elimina Riga");
+			jmit.addActionListener(this);
+			popupMenu.add(jmit);
+			tableProvaRipetibile.setComponentPopupMenu(popupMenu);
+			
 			
 			tableProvaRipetibile.setModel(model);
 			tableProvaRipetibile.setFont(new Font("Arial", Font.BOLD, 12));
@@ -1511,7 +1574,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 				
 			}else 
 			{
-				JOptionPane.showMessageDialog(null,"Il campione selezionato non ha i parametri necessari ad eseguire la misura", "Attenzione",JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null,"Il campione selezionato non ha i parametri necessari ad eseguire la misura \n Selezionare rif. Campione e Salvare ", "Attenzione",JOptionPane.ERROR_MESSAGE);
 			}
 			
 		}catch (Exception e) {
@@ -1582,8 +1645,64 @@ public class PannelloLivellaElettronica extends JPanel  {
 		
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
+		public void actionPerformed(ActionEvent event) {
+			JMenuItem menu = (JMenuItem) event.getSource();
+			if (menu == jmit) {
+	            eliminaRiga();
+	        }
+			
+		}
+		
+		private void eliminaRiga() {
+			try
+			{
+				boolean incertezza=true;
+				
+				int selectedRow = tableProvaRipetibile.getSelectedRow();
+				if(selectedRow!=-1)
+				{
+					
+					String[] ids = model.getValueAt(selectedRow, 23).toString().split(";");
+					
+					for (String id : ids) {
+					
+					if(incertezza) 
+					{
+					int idFromI=GestioneMisuraBO.getIdTabellaIncertezza(SessionBO.idMisura, model.getValueAt(selectedRow, 0).toString());	
+					
+					LatPuntoLivellaElettronicaDTO punto = new LatPuntoLivellaElettronicaDTO();
+					punto.setIndicazione_iniziale(checkField(textField_indicazione_iniziale.getText(),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA));
+					punto.setIndicazione_iniziale_corr(checkField(textField_indicazione_corretta.getText(),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA));
+					punto.setInclinazione_cmp_campione(checkField(textField_inclinazione_cmp.getText(),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA));
+					
+					GestioneMisuraBO.eliminaRigaLivellaElettronica(idFromI,punto);
+					
+					incertezza=false;
+					}	
+					
+					int indexPoint=Integer.parseInt(id);
+					
+					LatPuntoLivellaElettronicaDTO punto = new LatPuntoLivellaElettronicaDTO();
+					punto.setIndicazione_iniziale(checkField(textField_indicazione_iniziale.getText(),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA));
+					punto.setIndicazione_iniziale_corr(checkField(textField_indicazione_corretta.getText(),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA));
+					punto.setInclinazione_cmp_campione(checkField(textField_inclinazione_cmp.getText(),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA));
+					
+					GestioneMisuraBO.eliminaRigaLivellaElettronica(indexPoint,punto);
+					
+					}
+					
+					JPanel panelDB =new PannelloLivellaElettronica(2);
+					SystemGUI.callPanel(panelDB, "PMT");
+					
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(null, "Selezionare correttamente la riga da eliminare","Attenzione",JOptionPane.WARNING_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
+				}
+			}catch (Exception e) 
+			{
+				e.printStackTrace();
+			}	
 			
 		}
 
