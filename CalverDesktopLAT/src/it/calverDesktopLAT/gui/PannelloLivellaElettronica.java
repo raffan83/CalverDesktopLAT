@@ -69,6 +69,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 	private JTextField incertezza_em;
 	private JTextArea textArea;
 	private JTextField campo_misura;
+	private JTextField unita_formato;
 	private JTextField sensibilita;
 	private JTextField ind_iniz_camp;
 	private JTextField ind_iniz_camp_corr;
@@ -187,7 +188,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 
 
 
-			semInc.setLayout(new MigLayout("", "[][][20px][][grow][:5:]", "[][][][][][][][][grow][][][]"));
+			semInc.setLayout(new MigLayout("", "[][][20px][][grow][:5:]", "[][][][][][][][][][grow][][][]"));
 
 
 
@@ -209,21 +210,26 @@ public class PannelloLivellaElettronica extends JPanel  {
 			campo_misura.setColumns(10);
 			semInc.add(campo_misura, "flowx,cell 1 2,growx,aligny top");
 
+			JLabel lblUnitaFormato = new JLabel("Unità Formato (Strumento)");
+			semInc.add(lblUnitaFormato, "cell 0 3,alignx trailing,aligny top");
 
+			unita_formato = new JTextField();
+			unita_formato.setColumns(10);
+			semInc.add(unita_formato, "flowx,cell 1 3,growx,aligny top");
 
 			JLabel lblSensibilit = new JLabel("Sensibilit\u00E0: (Strumento)");
-			semInc.add(lblSensibilit, "cell 0 3,alignx trailing,aligny top");
+			semInc.add(lblSensibilit, "cell 0 4,alignx trailing,aligny top");
 
 			sensibilita = new JTextField();
 			sensibilita.setColumns(10);
-			semInc.add(sensibilita, "flowx,cell 1 3,growx,aligny top");
+			semInc.add(sensibilita, "flowx,cell 1 4,growx,aligny top");
 
 			JLabel lblIndiIniz = new JLabel("Indicazione Iniziale Campione");
-			semInc.add(lblIndiIniz, "cell 0 4,alignx trailing,aligny top");
+			semInc.add(lblIndiIniz, "cell 0 5,alignx trailing,aligny top");
 
 			ind_iniz_camp = new JTextField();
 			ind_iniz_camp.setColumns(10);
-			semInc.add(ind_iniz_camp, "flowx,cell 1 4,growx,aligny top");
+			semInc.add(ind_iniz_camp, "flowx,cell 1 5,growx,aligny top");
 
 			ind_iniz_camp.addFocusListener(new FocusListener() {
 
@@ -275,43 +281,43 @@ public class PannelloLivellaElettronica extends JPanel  {
 			});
 
 			JLabel lblIndiInizCorr = new JLabel("Indicazione Iniziale Campione Corr.");
-			semInc.add(lblIndiInizCorr, "cell 0 5,alignx trailing,aligny top");
+			semInc.add(lblIndiInizCorr, "cell 0 6,alignx trailing,aligny top");
 
 			ind_iniz_camp_corr = new JTextField();
 			ind_iniz_camp_corr.setColumns(10);
-			semInc.add(ind_iniz_camp_corr, "flowx,cell 1 5,growx,aligny top");
+			semInc.add(ind_iniz_camp_corr, "flowx,cell 1 6,growx,aligny top");
 
 
 			JLabel lblInc_tipo_comp = new JLabel("Incertezza tipo composta");
-			semInc.add(lblInc_tipo_comp, "cell 0 6,alignx trailing,aligny top");
+			semInc.add(lblInc_tipo_comp, "cell 0 7,alignx trailing,aligny top");
 
 			inc_tipo_comp = new JTextField();
 			inc_tipo_comp.setColumns(10);
-			semInc.add(inc_tipo_comp, "flowx,cell 1 6,growx,aligny top");
+			semInc.add(inc_tipo_comp, "flowx,cell 1 7,growx,aligny top");
 
 			JLabel lblIncertezzaEstesaUem = new JLabel("Incertezza Estesa U(Em)");
 			lblIncertezzaEstesaUem.setFont(new Font("Arial", Font.PLAIN, 12));
-			semInc.add(lblIncertezzaEstesaUem, "cell 0 7,alignx trailing,aligny top");
+			semInc.add(lblIncertezzaEstesaUem, "cell 0 8,alignx trailing,aligny top");
 
 			incertezza_em = new JTextField();
 			incertezza_em.setEditable(false);
 			incertezza_em.setColumns(10);
-			semInc.add(incertezza_em, "flowx,cell 1 7,growx,aligny top");
+			semInc.add(incertezza_em, "flowx,cell 1 8,growx,aligny top");
 
 
 			JButton btnSalva = new JButton("Salva");
 
 			btnSalva.setIcon(new ImageIcon(PannelloLivellaElettronica.class.getResource("/image/save.png")));
 			btnSalva.setFont(new Font("Arial", Font.BOLD, 12));
-			semInc.add(btnSalva, "cell 0 10 3 1,alignx center,aligny center");
+			semInc.add(btnSalva, "cell 0 11 3 1,alignx center,aligny center");
 
 			JLabel lblNote = new JLabel("Note:");
 			lblNote.setFont(new Font("Arial", Font.PLAIN, 12));
-			semInc.add(lblNote, "cell 3 10,alignx right");
+			semInc.add(lblNote, "cell 3 11,alignx right");
 
 			textArea = new JTextArea();
 			JScrollPane scrollPaneNote = new JScrollPane(textArea);
-			semInc.add(scrollPaneNote, "cell 4 10,grow");
+			semInc.add(scrollPaneNote, "cell 4 11,grow");
 
 			JLabel label_1 = new JLabel("''");
 			label_1.setVerticalAlignment(SwingConstants.TOP);
@@ -326,16 +332,20 @@ public class PannelloLivellaElettronica extends JPanel  {
 			semInc.add(label_3, "cell 2 4");
 
 			JLabel label_4 = new JLabel("''");
-			label_3.setVerticalAlignment(SwingConstants.TOP);
+			label_4.setVerticalAlignment(SwingConstants.TOP);
 			semInc.add(label_4, "cell 2 5");
 
 			JLabel label_5 = new JLabel("''");
-			label_3.setVerticalAlignment(SwingConstants.TOP);
+			label_5.setVerticalAlignment(SwingConstants.TOP);
 			semInc.add(label_5, "cell 2 6");
 
 			JLabel label_6 = new JLabel("''");
-			label_3.setVerticalAlignment(SwingConstants.TOP);
+			label_6.setVerticalAlignment(SwingConstants.TOP);
 			semInc.add(label_6, "cell 2 7");
+			
+			JLabel label_7 = new JLabel("''");
+		//	label_7.setVerticalAlignment(SwingConstants.TOP);
+			semInc.add(label_7, "cell 2 8,alignx left,aligny top");
 
 			tabellaIncertezze = new JTable();
 			//	tableProvaLineare.setDefaultRenderer(Object.class, new MyCellRenderer());
@@ -391,9 +401,16 @@ public class PannelloLivellaElettronica extends JPanel  {
 			semInc.add(scrollTab, "cell 4 0 1 9,height :350:400,grow");
 
 
-
-			LatMisuraDTO misura =GestioneMisuraBO.getMisuraLAT(SessionBO.idMisura);
-
+			LatMisuraDTO misura=null;
+			try 
+			{
+				 misura =GestioneMisuraBO.getMisuraLAT(SessionBO.idMisura);
+			}
+			catch (Exception e) 
+			{
+				JOptionPane.showMessageDialog(null,"Probabilemnte il file utilizzato non è aggiornato, riscaricarlo dall'intervento e riprovare","Errore File",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
+			 
+			}
 			/*Riempo pannello se il campo riferimenti_incertezza !=null*/
 			if(misura.getRif_campione()!=null) 
 			{
@@ -460,6 +477,11 @@ public class PannelloLivellaElettronica extends JPanel  {
 								sb.append("Indicare Campo Misura (strumento) \n");
 								check=false;
 							}
+							if(unita_formato.getText().length()<=0)
+							{
+								sb.append("Indicare Unità formato (strumento) \n");
+								check=false;
+							}
 							if(sensibilita.getText().length()<=0)
 							{
 								sb.append("Indicare Sensibilità (strumento)  \n");
@@ -482,6 +504,8 @@ public class PannelloLivellaElettronica extends JPanel  {
 								lat.setRif_campione(comboBox_cmpRif.getSelectedItem().toString());
 
 								lat.setCampo_misura(new BigDecimal(campo_misura.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
+								
+								lat.setUnita_formato(new BigDecimal(unita_formato.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
 
 								lat.setSensibilita(new BigDecimal(sensibilita.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
 

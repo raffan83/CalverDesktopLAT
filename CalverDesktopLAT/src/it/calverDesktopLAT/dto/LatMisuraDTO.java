@@ -2,8 +2,6 @@ package it.calverDesktopLAT.dto;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 public class LatMisuraDTO {
 	
@@ -15,6 +13,7 @@ public class LatMisuraDTO {
 	private BigDecimal incertezza_estesa_sec;
 	private BigDecimal incertezza_media;
 	private BigDecimal campo_misura;
+	private BigDecimal unita_formato;
 	private BigDecimal campo_misura_sec;
 	private BigDecimal sensibilita;
 	private String stato;
@@ -75,6 +74,14 @@ public class LatMisuraDTO {
 	}
 	public void setCampo_misura(BigDecimal campo_misura) {
 		this.campo_misura = campo_misura;
+	}
+	
+	
+	public BigDecimal getUnita_formato() {
+		return unita_formato;
+	}
+	public void setUnita_formato(BigDecimal unita_formato) {
+		this.unita_formato = unita_formato;
 	}
 	public BigDecimal getCampo_misura_sec() {
 		return campo_misura_sec;

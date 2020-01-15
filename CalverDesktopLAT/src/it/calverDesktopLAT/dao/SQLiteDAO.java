@@ -3373,7 +3373,7 @@ public static ArrayList<LatPuntoLivellaElettronicaDTO> getListaPuntiLivellaElett
 			con=getConnection();			
 			
 			pst=con.prepareStatement("UPDATE lat_misura SET incertezzaRif=?," + 
-					"incertezzaRif_sec=?,incertezzaEstesa=?,incertezzaEstesa_sec=?,incertezzaMedia=?,campo_misura=?,campo_misura_sec=?," + 
+					"incertezzaRif_sec=?,incertezzaEstesa=?,incertezzaEstesa_sec=?,incertezzaMedia=?,campo_misura=?,unita_formato=?,campo_misura_sec=?," + 
 					"sensibilita=?,stato=?,ammaccature=?,bolla_trasversale=?,regolazione=?,centraggio=?,note=?,id_rif_campione=?,id_rif_campione_lavoro=? WHERE id=? ");
 	
 			pst.setBigDecimal(1, lat.getIncertezza_rif());
@@ -3382,17 +3382,18 @@ public static ArrayList<LatPuntoLivellaElettronicaDTO> getListaPuntiLivellaElett
 			pst.setBigDecimal(4,lat.getIncertezza_estesa_sec());
 			pst.setBigDecimal(5,lat.getIncertezza_media());
 			pst.setBigDecimal(6, lat.getCampo_misura());
-			pst.setBigDecimal(7, lat.getCampo_misura_sec());
-			pst.setBigDecimal(8,lat.getSensibilita());
-			pst.setString(9, lat.getStato());
-			pst.setString(10, lat.getAmmaccature());
-			pst.setString(11, lat.getBolla_trasversale());
-			pst.setString(12, lat.getRegolazione());
-			pst.setString(13, lat.getCentraggio());
-			pst.setString(14,lat.getNote() );
-			pst.setString(15,lat.getRif_campione());
-			pst.setString(16,lat.getRif_campione_lavoro());
-			pst.setInt(17, lat.getId());
+			pst.setBigDecimal(7, lat.getUnita_formato());
+			pst.setBigDecimal(8, lat.getCampo_misura_sec());
+			pst.setBigDecimal(9,lat.getSensibilita());
+			pst.setString(10, lat.getStato());
+			pst.setString(11, lat.getAmmaccature());
+			pst.setString(12, lat.getBolla_trasversale());
+			pst.setString(13, lat.getRegolazione());
+			pst.setString(14, lat.getCentraggio());
+			pst.setString(15,lat.getNote() );
+			pst.setString(16,lat.getRif_campione());
+			pst.setString(17,lat.getRif_campione_lavoro());
+			pst.setInt(18, lat.getId());
 			
 			pst.execute();
 		
@@ -3434,6 +3435,7 @@ public static ArrayList<LatPuntoLivellaElettronicaDTO> getListaPuntiLivellaElett
 				misura.setIncertezza_estesa_sec(rs.getBigDecimal("incertezzaEstesa_sec"));
 				misura.setIncertezza_media(rs.getBigDecimal("incertezzaMedia"));
 				misura.setCampo_misura(rs.getBigDecimal("campo_misura"));
+				misura.setUnita_formato(rs.getBigDecimal("unita_formato"));
 				misura.setCampo_misura_sec(rs.getBigDecimal("campo_misura_sec"));
 				misura.setSensibilita(rs.getBigDecimal("sensibilita"));
 				misura.setStato(rs.getString("stato"));
@@ -3454,6 +3456,7 @@ public static ArrayList<LatPuntoLivellaElettronicaDTO> getListaPuntiLivellaElett
 		{
 			ex.printStackTrace();
 			throw ex;
+			
 		}
 		finally
 		{
