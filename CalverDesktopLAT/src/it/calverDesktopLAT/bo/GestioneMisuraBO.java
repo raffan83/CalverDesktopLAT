@@ -464,9 +464,9 @@ public class GestioneMisuraBO
 			punto.setId_misura(idMisura);
 			punto.setPunto(i+1);
 			punto.setTipo_prova("L");
-			punto.setIndicazione_iniziale(BigDecimal.ZERO);
-			punto.setIndicazione_iniziale_corr(BigDecimal.ZERO);
-			punto.setInclinazione_cmp_campione(BigDecimal.ZERO);
+	//		punto.setIndicazione_iniziale(BigDecimal.ZERO);
+	//		punto.setIndicazione_iniziale_corr(BigDecimal.ZERO);
+	//		punto.setInclinazione_cmp_campione(BigDecimal.ZERO);
 			SQLiteDAO.insertListaPuntiLivellaElettronica(punto);
 		}
 	
@@ -484,9 +484,9 @@ public class GestioneMisuraBO
 				punto.setPunto(i+1);
 				punto.setNumero_prova(j);
 				punto.setTipo_prova("R");
-				punto.setIndicazione_iniziale(BigDecimal.ZERO);
-				punto.setIndicazione_iniziale_corr(BigDecimal.ZERO);
-				punto.setInclinazione_cmp_campione(BigDecimal.ZERO);
+		//		punto.setIndicazione_iniziale(BigDecimal.ZERO);
+		//		punto.setIndicazione_iniziale_corr(BigDecimal.ZERO);
+		//		punto.setInclinazione_cmp_campione(BigDecimal.ZERO);
 				SQLiteDAO.insertListaPuntiLivellaElettronica(punto);
 			}	
 		}
@@ -499,9 +499,9 @@ public class GestioneMisuraBO
 			punto.setId_misura(idMisura);
 			punto.setPunto(i+1);
 			punto.setTipo_prova("I");
-			punto.setIndicazione_iniziale(BigDecimal.ZERO);
-			punto.setIndicazione_iniziale_corr(BigDecimal.ZERO);
-			punto.setInclinazione_cmp_campione(BigDecimal.ZERO);
+	//		punto.setIndicazione_iniziale(BigDecimal.ZERO);
+	//		punto.setIndicazione_iniziale_corr(BigDecimal.ZERO);
+	//		punto.setInclinazione_cmp_campione(BigDecimal.ZERO);
 			SQLiteDAO.insertListaPuntiLivellaElettronica(punto);
 		}
 		
