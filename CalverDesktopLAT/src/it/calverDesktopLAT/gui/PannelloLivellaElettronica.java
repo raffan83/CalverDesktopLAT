@@ -416,6 +416,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 			{
 				comboBox_cmpRif.setSelectedItem(misura.getRif_campione());
 				campo_misura.setText(misura.getCampo_misura().toPlainString());
+				unita_formato.setText(misura.getUnita_formato().toPlainString());
 				sensibilita.setText(misura.getSensibilita().toPlainString());
 
 				listaParametri=GestioneCampioneBO.getParametriTaratura(comboBox_cmpRif.getSelectedItem().toString());
