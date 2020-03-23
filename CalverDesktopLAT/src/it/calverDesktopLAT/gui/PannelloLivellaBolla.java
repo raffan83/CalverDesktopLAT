@@ -205,12 +205,15 @@ public class PannelloLivellaBolla extends JPanel  {
 				centraggio.setColumns(10);
 				semInc.add(centraggio, "cell 1 7 2 1,growx");
 
-				JLabel lblCampoMisura = new JLabel("Campo Misura");
+				JLabel lblCampoMisura = new JLabel("Campo Misura ±");
 				semInc.add(lblCampoMisura, "cell 0 9,alignx trailing");
 
 				campo_misura = new JTextField();
 				campo_misura.setColumns(10);
 				semInc.add(campo_misura, "flowx,cell 1 9,growx");
+				
+				JLabel lblNewLabel = new JLabel(" \u00B1");
+				semInc.add(lblNewLabel, "cell 2 9,alignx trailing");
 
 				campo_misura_sec = new JTextField();
 				campo_misura_sec.setEditable(false);
@@ -287,6 +290,7 @@ public class PannelloLivellaBolla extends JPanel  {
 				JLabel lblMmm_2 = new JLabel("mm/m");
 				semInc.add(lblMmm_2, "cell 1 9");
 
+				
 				JLabel label_4 = new JLabel("mm/m");
 				semInc.add(label_4, "cell 1 11");
 
@@ -615,7 +619,7 @@ public class PannelloLivellaBolla extends JPanel  {
 			dev_st_field = new JTextField();
 			dev_st_field.setEditable(false);
 			dev_st_field.setFont(new Font("Arial", Font.BOLD, 12));
-			dev_st_field.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,0).toPlainString());
+			dev_st_field.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,0).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
 			semDex.add(dev_st_field, "cell 1 4");
 			dev_st_field.setColumns(10);
 
@@ -1135,7 +1139,7 @@ public void actionPerformed(ActionEvent event) {
 			dev_st_field = new JTextField();
 			dev_st_field.setEditable(false);
 			dev_st_field.setFont(new Font("Arial", Font.BOLD, 12));
-			dev_st_field.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,1).toPlainString());
+			dev_st_field.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,1).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
 			semSX.add(dev_st_field, "cell 1 4");
 			dev_st_field.setColumns(10);
 

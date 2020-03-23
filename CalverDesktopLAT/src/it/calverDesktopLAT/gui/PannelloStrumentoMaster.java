@@ -505,13 +505,21 @@ public class PannelloStrumentoMaster extends JPanel implements ActionListener {
 							SessionBO.indexTableLAT=indexTableLAT;
 									JPanel panelDB =null;
 									int idMisura=GestioneMisuraBO.isPresentLAT(id);
-			
+									int idMisuraNoLat=GestioneMisuraBO.isPresent(id);
 			
 									if(idMisura==0)
 									{
 										SessionBO.idStrumento=id;	
 										
-										GestioneMisuraBO.insertMisura(id);
+										if(idMisuraNoLat==0) 
+										{
+											GestioneMisuraBO.insertMisura(id);
+										}
+										else 
+										{
+											GestioneMisuraBO.cambiaStatoMisura(SessionBO.idStrumento, 0);
+										}
+										
 										idMisura=GestioneMisuraBO.insertMisuraLAT(id,indexTableLAT);
 										
 										if(indexTableLAT==1) 

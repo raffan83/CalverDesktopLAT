@@ -578,7 +578,7 @@ public class GestioneMisuraBO
 			{
 				if(puntoSX.getDiv_dex()!=null && puntoSX.getDiv_dex().compareTo(BigDecimal.ZERO)!=0) 
 				{
-					media=media.add(puntoSX.getDiv_dex().abs() );
+					media=media.add(puntoSX.getDiv_dex() );
 					index++;
 				}
 			}
@@ -647,7 +647,7 @@ public class GestioneMisuraBO
 			{
 				if(puntoSX.getDiv_dex()!=null && puntoSX.getDiv_dex().compareTo(BigDecimal.ZERO)!=0) 
 				{
-					double val = Math.pow(puntoSX.getDiv_dex().abs().subtract(mediaGlobale).doubleValue(), 2D);
+					double val = Math.pow(puntoSX.getDiv_dex().subtract(mediaGlobale).doubleValue(), 2D);
 	                 media = media.add(new BigDecimal(val));
 	                 index++;
 				}

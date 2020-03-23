@@ -203,7 +203,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 			comboBox_cmpRif = new JComboBox(GestioneCampioneBO.getListaCampioniCompleta());
 			semInc.add(comboBox_cmpRif, "cell 1 1 2 1,growx,aligny top");
 
-			JLabel lblCampoMisura = new JLabel("Campo Misura (Strumento)");
+			JLabel lblCampoMisura = new JLabel("Campo Misura (Strumento) ±");
 			semInc.add(lblCampoMisura, "cell 0 2,alignx trailing,aligny top");
 
 			campo_misura = new JTextField();
@@ -217,7 +217,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 			unita_formato.setColumns(10);
 			semInc.add(unita_formato, "flowx,cell 1 3,growx,aligny top");
 
-			JLabel lblSensibilit = new JLabel("Sensibilit\u00E0: (Strumento)");
+			JLabel lblSensibilit = new JLabel("Risoluzione: (Strumento)");
 			semInc.add(lblSensibilit, "cell 0 4,alignx trailing,aligny top");
 
 			sensibilita = new JTextField();
