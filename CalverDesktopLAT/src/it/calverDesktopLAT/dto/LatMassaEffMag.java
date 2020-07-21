@@ -8,16 +8,21 @@ public class LatMassaEffMag {
 	private int id_misura; 
 	private String  comparatore;
 	private String  campione ;
-	private BigDecimal  valore_nominale_campione;   
+	private String  valore_nominale_campione;   
+	private String  classeOiml;
 	private String  segno_distintivo;
 	private BigDecimal  eff_mag_L1;  
-	private BigDecimal  eff_mag_L2;  
+	private BigDecimal  eff_mag_L2; 
+	private BigDecimal mc;
+	private BigDecimal uMc;
 	private String	  eff_mag_esito ;
+	
 	private String	  classe_campione ;
 	private BigDecimal  classe_campione_u;  
 	private BigDecimal  classe_campione_min ; 
 	private BigDecimal  classe_campione_pc ; 
 	private BigDecimal  classe_campione_max ; 
+	
 	private String	  classe_taratura ;
 	private BigDecimal  classe_taratura_u;  
 	private BigDecimal  classe_taratura_min ; 
@@ -47,11 +52,18 @@ public class LatMassaEffMag {
 	public void setCampione(String campione) {
 		this.campione = campione;
 	}
-	public BigDecimal getValore_nominale_campione() {
+	
+	public String getValore_nominale_campione() {
 		return valore_nominale_campione;
 	}
-	public void setValore_nominale_campione(BigDecimal valore_nominale_campione) {
+	public void setValore_nominale_campione(String valore_nominale_campione) {
 		this.valore_nominale_campione = valore_nominale_campione;
+	}
+	public String getClasseOiml() {
+		return classeOiml;
+	}
+	public void setClasseOiml(String classeOiml) {
+		this.classeOiml = classeOiml;
 	}
 	public String getSegno_distintivo() {
 		return segno_distintivo;
@@ -70,6 +82,19 @@ public class LatMassaEffMag {
 	}
 	public void setEff_mag_L2(BigDecimal eff_mag_L2) {
 		this.eff_mag_L2 = eff_mag_L2;
+	}
+	
+	public BigDecimal getMc() {
+		return mc;
+	}
+	public void setMc(BigDecimal mc) {
+		this.mc = mc;
+	}
+	public BigDecimal getuMc() {
+		return uMc;
+	}
+	public void setuMc(BigDecimal uMc) {
+		this.uMc = uMc;
 	}
 	public String getEff_mag_esito() {
 		return eff_mag_esito;

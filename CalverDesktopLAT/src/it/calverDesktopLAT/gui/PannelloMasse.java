@@ -34,6 +34,8 @@ import javax.swing.table.TableColumn;
 
 import org.apache.commons.io.FilenameUtils;
 
+import com.sun.xml.internal.bind.v2.runtime.reflect.ListTransducedAccessorImpl;
+
 import it.calverDesktopLAT.bo.GestioneCampioneBO;
 import it.calverDesktopLAT.bo.GestioneMisuraBO;
 import it.calverDesktopLAT.bo.GestioneRegistro;
@@ -43,11 +45,15 @@ import it.calverDesktopLAT.dao.SQLiteDAO;
 import it.calverDesktopLAT.dto.LatMassaAMB;
 import it.calverDesktopLAT.dto.LatMassaAMB_DATA;
 import it.calverDesktopLAT.dto.LatMassaAMB_SONDE;
+import it.calverDesktopLAT.dto.LatMassaClasseDTO;
+import it.calverDesktopLAT.dto.LatMassaEffMag;
+import it.calverDesktopLAT.dto.LatMassaScartiTipo;
 import it.calverDesktopLAT.dto.LatMisuraDTO;
 import it.calverDesktopLAT.dto.LatPuntoLivellaElettronicaDTO;
 import it.calverDesktopLAT.dto.ParametroTaraturaDTO;
 import it.calverDesktopLAT.dto.RegLinDTO;
 import it.calverDesktopLAT.utl.Costanti;
+import it.calverDesktopLAT.utl.Utility;
 import jdk.nashorn.internal.ir.CatchNode;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
@@ -90,6 +96,9 @@ public class PannelloMasse extends JPanel  {
 	private JTextField textField_l1;
 	private JTextField textField_l2;
 	private JTextField textField_val_taratura_param;
+	private ArrayList<LatMassaClasseDTO> listaClassi =null;
+	private ArrayList<LatMassaScartiTipo> listaScarti=null;
+	private JTextField textField_val_u_param;
 
 	public PannelloMasse(int index) {
 
@@ -140,26 +149,37 @@ public class PannelloMasse extends JPanel  {
 
 		mainPanelEffettoMagnetico.setBackground(Color.LIGHT_GRAY);
 
+		
 		try 
 		{
+			listaClassi=GestioneMisuraBO.getListaClassi();
 			mainPanelEffettoMagnetico.setLayout(new MigLayout("", "[grow]", "[30%,grow][grow]"));
 			model_condizionniEffMag = new ModelEffettoMagnetico();
 
 
 			JPanel pannelloInserimentoValori= new JPanel();
 			pannelloInserimentoValori.setBackground(Color.WHITE);
-			pannelloInserimentoValori.setLayout(new MigLayout("", "[][::10px][][::10px][][::10px][][::10px][][::10px][][grow]", "[grow][][grow][][grow][][grow][][grow][][grow][20px:20px][grow]"));
+			pannelloInserimentoValori.setLayout(new MigLayout("", "[][::10px][][::10px][][::10px][][::10px][][::10px][grow][grow]", "[grow][][grow][][][grow][][grow][][grow][][grow][20px:20px][grow]"));
 			mainPanelEffettoMagnetico.add(pannelloInserimentoValori, "cell 0 0,grow");
 
 			JLabel lblComparatore = new JLabel("Comparatore");
 			lblComparatore.setFont(new Font("Arial", Font.BOLD, 14));
 			pannelloInserimentoValori.add(lblComparatore, "flowx,cell 0 0,alignx trailing");
 
-			JComboBox comboBox_comparatore = new JComboBox(GestioneCampioneBO.getListaCampioniCompleta());
-			comboBox_comparatore.setFont(new Font("Arial", Font.PLAIN, 14));
-			pannelloInserimentoValori.add(comboBox_comparatore, "cell 2 0,growx");
+			listaScarti=GestioneCampioneBO.getListaScartiTipo();
 			
-			JCheckBox chckbxSegnoDistintivo = new JCheckBox("Segno Distintivo");
+			String[] descrizioni = new String[listaScarti.size()+1];
+			
+			descrizioni[0]="Seleziona un comparatore...";
+			for (int i = 0; i <listaScarti.size(); i++) {
+				descrizioni[i+1] =listaScarti.get(i).getDescrizione();
+			}
+			
+			final JComboBox comboBox_comparatore = new JComboBox(descrizioni);
+			comboBox_comparatore.setFont(new Font("Arial", Font.PLAIN, 14));
+			pannelloInserimentoValori.add(comboBox_comparatore, "cell 2 0");
+			
+			final JCheckBox chckbxSegnoDistintivo = new JCheckBox("Segno Distintivo");
 			chckbxSegnoDistintivo.setBackground(Color.WHITE);
 			chckbxSegnoDistintivo.setFont(new Font("Arial", Font.BOLD, 14));
 			pannelloInserimentoValori.add(chckbxSegnoDistintivo, "cell 4 0,alignx right");
@@ -170,7 +190,7 @@ public class PannelloMasse extends JPanel  {
 
 			final JComboBox comboBox_campione = new JComboBox(GestioneCampioneBO.getListaCampioniCompleta());
 			comboBox_campione.setFont(new Font("Arial", Font.PLAIN, 14));
-			pannelloInserimentoValori.add(comboBox_campione, "cell 2 2,growx");
+			pannelloInserimentoValori.add(comboBox_campione, "cell 2 2");
 
 			JLabel lblValoreNominale = new JLabel("Parametro");
 			lblValoreNominale.setFont(new Font("Arial", Font.BOLD, 14));
@@ -184,76 +204,96 @@ public class PannelloMasse extends JPanel  {
 			comboBox_valore_nominale.setFont(new Font("Arial", Font.PLAIN, 14));
 			pannelloInserimentoValori.add(comboBox_valore_nominale, "cell 6 2,width :150:");
 			
-			JLabel lblValoreTaratura = new JLabel("Valore Taratura");
+			JLabel lblClasseOimlR = new JLabel("Classe OIML R111-1");
+			lblClasseOimlR.setFont(new Font("Arial", Font.BOLD, 14));
+			pannelloInserimentoValori.add(lblClasseOimlR, "cell 0 3,alignx right");
+			
+			final JComboBox comboBox_classe_oiml = new JComboBox();
+			comboBox_classe_oiml.setFont(new Font("Arial", Font.PLAIN, 14));
+			comboBox_classe_oiml.setModel(new DefaultComboBoxModel(new String[] {"E1", "E2", "F1", "F2", "M1", "M1/2", "M2", "M2/2", "M3", "M3/2"}));
+			pannelloInserimentoValori.add(comboBox_classe_oiml, "cell 2 3");
+			
+			JLabel lblValoreTaratura = new JLabel("Mc");
 			lblValoreTaratura.setFont(new Font("Arial", Font.BOLD, 14));
-			pannelloInserimentoValori.add(lblValoreTaratura, "cell 8 2,alignx trailing");
+			pannelloInserimentoValori.add(lblValoreTaratura, "cell 4 3,alignx trailing");
 			
 			textField_val_taratura_param = new JTextField();
 			textField_val_taratura_param.setFont(new Font("Arial", Font.PLAIN, 14));
 			textField_val_taratura_param.setEditable(false);
-			pannelloInserimentoValori.add(textField_val_taratura_param, "cell 10 2,growx");
+			pannelloInserimentoValori.add(textField_val_taratura_param, "cell 6 3");
 			textField_val_taratura_param.setColumns(10);
 
 			JLabel lblLetturaL_1 = new JLabel("Lettura L1");
 			lblLetturaL_1.setFont(new Font("Arial", Font.BOLD, 14));
-			pannelloInserimentoValori.add(lblLetturaL_1, "cell 0 4,alignx trailing");
+			pannelloInserimentoValori.add(lblLetturaL_1, "cell 0 5,alignx trailing");
 
 			textField_l1 = new JTextField();
 			textField_l1.setFont(new Font("Arial", Font.PLAIN, 14));
-			pannelloInserimentoValori.add(textField_l1, "cell 2 4,width : 150:");
+			pannelloInserimentoValori.add(textField_l1, "cell 2 5,width : 150:");
 			textField_l1.setColumns(10);
+			
+			JLabel lblUmc = new JLabel("U(Mc)");
+			lblUmc.setFont(new Font("Arial", Font.BOLD, 14));
+			pannelloInserimentoValori.add(lblUmc, "cell 4 5,alignx right");
+			
+			textField_val_u_param = new JTextField();
+			textField_val_u_param.setFont(new Font("Arial", Font.PLAIN, 14));
+			textField_val_u_param.setEditable(false);
+			textField_val_u_param.setColumns(10);
+			pannelloInserimentoValori.add(textField_val_u_param, "cell 6 5");
 
 			JLabel lblLetturaL = new JLabel("Lettura L2");
 			lblLetturaL.setFont(new Font("Arial", Font.BOLD, 14));
-			pannelloInserimentoValori.add(lblLetturaL, "cell 0 6,alignx trailing");
+			pannelloInserimentoValori.add(lblLetturaL, "cell 0 7,alignx trailing");
 
 			textField_l2 = new JTextField();
 			textField_l2.setFont(new Font("Arial", Font.PLAIN, 14));
 			textField_l2.setColumns(10);
-			pannelloInserimentoValori.add(textField_l2, "cell 2 6,width :150:");
+			pannelloInserimentoValori.add(textField_l2, "cell 2 7,width :150:");
 
 			JLabel lblClasseCampione = new JLabel("Classe Campione");
 			lblClasseCampione.setHorizontalAlignment(SwingConstants.TRAILING);
 			lblClasseCampione.setFont(new Font("Arial", Font.BOLD, 14));
-			pannelloInserimentoValori.add(lblClasseCampione, "cell 0 8,alignx trailing");
+			pannelloInserimentoValori.add(lblClasseCampione, "cell 0 9,alignx trailing");
 
-			JComboBox comboBox_classe_campione = new JComboBox();
+			String[] classi =getValNominaleClassi(listaClassi);
+			final JComboBox comboBox_classe_campione = new JComboBox(classi);
 			comboBox_classe_campione.setFont(new Font("Arial", Font.PLAIN, 14));
-			pannelloInserimentoValori.add(comboBox_classe_campione, "cell 2 8,growx");
+			pannelloInserimentoValori.add(comboBox_classe_campione, "cell 2 9,growx");
 
 			JLabel lblUClasseCampione = new JLabel("(U) Classe Campione");
 			lblUClasseCampione.setHorizontalAlignment(SwingConstants.TRAILING);
 			lblUClasseCampione.setFont(new Font("Arial", Font.BOLD, 14));
-			pannelloInserimentoValori.add(lblUClasseCampione, "cell 4 8,alignx trailing");
+			pannelloInserimentoValori.add(lblUClasseCampione, "cell 4 9,alignx trailing");
 
-			JComboBox comboBox_u_classe_campione = new JComboBox();
+			final JComboBox comboBox_u_classe_campione = new JComboBox();
 			comboBox_u_classe_campione.setFont(new Font("Arial", Font.PLAIN, 14));
-			comboBox_u_classe_campione.setModel(new DefaultComboBoxModel(new String[] {"Seleziona ...", "70", "85", "300"}));
-			pannelloInserimentoValori.add(comboBox_u_classe_campione, "cell 6 8,growx");
+			comboBox_u_classe_campione.setModel(new DefaultComboBoxModel(new String[] {"Seleziona ...", "140", "170", "600"}));
+			pannelloInserimentoValori.add(comboBox_u_classe_campione, "cell 6 9,growx");
 
 			JLabel lblClasseTaratura = new JLabel("Classe Taratura");
 			lblClasseTaratura.setHorizontalAlignment(SwingConstants.TRAILING);
 			lblClasseTaratura.setFont(new Font("Arial", Font.BOLD, 14));
-			pannelloInserimentoValori.add(lblClasseTaratura, "cell 0 10,alignx trailing");
+			pannelloInserimentoValori.add(lblClasseTaratura, "cell 0 11,alignx trailing");
 
-			JComboBox comboBox_classe_taratura = new JComboBox();
+			final JComboBox comboBox_classe_taratura = new JComboBox(classi);
 			comboBox_classe_taratura.setFont(new Font("Arial", Font.PLAIN, 14));
-			pannelloInserimentoValori.add(comboBox_classe_taratura, "cell 2 10,growx");
+			pannelloInserimentoValori.add(comboBox_classe_taratura, "cell 2 11,growx");
 
 			JLabel lblUClasseTaratura = new JLabel("(U) Classe Taratura");
 			lblUClasseTaratura.setHorizontalAlignment(SwingConstants.TRAILING);
 			lblUClasseTaratura.setFont(new Font("Arial", Font.BOLD, 14));
-			pannelloInserimentoValori.add(lblUClasseTaratura, "cell 4 10,alignx trailing");
+			pannelloInserimentoValori.add(lblUClasseTaratura, "cell 4 11,alignx trailing");
 
-			JComboBox comboBox_u_classe_taratura = new JComboBox();
+			final JComboBox comboBox_u_classe_taratura = new JComboBox();
 			comboBox_u_classe_taratura.setFont(new Font("Arial", Font.PLAIN, 14));
-			comboBox_u_classe_taratura.setModel(new DefaultComboBoxModel(new String[] {"Seleziona ...", "70", "85", "300"}));
-			pannelloInserimentoValori.add(comboBox_u_classe_taratura, "cell 6 10,growx");
+			comboBox_u_classe_taratura.setModel(new DefaultComboBoxModel(new String[] {"Seleziona ...", "140", "170", "600"}));
+			pannelloInserimentoValori.add(comboBox_u_classe_taratura, "cell 6 11,growx");
 
 			JButton btnCalcolaInserisci = new JButton("Calcola & Inserisci");
 			btnCalcolaInserisci.setIcon(new ImageIcon(PannelloMasse.class.getResource("/image/calcola.png")));
 			btnCalcolaInserisci.setFont(new Font("Arial", Font.BOLD, 14));
-			pannelloInserimentoValori.add(btnCalcolaInserisci, "cell 0 12 11 1,alignx center");
+			pannelloInserimentoValori.add(btnCalcolaInserisci, "cell 0 13 11 1,alignx center");
 
 			JPanel pannelloTabEffettoMag= new JPanel();
 			pannelloTabEffettoMag.setBackground(Color.WHITE);
@@ -282,6 +322,40 @@ public class PannelloMasse extends JPanel  {
 			pannelloTabEffettoMag.add(scrollTab, "cell 0 0,grow");
 
 
+			ArrayList<LatMassaEffMag> listaEffettoMagnetico = GestioneMisuraBO.getListaEffettoMagnetico(SessionBO.idMisura);
+			
+			
+			for (int i = 0; i < listaEffettoMagnetico.size(); i++) {
+				
+				int row=i;
+				
+				LatMassaEffMag effetto=listaEffettoMagnetico.get(i);
+				
+				model_condizionniEffMag.addRow(new Object[0]);
+				model_condizionniEffMag.setValueAt(effetto.getComparatore(), row, 0);
+				model_condizionniEffMag.setValueAt(effetto.getCampione(), row, 1);
+				model_condizionniEffMag.setValueAt(effetto.getValore_nominale_campione(), row, 2);
+				model_condizionniEffMag.setValueAt(effetto.getClasseOiml(), row, 3);
+				model_condizionniEffMag.setValueAt(effetto.getSegno_distintivo(), row, 4);
+				model_condizionniEffMag.setValueAt(effetto.getEff_mag_L1().stripTrailingZeros().toPlainString(), row, 5);
+				model_condizionniEffMag.setValueAt(effetto.getEff_mag_L2().stripTrailingZeros().toPlainString(), row, 6);
+				model_condizionniEffMag.setValueAt(effetto.getEff_mag_esito(), row, 7);
+				model_condizionniEffMag.setValueAt(effetto.getMc().stripTrailingZeros().toString(), row, 8);
+				model_condizionniEffMag.setValueAt(effetto.getuMc().stripTrailingZeros().toString(), row, 9);
+				
+				model_condizionniEffMag.setValueAt(effetto.getClasse_campione(), row, 10);
+				model_condizionniEffMag.setValueAt(effetto.getClasse_campione_u().stripTrailingZeros().toPlainString(), row, 11);
+				model_condizionniEffMag.setValueAt(effetto.getClasse_campione_min().stripTrailingZeros().toPlainString(), row, 12);
+				model_condizionniEffMag.setValueAt(effetto.getClasse_campione_pc().stripTrailingZeros().toPlainString(), row, 13);
+				model_condizionniEffMag.setValueAt(effetto.getClasse_campione_max().stripTrailingZeros().toPlainString(), row, 14);
+				
+				model_condizionniEffMag.setValueAt(effetto.getClasse_taratura(), row, 15);
+				model_condizionniEffMag.setValueAt(effetto.getClasse_taratura_u().stripTrailingZeros().toPlainString(), row, 16);
+				model_condizionniEffMag.setValueAt(effetto.getClasse_taratura_min().stripTrailingZeros().toPlainString(), row, 17);
+				model_condizionniEffMag.setValueAt(effetto.getClasse_taratura_pc().stripTrailingZeros().toPlainString(), row, 18);
+				model_condizionniEffMag.setValueAt(effetto.getClasse_taratura_max().stripTrailingZeros().toPlainString(), row, 19);
+			}
+			
 			comboBox_campione.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 				
@@ -329,7 +403,12 @@ public class PannelloMasse extends JPanel  {
 							if(param.getDescrizioneParametro().equals(codiceParametro)) 
 							{
 								textField_val_taratura_param.setText(param.getValoreTaratura().toPlainString());
+								
+								BigDecimal value=param.getIncertezzaAssoluta().setScale(20).divide(new BigDecimal(2).setScale(20),RoundingMode.HALF_UP);
+								textField_val_u_param.setText(value.stripTrailingZeros().toPlainString());
 							}
+							
+							
 						}
 					}
 				 }
@@ -340,6 +419,169 @@ public class PannelloMasse extends JPanel  {
 				}
 			});
 
+			btnCalcolaInserisci.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					
+					boolean calcola=true;
+					
+					if(comboBox_comparatore.getSelectedIndex()==0) 
+					{
+						calcola=false;
+					}
+					if(comboBox_campione.getSelectedIndex()==0) 
+					{
+						calcola=false;
+					}
+					if(comboBox_valore_nominale.getSelectedIndex()==0) 
+					{
+						calcola=false;
+					}
+					if(comboBox_classe_oiml.getSelectedIndex()==0) 
+					{
+						calcola=false;
+					}
+					if(textField_val_taratura_param.getText().length()==0) 
+					{
+						calcola=false;
+					}
+					if(textField_val_u_param.getText().length()==0) 
+					{
+						calcola=false;
+					}
+					if(textField_l1.getText().length()==0) 
+					{
+						calcola=false;
+					}
+					if(textField_l2.getText().length()==0) 
+					{
+						calcola=false;
+					}
+					if(comboBox_classe_campione.getSelectedIndex()==0) 
+					{
+						calcola=false;
+					}
+					if(comboBox_u_classe_campione.getSelectedIndex()==0) 
+					{
+						calcola=false;
+					}
+					if(comboBox_classe_taratura.getSelectedIndex()==0) 
+					{
+						calcola=false;
+					}
+					if(comboBox_u_classe_taratura.getSelectedIndex()==0) 
+					{
+						calcola=false;
+					}
+					
+					int row=model_condizionniEffMag.getRowCount();
+					if(calcola) 
+					{
+						model_condizionniEffMag.addRow(new Object[0]);
+						model_condizionniEffMag.setValueAt(comboBox_comparatore.getSelectedItem().toString(), row, 0);
+						model_condizionniEffMag.setValueAt(comboBox_campione.getSelectedItem().toString(), row, 1);
+						model_condizionniEffMag.setValueAt(comboBox_valore_nominale.getSelectedItem().toString(), row, 2);
+						model_condizionniEffMag.setValueAt(comboBox_classe_oiml.getSelectedItem().toString(), row, 3);
+						
+						if(chckbxSegnoDistintivo.isSelected()) 
+						{
+							model_condizionniEffMag.setValueAt("*", row, 4);
+						}
+						model_condizionniEffMag.setValueAt(textField_l1.getText(), row, 5);
+						model_condizionniEffMag.setValueAt(textField_l2.getText().toString(), row, 6);
+						
+						String esito =getEsitoEffettoMagnetico(textField_l1.getText(),textField_l2.getText(),listaScarti.get(comboBox_comparatore.getSelectedIndex()-1));
+						model_condizionniEffMag.setValueAt(esito, row, 7);
+						model_condizionniEffMag.setValueAt(textField_val_taratura_param.getText().toString(), row, 8);
+						model_condizionniEffMag.setValueAt(textField_val_u_param.getText().toString(), row, 9);
+						
+						model_condizionniEffMag.setValueAt(comboBox_classe_campione.getSelectedItem().toString(), row, 10);
+						model_condizionniEffMag.setValueAt(comboBox_u_classe_campione.getSelectedItem().toString(), row, 11);
+						
+						model_condizionniEffMag.setValueAt(listaClassi.get(comboBox_classe_campione.getSelectedIndex()-1).getDens_min(), row, 12);
+						double media_ccp=(listaClassi.get(comboBox_classe_campione.getSelectedIndex()-1).getDens_min()+listaClassi.get(comboBox_classe_campione.getSelectedIndex()-1).getDens_max())/2;
+						model_condizionniEffMag.setValueAt(media_ccp, row, 13);
+						model_condizionniEffMag.setValueAt(listaClassi.get(comboBox_classe_campione.getSelectedIndex()-1).getDens_max(), row, 14);
+						
+						model_condizionniEffMag.setValueAt(comboBox_classe_taratura.getSelectedItem().toString(), row, 15);
+						model_condizionniEffMag.setValueAt(comboBox_u_classe_taratura.getSelectedItem().toString(), row, 16);
+						
+						model_condizionniEffMag.setValueAt(listaClassi.get(comboBox_classe_taratura.getSelectedIndex()-1).getDens_min(), row, 17);
+						double media_cct=(listaClassi.get(comboBox_classe_taratura.getSelectedIndex()-1).getDens_min()+listaClassi.get(comboBox_classe_taratura.getSelectedIndex()-1).getDens_max())/2;
+						model_condizionniEffMag.setValueAt(media_cct, row, 18);
+						model_condizionniEffMag.setValueAt(listaClassi.get(comboBox_classe_taratura.getSelectedIndex()-1).getDens_max(), row, 19);
+						
+						
+						LatMassaEffMag effMag= new LatMassaEffMag();
+						effMag.setId_misura(SessionBO.idMisura);
+						effMag.setComparatore(comboBox_comparatore.getSelectedItem().toString());
+						effMag.setCampione(comboBox_campione.getSelectedItem().toString());
+						effMag.setValore_nominale_campione(comboBox_valore_nominale.getSelectedItem().toString());
+						effMag.setClasseOiml(comboBox_classe_oiml.getSelectedItem().toString());
+						if(chckbxSegnoDistintivo.isSelected()) 
+						{
+							effMag.setSegno_distintivo("*");
+						}
+						effMag.setEff_mag_L1(new BigDecimal(textField_l1.getText()));
+						effMag.setEff_mag_L2(new BigDecimal(textField_l2.getText()));
+						effMag.setEff_mag_esito(esito);
+						
+						effMag.setMc(new BigDecimal(textField_val_taratura_param.getText()));
+						effMag.setuMc(new BigDecimal(textField_val_u_param.getText()));
+						
+						effMag.setClasse_campione(comboBox_classe_campione.getSelectedItem().toString());
+						effMag.setClasse_campione_u(new BigDecimal(comboBox_u_classe_campione.getSelectedItem().toString()));  
+						effMag.setClasse_campione_min(new BigDecimal(listaClassi.get(comboBox_classe_campione.getSelectedIndex()-1).getDens_min())) ; 
+						effMag.setClasse_campione_pc(new BigDecimal(media_ccp)) ; 
+						effMag.setClasse_campione_max(new BigDecimal(listaClassi.get(comboBox_classe_campione.getSelectedIndex()-1).getDens_max())) ; 
+						
+						effMag.setClasse_taratura(comboBox_classe_taratura.getSelectedItem().toString());
+						effMag.setClasse_taratura_u(new BigDecimal(comboBox_u_classe_taratura.getSelectedItem().toString()));  
+						effMag.setClasse_taratura_min(new BigDecimal(listaClassi.get(comboBox_classe_taratura.getSelectedIndex()-1).getDens_min())) ; 
+						effMag.setClasse_taratura_pc(new BigDecimal(media_cct)) ; 
+						effMag.setClasse_taratura_max(new BigDecimal(listaClassi.get(comboBox_classe_taratura.getSelectedIndex()-1).getDens_max())) ;
+						
+						try {
+							GestioneMisuraBO.insertEffettoMagnetico(effMag);
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						
+					}else 
+					{
+						JOptionPane.showMessageDialog(null,"Compilare tutti i campi","Errore Compilazione",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
+					}
+				}
+
+				private String getEsitoEffettoMagnetico(String l1, String l2,LatMassaScartiTipo latMassaScartiTipo) {
+					
+					if(Utility.isNumber(l1) && Utility.isNumber(l2)) 
+					{
+						double lettuta1=Double.parseDouble(l1);
+						double lettuta2=Double.parseDouble(l2);
+						
+						double valore=Math.abs(lettuta1)-lettuta2;
+						
+						double ub = Math.sqrt((Math.pow(latMassaScartiTipo.getScarto().doubleValue(),2)+(Math.pow(latMassaScartiTipo.getIncertezzaScarto().doubleValue(),2)/6)));
+					
+						if(valore<2*ub) 
+						{
+							return "NON RILEVATO, NO DISTANZIALE";
+						}
+						else 
+						{
+							return "RILEVATO, SI DISTANZIALE";
+						}
+					}
+					else 
+					{
+						return "ERRORE";
+					}
+					
+				}
+			});
 		}
 		catch (Exception e) 
 		{
@@ -347,6 +589,22 @@ public class PannelloMasse extends JPanel  {
 		}
 
 		return mainPanelEffettoMagnetico;
+	}
+
+
+
+	private String[] getValNominaleClassi(ArrayList<LatMassaClasseDTO> listClass) {
+		
+		String[] data =new String[listClass.size()+1];
+		
+		data[0]="Seleziona...";
+		
+		for (int i = 0; i < listClass.size(); i++)
+		{
+			
+			data[i+1]=listaClassi.get(i).getVal_nominale();
+		}
+		return data;
 	}
 
 
@@ -1306,6 +1564,7 @@ class ModelEffettoMagnetico extends DefaultTableModel {
 		addColumn("COMPARATORE");
 		addColumn("CAMPIONE");
 		addColumn("VAL. NOM.");
+		addColumn("C. OIML");
 		addColumn("SEGNO DIST.");
 		addColumn("EFF MAG L1");
 		addColumn("EFF MAG L2");
@@ -1313,15 +1572,16 @@ class ModelEffettoMagnetico extends DefaultTableModel {
 		addColumn("Mc");
 		addColumn("U (Mc)");
 		addColumn("C.C.");
+		addColumn("C.C. U");
 		addColumn("C.C. \u03C1min");
 		addColumn("C.C. \u03C1c");
 		addColumn("C.C. \u03C1max");
-		addColumn("C.C. U");
 		addColumn("C.T.");
+		addColumn("C.T. U");
 		addColumn("C.T. \u03C1min");
 		addColumn("C.T. \u03C1c");
 		addColumn("C.T. \u03C1max");
-		addColumn("C.T. U");
+		
 
 		addColumn("index");
 
@@ -1368,6 +1628,8 @@ class ModelEffettoMagnetico extends DefaultTableModel {
 		case 18:
 			return String.class;
 		case 19:
+			return String.class;
+		case 20:
 			return String.class;
 		default:
 			return String.class;

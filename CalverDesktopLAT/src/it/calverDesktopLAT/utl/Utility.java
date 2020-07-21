@@ -52,7 +52,7 @@ public class Utility {
 		
 		try 
 		{
-		 Integer.parseInt(nPunti);		
+		 Double.parseDouble(nPunti);		
 		} 
 		catch (NumberFormatException e) 
 		{

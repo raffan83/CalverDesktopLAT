@@ -12,6 +12,8 @@ import it.calverDesktopLAT.dto.DatiEsterniDTO;
 import it.calverDesktopLAT.dto.LatMassaAMB;
 import it.calverDesktopLAT.dto.LatMassaAMB_DATA;
 import it.calverDesktopLAT.dto.LatMassaAMB_SONDE;
+import it.calverDesktopLAT.dto.LatMassaClasseDTO;
+import it.calverDesktopLAT.dto.LatMassaEffMag;
 import it.calverDesktopLAT.dto.LatMisuraDTO;
 import it.calverDesktopLAT.dto.LatPuntoLivellaElettronicaDTO;
 import it.calverDesktopLAT.dto.MisuraDTO;
@@ -1055,6 +1057,21 @@ public class GestioneMisuraBO
 	public static int getIdTabellaIncertezza(int idMisura, String idPunto) throws Exception {
 		
 		return SQLiteDAO.getIdTabellaIncertezza(idMisura, idPunto);
+	}
+
+	public static ArrayList<LatMassaClasseDTO> getListaClassi() throws Exception {
+		
+		return SQLiteDAO.getListaClassi();
+	}
+
+	public static void insertEffettoMagnetico(LatMassaEffMag effMag) throws Exception {
+		
+		SQLiteDAO.insertEffettoMagnetico(effMag);
+	}
+
+	public static ArrayList<LatMassaEffMag> getListaEffettoMagnetico(int idMisura) throws Exception {
+		
+		return SQLiteDAO.getListaEffettoMagnetico(idMisura);
 	}
 
 	

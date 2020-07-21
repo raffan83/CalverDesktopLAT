@@ -7,8 +7,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.ComboBoxModel;
+
 import it.calverDesktopLAT.dao.SQLiteDAO;
 import it.calverDesktopLAT.dto.CampioneDTO;
+import it.calverDesktopLAT.dto.LatMassaEffMag;
+import it.calverDesktopLAT.dto.LatMassaScartiTipo;
 import it.calverDesktopLAT.dto.ParametroTaraturaDTO;
 
 public class GestioneCampioneBO {
@@ -226,5 +230,12 @@ public static String[] getParametriTaraturaTotali(String codiceCampione) throws 
 		ArrayList<ParametroTaraturaDTO> listaParametri = SQLiteDAO.getListaParametriTaraturaSelezionato(codCampione);
 		
 		return listaParametri;
+	}
+
+
+	public static ArrayList<LatMassaScartiTipo> getListaScartiTipo() throws Exception {
+		
+		 ArrayList<LatMassaScartiTipo> listaScarti =SQLiteDAO.getListaScartiTipo();
+		 return listaScarti;
 	}
 }

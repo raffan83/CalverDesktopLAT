@@ -26,6 +26,9 @@ import it.calverDesktopLAT.dto.DatiEsterniDTO;
 import it.calverDesktopLAT.dto.LatMassaAMB;
 import it.calverDesktopLAT.dto.LatMassaAMB_DATA;
 import it.calverDesktopLAT.dto.LatMassaAMB_SONDE;
+import it.calverDesktopLAT.dto.LatMassaClasseDTO;
+import it.calverDesktopLAT.dto.LatMassaEffMag;
+import it.calverDesktopLAT.dto.LatMassaScartiTipo;
 import it.calverDesktopLAT.dto.LatMisuraDTO;
 import it.calverDesktopLAT.dto.LatPuntoLivellaElettronicaDTO;
 import it.calverDesktopLAT.dto.LuogoVerificaDTO;
@@ -3931,6 +3934,185 @@ public static ArrayList<LatPuntoLivellaElettronicaDTO> getListaPuntiLivellaElett
 			con.close();
 		}
 		return 0;
+	}
+	public static ArrayList<LatMassaClasseDTO> getListaClassi() throws Exception {
+		
+		Connection con =null;
+		PreparedStatement pst= null;
+		ResultSet rs=null;
+		ArrayList<LatMassaClasseDTO> listaClassi = new ArrayList<LatMassaClasseDTO>();
+		try{
+			con=getConnection();			
+			
+			pst=con.prepareStatement("SELECT * FROM lat_massa_classe");
+			rs=pst.executeQuery();
+		
+			LatMassaClasseDTO classe;
+		    while(rs.next()) 
+		    {
+		    	classe = new LatMassaClasseDTO();
+		    	classe.setId(rs.getInt("id"));
+		    	classe.setVal_nominale(rs.getString("val_nominale"));
+		    	classe.setMg(rs.getInt("mg"));
+		    	classe.setDens_min(rs.getInt("dens_min"));
+		    	classe.setDens_max(rs.getInt("dens_max"));
+		    	
+		    	listaClassi.add(classe);
+		    }
+			  
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+			throw ex;
+		}
+		finally
+		{
+			pst.close();
+			con.close();
+		}
+		return listaClassi;
+	}
+	public static ArrayList<LatMassaScartiTipo> getListaScartiTipo() throws Exception {
+		Connection con =null;
+		PreparedStatement pst= null;
+		ResultSet rs=null;
+		ArrayList<LatMassaScartiTipo> listaScarti = new ArrayList<LatMassaScartiTipo>();
+		try{
+			con=getConnection();			
+			
+			pst=con.prepareStatement("SELECT * FROM lat_massa_scarti_tipo");
+			rs=pst.executeQuery();
+		
+			LatMassaScartiTipo scarto;
+		    while(rs.next()) 
+		    {
+		    	scarto = new LatMassaScartiTipo();
+		    	scarto.setId(rs.getInt("id"));
+		    	scarto.setDescrizione(rs.getString("descrizione"));
+		    	scarto.setScarto(rs.getBigDecimal("scarto"));
+		    	scarto.setIncertezzaScarto(rs.getBigDecimal("uf"));
+		    	
+		    	
+		    	listaScarti.add(scarto);
+		    }
+			  
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+			throw ex;
+		}
+		finally
+		{
+			pst.close();
+			con.close();
+		}
+		return listaScarti;
+	}
+	public static void insertEffettoMagnetico(LatMassaEffMag effMag) throws Exception {
+	
+		Connection con =null;
+		PreparedStatement pst= null;
+
+		try{
+			con=getConnection();
+			con.setAutoCommit(false);
+			
+			pst=con.prepareStatement("INSERT INTO lat_massa_eff_mag(id_misura,comparatore,campione,valore_nominale_campione,classe_OIML,segno_distintivo,eff_mag_L1,eff_mag_L2,eff_mag_esito,mc,uMc,"
+																   +"classe_campione,classe_campione_u,classe_campione_min,classe_campione_pc,classe_campione_max,"
+																   +"classe_taratura,classe_taratura_u,classe_taratura_min,classe_taratura_pc,classe_taratura_max) "
+																   + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			
+			
+			pst.setInt(1, effMag.getId_misura());
+			pst.setString(2,effMag.getComparatore());
+			pst.setString(3,effMag.getCampione());
+			pst.setString(4,effMag.getValore_nominale_campione());
+			pst.setString(5,effMag.getClasseOiml());
+			pst.setString(6,effMag.getSegno_distintivo());
+			pst.setBigDecimal(7,effMag.getEff_mag_L1());
+			pst.setBigDecimal(8,effMag.getEff_mag_L2());
+			pst.setString(9,effMag.getEff_mag_esito());
+			pst.setBigDecimal(10,effMag.getMc());
+			pst.setBigDecimal(11,effMag.getuMc());
+			pst.setString(12,effMag.getClasse_campione());
+			pst.setBigDecimal(13,effMag.getClasse_campione_u());
+			pst.setBigDecimal(14,effMag.getClasse_campione_min());
+			pst.setBigDecimal(15,effMag.getClasse_campione_pc());
+			pst.setBigDecimal(16,effMag.getClasse_campione_max());
+			pst.setString(17,effMag.getClasse_taratura());
+			pst.setBigDecimal(18,effMag.getClasse_taratura_u());
+			pst.setBigDecimal(19,effMag.getClasse_taratura_min());
+			pst.setBigDecimal(20,effMag.getClasse_taratura_pc());
+			pst.setBigDecimal(21,effMag.getClasse_taratura_max());
+			pst.execute();
+			con.commit();
+			  
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+			throw ex;
+		}
+		finally
+		{
+			pst.close();
+			con.close();
+		}
+		
+	}
+	public static ArrayList<LatMassaEffMag> getListaEffettoMagnetico(int idMisura) throws Exception {
+		Connection con=null;
+		PreparedStatement pst=null;
+		ResultSet rs =null;
+		ArrayList<LatMassaEffMag> toRet=new  ArrayList<LatMassaEffMag>();
+		
+		LatMassaEffMag effetto=null;
+		try
+		{
+			con=getConnection();
+			
+			pst=con.prepareStatement("select * FROM lat_massa_eff_Mag WHERE id_misura=? ORDER BY ID ASC ");
+			pst.setInt(1, idMisura);		
+			
+			rs=pst.executeQuery();
+			
+			while(rs.next())
+			{
+				effetto= new LatMassaEffMag();
+				
+				effetto.setId_misura(idMisura);
+				effetto.setComparatore(rs.getString("comparatore"));
+				effetto.setCampione(rs.getString("campione"));
+				effetto.setValore_nominale_campione(rs.getString("valore_nominale_campione"));
+				effetto.setClasseOiml(rs.getString("classe_OIML"));
+				effetto.setSegno_distintivo(rs.getString("segno_distintivo"));
+				effetto.setEff_mag_L1(rs.getBigDecimal("eff_mag_L1"));
+				effetto.setEff_mag_L2(rs.getBigDecimal("eff_mag_L2"));
+				effetto.setEff_mag_esito(rs.getString("eff_mag_esito"));
+				effetto.setMc(rs.getBigDecimal("mc"));
+				effetto.setuMc(rs.getBigDecimal("uMc"));
+				effetto.setClasse_campione(rs.getString("classe_campione"));
+				effetto.setClasse_campione_u(rs.getBigDecimal("classe_campione_u"));
+				effetto.setClasse_campione_min(rs.getBigDecimal("classe_campione_min"));
+				effetto.setClasse_campione_pc(rs.getBigDecimal("classe_campione_pc"));
+				effetto.setClasse_campione_max(rs.getBigDecimal("classe_campione_max"));
+				effetto.setClasse_taratura(rs.getString("classe_taratura"));
+				effetto.setClasse_taratura_u(rs.getBigDecimal("classe_taratura_u"));
+				effetto.setClasse_taratura_min(rs.getBigDecimal("classe_taratura_min"));
+				effetto.setClasse_taratura_pc(rs.getBigDecimal("classe_taratura_pc"));
+				effetto.setClasse_taratura_max(rs.getBigDecimal("classe_taratura_max"));
+				
+				toRet.add(effetto);			
+				
+			}
+			
+		}catch (Exception e) {
+			throw e;
+		}finally
+		{
+			pst.close();
+			con.close();
+		}
+		return toRet;
 	}
 
 }
