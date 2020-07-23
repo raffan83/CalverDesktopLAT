@@ -1074,6 +1074,11 @@ public class GestioneMisuraBO
 		return SQLiteDAO.getListaEffettoMagnetico(idMisura);
 	}
 
+	public static int getRipetizioneMasse(int idMisura) throws Exception {
+		
+		return SQLiteDAO.getRipetizioneMasse(idMisura);
+	}
+
 	
 
 

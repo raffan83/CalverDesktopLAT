@@ -2471,7 +2471,7 @@ public static void updateMisuraRDP(int idRecord, String descrizioneCampione, Str
 		PreparedStatement pst=null;
 		ResultSet rs = null;
 		ArrayList<String> listaRitorno= new ArrayList<String>();
-		listaRitorno.add("Selezione Unità Misura");
+		listaRitorno.add("Selezione Unitï¿½ Misura");
 		try {
 			con =getConnection();
 			pst=con.prepareStatement("select distinct (um_a),um from tbl_conversione where tipo_misura=?");
@@ -3991,6 +3991,7 @@ public static ArrayList<LatPuntoLivellaElettronicaDTO> getListaPuntiLivellaElett
 		    	scarto.setDescrizione(rs.getString("descrizione"));
 		    	scarto.setScarto(rs.getBigDecimal("scarto"));
 		    	scarto.setIncertezzaScarto(rs.getBigDecimal("uf"));
+		    	scarto.setGradi_liberta(rs.getInt("gradi_lib"));
 		    	
 		    	
 		    	listaScarti.add(scarto);
@@ -4113,6 +4114,35 @@ public static ArrayList<LatPuntoLivellaElettronicaDTO> getListaPuntiLivellaElett
 			con.close();
 		}
 		return toRet;
+	}
+	public static int getRipetizioneMasse(int idMisura) throws Exception {
+		Connection con =null;
+		PreparedStatement pst= null;
+		ResultSet rs=null;
+		int ripetizione=0;
+		try{
+			con=getConnection();			
+			
+			pst=con.prepareStatement("SELECT Max(ripetizione) FROM lat_massa_data WHERE id_misura=?");
+			pst.setInt(1, idMisura);
+			rs=pst.executeQuery();
+		
+		    while(rs.next()) 
+		    {
+		    	ripetizione=rs.getInt(1);
+		    }
+			  
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
+			throw ex;
+		}
+		finally
+		{
+			pst.close();
+			con.close();
+		}
+		return ripetizione;
 	}
 
 }

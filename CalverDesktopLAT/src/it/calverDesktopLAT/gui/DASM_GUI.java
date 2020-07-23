@@ -41,7 +41,7 @@ public class DASM_GUI extends JFrame {
 	
 	public DASM_GUI()
 	{
-		setTitle("DASM  ®");
+		setTitle("DASM  Â©");
 		setSize(250,650);
 		setResizable(false);
 		g=this;
@@ -123,7 +123,7 @@ public class DASM_GUI extends JFrame {
 				}
 				catch (PortInUseException e) 
 				{
-					JOptionPane.showMessageDialog(null, "Porta già in uso","Errore",JOptionPane.ERROR_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
+					JOptionPane.showMessageDialog(null, "Porta giï¿½ in uso","Errore",JOptionPane.ERROR_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
 				}
 				
 				catch (Exception e) 

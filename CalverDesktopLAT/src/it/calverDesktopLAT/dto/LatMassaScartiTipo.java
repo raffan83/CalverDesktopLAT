@@ -8,6 +8,8 @@ public class LatMassaScartiTipo {
 	private String descrizione;
 	private BigDecimal scarto;
 	private BigDecimal incertezzaScarto;
+	private int gradi_liberta;
+	
 	public int getId() {
 		return id;
 	}
@@ -31,6 +33,12 @@ public class LatMassaScartiTipo {
 	}
 	public void setIncertezzaScarto(BigDecimal incertezzaScarto) {
 		this.incertezzaScarto = incertezzaScarto;
+	}
+	public int getGradi_liberta() {
+		return gradi_liberta;
+	}
+	public void setGradi_liberta(int gradi_liberta) {
+		this.gradi_liberta = gradi_liberta;
 	}
 	
 	
