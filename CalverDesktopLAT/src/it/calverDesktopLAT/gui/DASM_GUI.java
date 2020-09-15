@@ -41,7 +41,7 @@ public class DASM_GUI extends JFrame {
 	
 	public DASM_GUI()
 	{
-		setTitle("DASM  ©");
+		setTitle("DASM  LAT");
 		setSize(250,650);
 		setResizable(false);
 		g=this;

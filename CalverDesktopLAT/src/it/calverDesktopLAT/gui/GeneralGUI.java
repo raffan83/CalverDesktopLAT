@@ -58,7 +58,7 @@ public  class GeneralGUI extends JFrame implements Serializable{
 	
 	
 	public GeneralGUI() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
-	setTitle("DasmTar LAT v"+Costanti.VERSION+" ®");
+	setTitle("DasmTar LAT v"+Costanti.VERSION+" Â©");
 	
 	g=this;
 	
@@ -245,7 +245,7 @@ public  class GeneralGUI extends JFrame implements Serializable{
 					    			SystemGUI.callPanel(panelDB, "PSS");
 					    		}else
 					    		{
-					    			JOptionPane.showMessageDialog(null,"File già chiuso - non utilizzabile","File chiuso",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
+					    			JOptionPane.showMessageDialog(null,"File giï¿½ chiuso - non utilizzabile","File chiuso",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
 					    		}
 				    		}else
 				    		{
@@ -268,7 +268,7 @@ public  class GeneralGUI extends JFrame implements Serializable{
 			
 			try
 			{	
-				int scelta = JOptionPane.showConfirmDialog(null, "Con questa operazione il programma verra chiuso e le misure non saranno più modificabili. \n Confermi la chiusura?", "Chiusura Misure",JOptionPane.YES_NO_OPTION,JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
+				int scelta = JOptionPane.showConfirmDialog(null, "Con questa operazione il programma verra chiuso e le misure non saranno piï¿½ modificabili. \n Confermi la chiusura?", "Chiusura Misure",JOptionPane.YES_NO_OPTION,JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
 				
 				if(scelta==0)
 				{

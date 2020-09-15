@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +16,12 @@ import javax.swing.JFrame;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+
+import it.calverDesktopLAT.bo.GestioneMisuraBO;
 
 public class TestTable {
 
@@ -241,16 +241,15 @@ public class TestTable {
 
     }
 
-    public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException,
-            UnsupportedLookAndFeelException {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        SwingUtilities.invokeLater(new Runnable() {
+    public static void main(String[] args) {
+		
+    	ArrayList<BigDecimal> lista = new ArrayList<>();
 
-            @Override
-            public void run() {
-                new TestTable().initUI();
-            }
-        });
+    	lista.add(new BigDecimal("0.00000150"));
+    	lista.add(new BigDecimal("0.00000200"));
+    	lista.add(new BigDecimal("0.00000200"));
+    	System.out.println(GestioneMisuraBO.getDevStd(lista, null, 15).toPlainString());
+	
     }
 
 }

@@ -373,10 +373,6 @@ public class PannelloMasse extends JPanel  {
 			JScrollPane scrollTab = new JScrollPane(tabellaElaborazioneDati);
 			pannelloTabElaborazioneDati.add(scrollTab, "cell 0 0,grow");
 
-
-
-			
-			
 			comboBox_campione_ed.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 				
@@ -402,7 +398,28 @@ public class PannelloMasse extends JPanel  {
 				}
 				}
 			});
-
+			
+	/*Dati Test*/
+			
+			textField_cmp_l1_r1.setText("0.001002");
+			textField_mis_l2_r1.setText("0.001004");
+			textField_mis_l3_r1.setText("0.001003");
+			textField_cmp_l4_r1.setText("0.001002");
+		
+			textField_cmp_l1_r2.setText("0.001003");
+			textField_mis_l2_r2.setText("0.001006");
+			textField_mis_l3_r2.setText("0.001005");
+			textField_cmp_l4_r2.setText("0.001004");
+			
+			textField_cmp_l1_r3.setText("0.001004");
+			textField_mis_l2_r3.setText("0.001006");
+			textField_mis_l3_r3.setText("0.001007");
+			textField_cmp_l4_r3.setText("0.001005");
+			
+			comboBox_campione_ed.setSelectedIndex(1);
+			comboBox_comparatore_ed.setSelectedIndex(1);
+			comboBox_valore_nominale_ed.setSelectedIndex(1);
+			
 			btnCalcolaInserisci.addActionListener(new ActionListener() {
 				
 				@Override
@@ -481,6 +498,8 @@ public class PannelloMasse extends JPanel  {
 					
 					int row=model_elaborazioneDati.getRowCount();
 					
+					
+					
 					if(calcola) 
 					{
 						
@@ -505,6 +524,8 @@ public class PannelloMasse extends JPanel  {
 						BigDecimal i_esima_diff_2=null;
 						BigDecimal i_esima_diff_3=null;
 						
+						ArrayList<BigDecimal> lista = new ArrayList<>();
+						
 						for (int i=0;i<3;i++)
 							{
 							model_elaborazioneDati.addRow(new Object[0]);
@@ -513,6 +534,9 @@ public class PannelloMasse extends JPanel  {
 							model_elaborazioneDati.setValueAt(comboBox_campione_ed.getSelectedItem().toString(), row+i, 1);
 							model_elaborazioneDati.setValueAt(comboBox_valore_nominale_ed.getSelectedItem().toString(), row+i, 2);
 							
+					    	
+					    	
+					    	
 							if(i==0) 
 							{
 								model_elaborazioneDati.setValueAt(cmp_l1_r1.toPlainString(), row+i, 3);
@@ -522,6 +546,7 @@ public class PannelloMasse extends JPanel  {
 								
 								BigDecimal sum=(cmp_l1_r1.multiply(new BigDecimal(-1))).add(mis_l2_r1).add(mis_l3_r1).subtract(cmp_l4_r1);
 								i_esima_diff_1=new BigDecimal(0.5).multiply(sum);
+								lista.add(i_esima_diff_1);
 								model_elaborazioneDati.setValueAt(i_esima_diff_1, row+i, 7);
 							}
 							else if(i==1) 
@@ -533,6 +558,7 @@ public class PannelloMasse extends JPanel  {
 								
 								BigDecimal sum=(cmp_l1_r2.multiply(new BigDecimal(-1))).add(mis_l2_r2).add(mis_l3_r2).subtract(cmp_l4_r2);
 								i_esima_diff_2=new BigDecimal(0.5).multiply(sum);
+								lista.add(i_esima_diff_2);
 								model_elaborazioneDati.setValueAt(i_esima_diff_2, row+i, 7);
 								
 							}
@@ -545,6 +571,7 @@ public class PannelloMasse extends JPanel  {
 								
 								BigDecimal sum=(cmp_l1_r3.multiply(new BigDecimal(-1))).add(mis_l2_r3).add(mis_l3_r3).subtract(cmp_l4_r3);
 								i_esima_diff_3=new BigDecimal(0.5).multiply(sum);
+								lista.add(i_esima_diff_3);
 								model_elaborazioneDati.setValueAt(i_esima_diff_3, row+i, 7);
 								
 								BigDecimal media_i_esima_diff=(i_esima_diff_1.add(i_esima_diff_2).add(i_esima_diff_3)).divide(new BigDecimal(3),RoundingMode.HALF_UP).setScale(8,RoundingMode.HALF_UP);
@@ -555,11 +582,11 @@ public class PannelloMasse extends JPanel  {
 								
 								LatMassaScartiTipo scarto=listaScarti.get(comboBox_comparatore_ed.getSelectedIndex()-1);
 								
-								if(i<2) 
+								if(row<=2) 
 								{
-									model_elaborazioneDati.setValueAt(scarto.getScarto(), (row+i)-2, 9);
-									model_elaborazioneDati.setValueAt(scarto.getScarto(), (row+i)-1, 9);
-									model_elaborazioneDati.setValueAt(scarto.getScarto(), row+i, 9);
+									model_elaborazioneDati.setValueAt(scarto.getScarto().toPlainString(), (row+i)-2, 9);
+									model_elaborazioneDati.setValueAt(scarto.getScarto().toPlainString(), (row+i)-1, 9);
+									model_elaborazioneDati.setValueAt(scarto.getScarto().toPlainString(), row+i, 9);
 									
 									model_elaborazioneDati.setValueAt(scarto.getGradi_liberta(), (row+i)-2, 10);
 									model_elaborazioneDati.setValueAt(scarto.getGradi_liberta(), (row+i)-1, 10);
@@ -569,15 +596,15 @@ public class PannelloMasse extends JPanel  {
 								}
 								else 
 								{
-									if(model_elaborazioneDati.getValueAt((row+i)-3, 0).toString().equals(model_elaborazioneDati.getValueAt((row+i), 0).toString()))
+									if(model_elaborazioneDati.getValueAt((row+i)-2, 0).toString().equals(model_elaborazioneDati.getValueAt((row+i), 0).toString()))
 									{
-										model_elaborazioneDati.setValueAt(model_elaborazioneDati.getValueAt(row+i, 11), (row+i)-2, 9);
-										model_elaborazioneDati.setValueAt(model_elaborazioneDati.getValueAt(row+i, 11), (row+i)-1, 9);
-										model_elaborazioneDati.setValueAt(model_elaborazioneDati.getValueAt(row+i, 11), row+i, 9);
+										model_elaborazioneDati.setValueAt(model_elaborazioneDati.getValueAt(row+i-3, 11), (row+i)-2, 9);
+										model_elaborazioneDati.setValueAt(model_elaborazioneDati.getValueAt(row+i-3, 11), (row+i)-1, 9);
+										model_elaborazioneDati.setValueAt(model_elaborazioneDati.getValueAt(row+i-3, 11), row+i, 9);
 										
-										model_elaborazioneDati.setValueAt(Integer.parseInt(model_elaborazioneDati.getValueAt(row+i, 10).toString())+2, (row+i)-2, 10);
-										model_elaborazioneDati.setValueAt(Integer.parseInt(model_elaborazioneDati.getValueAt(row+i, 10).toString())+2, (row+i)-1, 10);
-										model_elaborazioneDati.setValueAt(Integer.parseInt(model_elaborazioneDati.getValueAt(row+i, 10).toString())+2, row+i, 10);
+										model_elaborazioneDati.setValueAt(Integer.parseInt(model_elaborazioneDati.getValueAt(row+i-3, 10).toString())+2, (row+i)-2, 10);
+										model_elaborazioneDati.setValueAt(Integer.parseInt(model_elaborazioneDati.getValueAt(row+i-3, 10).toString())+2, (row+i)-1, 10);
+										model_elaborazioneDati.setValueAt(Integer.parseInt(model_elaborazioneDati.getValueAt(row+i-3, 10).toString())+2, row+i, 10);
 									}else 
 									{
 										model_elaborazioneDati.setValueAt(scarto.getScarto(), (row+i)-2, 9);
@@ -589,10 +616,76 @@ public class PannelloMasse extends JPanel  {
 										model_elaborazioneDati.setValueAt(scarto.getGradi_liberta(), row+i, 10);
 									}
 								}
+								
+								BigDecimal devStd=GestioneMisuraBO.getDevStd(lista, null, 15);
+								
+								BigDecimal sc1= new BigDecimal(model_elaborazioneDati.getValueAt(row+i, 9).toString());
+								BigDecimal vc1= new BigDecimal(model_elaborazioneDati.getValueAt(row+i, 10).toString());
+								
+								BigDecimal sc2_part1=vc1.multiply(sc1.multiply(sc1));
+								BigDecimal sc2_part2=new BigDecimal(2).multiply(devStd.multiply(devStd));
+								
+								BigDecimal sc2=new BigDecimal(Math.sqrt(((sc2_part1.add(sc2_part2)).divide(vc1.add(new BigDecimal(2)),RoundingMode.HALF_UP)).doubleValue()));
+								
+								model_elaborazioneDati.setValueAt(sc2.toPlainString(), (row+i)-2,11);
+								model_elaborazioneDati.setValueAt(sc2.toPlainString(), (row+i)-1, 11);
+								model_elaborazioneDati.setValueAt(sc2.toPlainString(), row+i, 11);
+								
+								
+								
+								model_elaborazioneDati.setValueAt(devStd.toPlainString(), (row+i)-2,12);
+								model_elaborazioneDati.setValueAt(devStd.toPlainString(), (row+i)-1, 12);
+								model_elaborazioneDati.setValueAt(devStd.toPlainString(), row+i, 12);
+								
+								String esito="";
+								
+								if(devStd.compareTo(sc1.multiply(new BigDecimal(2)))<1) 
+								{
+									esito="OK";
+								}else 
+								{
+									esito="NON OK";
+								}
+								
+								model_elaborazioneDati.setValueAt(esito, (row+i)-2,13);
+								model_elaborazioneDati.setValueAt(esito, (row+i)-1, 13);
+								model_elaborazioneDati.setValueAt(esito, row+i, 13);
+								
+								BigDecimal ud=sc2.divide(new BigDecimal(1.732050807568877),RoundingMode.HALF_UP);
+								
+								model_elaborazioneDati.setValueAt(ud, (row+i)-2,14);
+								model_elaborazioneDati.setValueAt(ud, (row+i)-1, 14);
+								model_elaborazioneDati.setValueAt(ud, row+i, 14);
+								
+								
+								BigDecimal uf=scarto.getIncertezzaScarto().divide(new BigDecimal(3.464101615137755),RoundingMode.HALF_UP).multiply(new BigDecimal(1.414213562373095));
+								
+								model_elaborazioneDati.setValueAt(uf, (row+i)-2,15);
+								model_elaborazioneDati.setValueAt(uf, (row+i)-1, 15);
+								model_elaborazioneDati.setValueAt(uf, row+i, 15);
+								
+								model_elaborazioneDati.setValueAt(comboBox_caso.getSelectedIndex(), (row+i)-2,16);
+								model_elaborazioneDati.setValueAt(comboBox_caso.getSelectedIndex(), (row+i)-1, 16);
+								model_elaborazioneDati.setValueAt(comboBox_caso.getSelectedIndex(), row+i, 16);
+								
+								
+								BigDecimal correzioneGalleggiamento=new BigDecimal(textField_pa_no_cipm.getText()).subtract(new BigDecimal(1.2));
+								int idndiceDensMag=row/3;
+								
+								double px=1/Double.parseDouble(model_condizionniEffMag.getValueAt(idndiceDensMag, 18).toString());
+								
+								double pc=1/Double.parseDouble(model_condizionniEffMag.getValueAt(idndiceDensMag, 13).toString());
+								
+								correzioneGalleggiamento=correzioneGalleggiamento.multiply(new BigDecimal(px-pc));
+								
+								model_elaborazioneDati.setValueAt(correzioneGalleggiamento.stripTrailingZeros().toPlainString(), (row+i)-2,17);
+								model_elaborazioneDati.setValueAt(correzioneGalleggiamento.stripTrailingZeros().toPlainString(), (row+i)-1, 17);
+								model_elaborazioneDati.setValueAt(correzioneGalleggiamento.stripTrailingZeros().toPlainString(), row+i, 17);
+								
 							}
 							
-							
-							
+
+						
 							
 							}
 						
@@ -2060,7 +2153,7 @@ class ModelEffettoMagnetico extends DefaultTableModel {
 		addColumn("C.T.");
 		addColumn("C.T. U");
 		addColumn("C.T. \u03C1min");
-		addColumn("C.T. \u03C1c");
+		addColumn("C.T. \u03C1x");
 		addColumn("C.T. \u03C1max");
 		
 
@@ -2142,6 +2235,7 @@ class ModelElaborazioneDati extends DefaultTableModel {
 		addColumn("SC1");
 		addColumn("VC1");
 		addColumn("SC2");
+		addColumn("Sd");
 		addColumn("ESITO");
 		addColumn("U(d)");
 		addColumn("U(uf)");
@@ -2199,6 +2293,8 @@ class ModelElaborazioneDati extends DefaultTableModel {
 		case 19:
 			return String.class;
 		case 20:
+			return String.class;
+		case 21:
 			return String.class;
 		default:
 			return String.class;

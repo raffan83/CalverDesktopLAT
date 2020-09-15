@@ -76,23 +76,23 @@ public class Utility {
 		
 		String[] lista = new String[3];
 		
-		if(um_fond.equals("°C"))
+		if(um_fond.equals("Â°C"))
 		{
 			lista[0]="Seleziona Parametro....";
 			lista[1]="K @ Kelvin";
-			lista[2]="°F @ Grado Fahrenehit";
+			lista[2]="Â°F @ Grado Fahrenehit";
 		}
-		if(um_fond.equals("°F"))
+		if(um_fond.equals("Â°F"))
 		{
 			lista[0]="Seleziona Parametro....";
 			lista[1]="K @ Kelvin";
-			lista[2]="°C @ Grado Celsius";
+			lista[2]="Â°C @ Grado Celsius";
 		}
 		if(um_fond.equals("K"))
 		{
 			lista[0]="Seleziona Parametro....";
-			lista[1]="°F @ Grado Fahrenehit";
-			lista[2]="°C @ Grado Celsius";
+			lista[1]="Â°F @ Grado Fahrenehit";
+			lista[2]="Â°C @ Grado Celsius";
 		}
 		
 		return lista;	
@@ -188,8 +188,8 @@ public class Utility {
 
 			
 			lista[0]="Seleziona Parametro....";
-			lista[1]="°F @ Grado Fahrenehit";
-			lista[2]="°C @ Grado Celsius";
+			lista[1]="ï¿½F @ Grado Fahrenehit";
+			lista[2]="ï¿½C @ Grado Celsius";
 			lista[3]="K @ Kelvin";
 		
 		

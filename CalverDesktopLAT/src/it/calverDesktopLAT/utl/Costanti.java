@@ -6,7 +6,7 @@ import java.awt.Paint;
 public class Costanti {
 	
 	public static final String FONT = "Courier";
-	public static final String[] TIPO_PROVA ={"Linearit‡","Ripetibilit‡"};
+	public static final String[] TIPO_PROVA ={"Linearit√†","Ripetibilit√†"};
 	public static final String[] TIPO_SATORICEZIONE = {"In Tolleranza","Fuori Tolleranza","Non Funzionante"};
 	public static final String[] INTERPOLAZIONE = {"1","2","3","4","5","10"};
 	public static final String[] TOLLERANZA = {"Tolleranza dgt/div","Tolleranza %","Tolleranza % FS","Tolleranza dgt + %"};
