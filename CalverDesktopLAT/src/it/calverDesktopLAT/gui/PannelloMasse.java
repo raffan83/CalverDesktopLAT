@@ -113,11 +113,15 @@ public class PannelloMasse extends JPanel  {
 	private JTextField textField_cmp_l4_r2;
 	private JTextField textField_mis_l3_r3;
 	private JTextField textField_cmp_l4_r3;
-
+	BigDecimal valoreNominale=BigDecimal.ZERO;
+	LatMassaAMB_DATA datiCondizioniAmbinetali;
+	
 	public PannelloMasse(int index) {
 
 		SessionBO.prevPage="PMM";
 
+		
+		
 		try 
 		{
 			this.setLayout(new MigLayout("", "[grow]", "[grow]"));
@@ -505,6 +509,8 @@ public class PannelloMasse extends JPanel  {
 						
 						int ripetizione = GestioneMisuraBO.getRipetizioneMasse(SessionBO.idMisura);
 						
+						datiCondizioniAmbinetali=GestioneMisuraBO.getCondizioniAmbientaliDati(SessionBO.idMisura);
+						
 						BigDecimal cmp_l1_r1=new BigDecimal(textField_cmp_l1_r1.getText());
 						BigDecimal mis_l2_r1=new BigDecimal(textField_mis_l2_r1.getText());
 						BigDecimal mis_l3_r1=new BigDecimal(textField_mis_l3_r1.getText());
@@ -682,6 +688,143 @@ public class PannelloMasse extends JPanel  {
 								model_elaborazioneDati.setValueAt(correzioneGalleggiamento.stripTrailingZeros().toPlainString(), (row+i)-1, 17);
 								model_elaborazioneDati.setValueAt(correzioneGalleggiamento.stripTrailingZeros().toPlainString(), row+i, 17);
 								
+								
+								if(comboBox_caso.getSelectedIndex()==1) 
+								{
+									double m0=Double.parseDouble(model_condizionniEffMag.getValueAt(idndiceDensMag, 2).toString());
+									
+									double pa=0;
+									
+									if(datiCondizioniAmbinetali.getDensita_aria_cimp()!=null) 
+									{
+										pa=datiCondizioniAmbinetali.getDensita_aria_cimp().doubleValue();
+									}else 
+									{ 
+										pa=Double.parseDouble(textField_pa_no_cipm.getText());
+									}	
+									
+									double u=Double.parseDouble(textField_U_pa.getText());
+									
+									double pMin=1/Double.parseDouble(model_condizionniEffMag.getValueAt(idndiceDensMag, 12).toString());
+									
+									double pMax=1/Double.parseDouble(model_condizionniEffMag.getValueAt(idndiceDensMag, 14).toString());
+									
+									double u_gal=(m0/Math.sqrt(6))*(pMin-pMax)*Math.sqrt(Math.pow(pa-1.2,2)+Math.pow(u, 2)*pa);
+									
+									model_elaborazioneDati.setValueAt(new BigDecimal(u_gal).stripTrailingZeros().toPlainString(), (row+i)-2,18);
+									model_elaborazioneDati.setValueAt(new BigDecimal(u_gal).stripTrailingZeros().toPlainString(), (row+i)-1, 18);
+									model_elaborazioneDati.setValueAt(new BigDecimal(u_gal).stripTrailingZeros().toPlainString(), row+i, 18);
+									
+									
+									double mx=media_i_esima_diff.doubleValue()+correzioneGalleggiamento.doubleValue()+Double.parseDouble(model_condizionniEffMag.getValueAt(idndiceDensMag, 8).toString());
+								
+									model_elaborazioneDati.setValueAt(new BigDecimal(mx).stripTrailingZeros().toPlainString(), (row+i)-2,19);
+									model_elaborazioneDati.setValueAt(new BigDecimal(mx).stripTrailingZeros().toPlainString(), (row+i)-1, 19);
+									model_elaborazioneDati.setValueAt(new BigDecimal(mx).stripTrailingZeros().toPlainString(), row+i, 19);
+									
+									
+									double uMx=2*Math.sqrt(Math.pow(u_gal, 2)+Math.pow(ud.doubleValue(), 2)+Math.pow(Double.parseDouble(model_condizionniEffMag.getValueAt(idndiceDensMag, 9).toString()), 2)+Math.pow(uf.doubleValue(), 2));
+									
+									model_elaborazioneDati.setValueAt(new BigDecimal(uMx).stripTrailingZeros().toPlainString(), (row+i)-2,20);
+									model_elaborazioneDati.setValueAt(new BigDecimal(uMx).stripTrailingZeros().toPlainString(), (row+i)-1, 20);
+									model_elaborazioneDati.setValueAt(new BigDecimal(uMx).stripTrailingZeros().toPlainString(), row+i, 20);
+								
+								}
+								
+								if(comboBox_caso.getSelectedIndex()==2) 
+								{
+									double m0=Double.parseDouble(model_condizionniEffMag.getValueAt(idndiceDensMag, 2).toString());
+									
+									double pa=0;
+									
+									if(datiCondizioniAmbinetali.getDensita_aria_cimp()!=null) 
+									{
+										pa=datiCondizioniAmbinetali.getDensita_aria_cimp().doubleValue();
+									}else 
+									{ 
+										pa=Double.parseDouble(textField_pa_no_cipm.getText());
+									}	
+									
+									double u=Double.parseDouble(textField_U_pa.getText());
+									
+									double pMinC=1/Double.parseDouble(model_condizionniEffMag.getValueAt(idndiceDensMag, 12).toString());
+									
+									double pMaxC=1/Double.parseDouble(model_condizionniEffMag.getValueAt(idndiceDensMag, 14).toString());
+									
+									double pMinX=1/Double.parseDouble(model_condizionniEffMag.getValueAt(idndiceDensMag, 17).toString());
+									
+									double pMaxX=1/Double.parseDouble(model_condizionniEffMag.getValueAt(idndiceDensMag, 19).toString());
+									
+									double u_gal=(m0/Math.sqrt(12))*Math.sqrt(Math.pow((pMinX-pMaxX),2)+Math.pow((pMinC-pMaxC),2))*Math.sqrt(Math.pow(pa-1.2,2)+Math.pow(u, 2)*pa);
+									
+									model_elaborazioneDati.setValueAt(new BigDecimal(u_gal).stripTrailingZeros().toPlainString(), (row+i)-2,18);
+									model_elaborazioneDati.setValueAt(new BigDecimal(u_gal).stripTrailingZeros().toPlainString(), (row+i)-1, 18);
+									model_elaborazioneDati.setValueAt(new BigDecimal(u_gal).stripTrailingZeros().toPlainString(), row+i, 18);
+									
+									
+									double mx=media_i_esima_diff.doubleValue()+correzioneGalleggiamento.doubleValue()+Double.parseDouble(model_condizionniEffMag.getValueAt(idndiceDensMag, 8).toString());
+								
+									model_elaborazioneDati.setValueAt(new BigDecimal(mx).stripTrailingZeros().toPlainString(), (row+i)-2,19);
+									model_elaborazioneDati.setValueAt(new BigDecimal(mx).stripTrailingZeros().toPlainString(), (row+i)-1, 19);
+									model_elaborazioneDati.setValueAt(new BigDecimal(mx).stripTrailingZeros().toPlainString(), row+i, 19);
+									
+									
+									double uMx=2*Math.sqrt(Math.pow(u_gal, 2)+Math.pow(ud.doubleValue(), 2)+Math.pow(Double.parseDouble(model_condizionniEffMag.getValueAt(idndiceDensMag, 9).toString()), 2)+Math.pow(uf.doubleValue(), 2));
+									
+									model_elaborazioneDati.setValueAt(new BigDecimal(uMx).stripTrailingZeros().toPlainString(), (row+i)-2,20);
+									model_elaborazioneDati.setValueAt(new BigDecimal(uMx).stripTrailingZeros().toPlainString(), (row+i)-1, 20);
+									model_elaborazioneDati.setValueAt(new BigDecimal(uMx).stripTrailingZeros().toPlainString(), row+i, 20);
+								
+								}
+								
+								if(comboBox_caso.getSelectedIndex()==3) 
+								{
+									double m0=Double.parseDouble(model_condizionniEffMag.getValueAt(idndiceDensMag, 2).toString());
+									
+									double pa_norm=0;
+									
+									if(datiCondizioniAmbinetali.getDensita_aria_cimp()!=null) 
+									{
+										pa_norm=datiCondizioniAmbinetali.getDensita_aria_cimp().doubleValue()-1.2;
+									}else 
+									{ 
+										pa_norm=Double.parseDouble(textField_pa_no_cipm.getText())-1.2;
+									}	
+									
+									double u=Double.parseDouble(textField_U_pa.getText());
+									
+									double pC=Double.parseDouble(model_condizionniEffMag.getValueAt(idndiceDensMag, 13).toString());
+									
+									double pX=Double.parseDouble(model_condizionniEffMag.getValueAt(idndiceDensMag, 18).toString());
+									
+									double u_gal_1_parte=(Math.pow(u, 2)*pX/Math.pow(pX, 4))+(Math.pow(u, 2)*pC/Math.pow(pC, 4));
+									
+									double u_gal_2_parte=Math.pow(pa_norm, 2)+Math.pow(u, 2)*pa_norm;
+									
+									double u_gal_3_parte=Math.pow(u, 2)*pa_norm*Math.pow((1/pX)-(1/pC), 2);
+									
+									double u_gal=m0*Math.sqrt(u_gal_1_parte*u_gal_2_parte+u_gal_3_parte);
+									
+									model_elaborazioneDati.setValueAt(new BigDecimal(u_gal).stripTrailingZeros().toPlainString(), (row+i)-2,18);
+									model_elaborazioneDati.setValueAt(new BigDecimal(u_gal).stripTrailingZeros().toPlainString(), (row+i)-1, 18);
+									model_elaborazioneDati.setValueAt(new BigDecimal(u_gal).stripTrailingZeros().toPlainString(), row+i, 18);
+									
+									
+									double mx=media_i_esima_diff.doubleValue()+correzioneGalleggiamento.doubleValue()+Double.parseDouble(model_condizionniEffMag.getValueAt(idndiceDensMag, 8).toString());
+								
+									model_elaborazioneDati.setValueAt(new BigDecimal(mx).stripTrailingZeros().toPlainString(), (row+i)-2,19);
+									model_elaborazioneDati.setValueAt(new BigDecimal(mx).stripTrailingZeros().toPlainString(), (row+i)-1, 19);
+									model_elaborazioneDati.setValueAt(new BigDecimal(mx).stripTrailingZeros().toPlainString(), row+i, 19);
+									
+									
+									double uMx=2*Math.sqrt(Math.pow(u_gal, 2)+Math.pow(ud.doubleValue(), 2)+Math.pow(Double.parseDouble(model_condizionniEffMag.getValueAt(idndiceDensMag, 9).toString()), 2)+Math.pow(uf.doubleValue(), 2));
+									
+									model_elaborazioneDati.setValueAt(new BigDecimal(uMx).stripTrailingZeros().toPlainString(), (row+i)-2,20);
+									model_elaborazioneDati.setValueAt(new BigDecimal(uMx).stripTrailingZeros().toPlainString(), (row+i)-1, 20);
+									model_elaborazioneDati.setValueAt(new BigDecimal(uMx).stripTrailingZeros().toPlainString(), row+i, 20);
+								
+								}
+								
 							}
 							
 
@@ -721,6 +864,7 @@ public class PannelloMasse extends JPanel  {
 
 		mainPanelEffettoMagnetico.setBackground(Color.LIGHT_GRAY);
 
+		
 		
 		try 
 		{
@@ -914,8 +1058,8 @@ public class PannelloMasse extends JPanel  {
 				model_condizionniEffMag.setValueAt(effetto.getEff_mag_L1().stripTrailingZeros().toPlainString(), row, 5);
 				model_condizionniEffMag.setValueAt(effetto.getEff_mag_L2().stripTrailingZeros().toPlainString(), row, 6);
 				model_condizionniEffMag.setValueAt(effetto.getEff_mag_esito(), row, 7);
-				model_condizionniEffMag.setValueAt(effetto.getMc().stripTrailingZeros().toString(), row, 8);
-				model_condizionniEffMag.setValueAt(effetto.getuMc().stripTrailingZeros().toString(), row, 9);
+				model_condizionniEffMag.setValueAt(effetto.getMc().stripTrailingZeros().toPlainString(), row, 8);
+				model_condizionniEffMag.setValueAt(effetto.getuMc().stripTrailingZeros().toPlainString(), row, 9);
 				
 				model_condizionniEffMag.setValueAt(effetto.getClasse_campione(), row, 10);
 				model_condizionniEffMag.setValueAt(effetto.getClasse_campione_u().stripTrailingZeros().toPlainString(), row, 11);
@@ -961,7 +1105,7 @@ public class PannelloMasse extends JPanel  {
 					
 					try 
 					{
-					if(comboBox_valore_nominale.getSelectedIndex()!=0)
+					if(comboBox_valore_nominale.getSelectedIndex()>0)
 					{
 						String codiceParametro=comboBox_valore_nominale.getSelectedItem().toString();
 						
@@ -978,6 +1122,7 @@ public class PannelloMasse extends JPanel  {
 							{
 								textField_val_taratura_param.setText(param.getValoreTaratura().toPlainString());
 								
+								valoreNominale=param.getValore_nominale();
 								BigDecimal value=param.getIncertezzaAssoluta().setScale(20).divide(new BigDecimal(2).setScale(20),RoundingMode.HALF_UP);
 								textField_val_u_param.setText(value.stripTrailingZeros().toPlainString());
 							}
@@ -1055,7 +1200,7 @@ public class PannelloMasse extends JPanel  {
 						model_condizionniEffMag.addRow(new Object[0]);
 						model_condizionniEffMag.setValueAt(comboBox_comparatore.getSelectedItem().toString(), row, 0);
 						model_condizionniEffMag.setValueAt(comboBox_campione.getSelectedItem().toString(), row, 1);
-						model_condizionniEffMag.setValueAt(comboBox_valore_nominale.getSelectedItem().toString(), row, 2);
+						model_condizionniEffMag.setValueAt(valoreNominale.stripTrailingZeros().toPlainString(), row, 2);
 						model_condizionniEffMag.setValueAt(comboBox_classe_oiml.getSelectedItem().toString(), row, 3);
 						
 						if(chckbxSegnoDistintivo.isSelected()) 
@@ -1204,7 +1349,7 @@ public class PannelloMasse extends JPanel  {
 			JPanel pannelloValori= new JPanel();
 			pannelloValori.setBackground(Color.WHITE);
 
-			LatMassaAMB_DATA datiCondizioniAmbinetali=GestioneMisuraBO.getCondizioniAmbientaliDati(SessionBO.idMisura);
+			datiCondizioniAmbinetali=GestioneMisuraBO.getCondizioniAmbientaliDati(SessionBO.idMisura);
 
 			mainPanelMonitoraggioAmb.add(pannelloTabCondizioni, "cell 0 0 1 2,grow");
 			mainPanelMonitoraggioAmb.add(pannelloValori, "cell 1 0 1 2,grow");
