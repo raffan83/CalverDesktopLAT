@@ -205,7 +205,7 @@ public class PannelloLivellaBolla extends JPanel  {
 				centraggio.setColumns(10);
 				semInc.add(centraggio, "cell 1 7 2 1,growx");
 
-				JLabel lblCampoMisura = new JLabel("Campo Misura ±");
+				JLabel lblCampoMisura = new JLabel("Campo Misura Â±");
 				semInc.add(lblCampoMisura, "cell 0 9,alignx trailing");
 
 				campo_misura = new JTextField();
@@ -359,7 +359,7 @@ public class PannelloLivellaBolla extends JPanel  {
 
 						}else 
 						{
-							JOptionPane.showMessageDialog(null,"Compilare \"Campo Misura\" e \"Sensibilità\"","Attenzione",JOptionPane.WARNING_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
+							JOptionPane.showMessageDialog(null,"Compilare \"Campo Misura\" e \"SensibilitÃ \"","Attenzione",JOptionPane.WARNING_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
 						}
 
 					}

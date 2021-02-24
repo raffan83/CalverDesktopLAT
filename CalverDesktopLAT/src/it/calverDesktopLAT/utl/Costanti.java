@@ -23,7 +23,7 @@ public class Costanti {
 	public static final Color backgroundGreyLight = new Color(204, 204, 204);
 	public static final String SYSROOT = System.getenv("ProgramData")+"\\Calver";
 	public static final String DEPLOY_HOST = "http://www.calver.it";
-	public static final String VERSION = "1.0.1";
+	public static final String VERSION = "1.0.2";
 	public static final String REGISTER_KEY = "Software\\Calver";
 	public static final String COD_OPT = "CL_OPR";
 	public static final String COD_CNT ="CL_CNT";
@@ -36,7 +36,7 @@ public class Costanti {
 	public static final Paint COLOR_BLUE = new Color(20,55,200);
 	public static final int RISOLUZIONE_LIVELLA_BOLLA = 2;
 	public static final int RISOLUZIONE_LIVELLA_ELETTRONICA = 2;
-	public static final String INCERTEZZA_CDT001 = "2.3";
+	public static final String INCERTEZZA_CDT001 = "2.5";
 	public static final double RISOLUZIONE_RSG30_TEMP_RIS = 0.01;
 	public static final double RISOLUZIONE_RSG30_TEMP_RIS_U = 0.05;
 	public static final double RISOLUZIONE_RSG30_UR_RIS = 0.1;

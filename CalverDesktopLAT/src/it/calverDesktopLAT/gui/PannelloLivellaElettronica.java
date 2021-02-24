@@ -1,5 +1,6 @@
 package it.calverDesktopLAT.gui;
 
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
@@ -47,6 +48,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+
 import it.calverDesktopLAT.bo.GestioneCampioneBO;
 import it.calverDesktopLAT.bo.GestioneMisuraBO;
 import it.calverDesktopLAT.bo.SessionBO;
@@ -55,6 +57,7 @@ import it.calverDesktopLAT.dto.LatMisuraDTO;
 import it.calverDesktopLAT.dto.LatPuntoLivellaElettronicaDTO;
 import it.calverDesktopLAT.dto.ParametroTaraturaDTO;
 import it.calverDesktopLAT.dto.RegLinDTO;
+import it.calverDesktopLAT.gui.PannelloTOP.ValidateThread;
 import it.calverDesktopLAT.utl.Costanti;
 import net.miginfocom.swing.MigLayout;
 
@@ -81,6 +84,8 @@ public class PannelloLivellaElettronica extends JPanel  {
 	ModelIncertezze model_incertezze;
 	ModelProvaLineare modelLin;
 	LatMisuraDTO lat;
+	Splash	d=null;
+	JPanel me;
 
 	private boolean isSelectAllForMouseEvent = false;
 	private boolean isSelectAllForActionEvent = false;
@@ -90,7 +95,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 	public PannelloLivellaElettronica(int index) {
 
 		SessionBO.prevPage="PMM";
-
+		me=this;
 		try 
 		{
 			setLayout(new MigLayout("", "[grow][grow][grow][grow][grow]", "[][grow]"));
@@ -149,7 +154,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 			PannelloProvaLineare provaLineare = new PannelloProvaLineare();
 			tabbedPane.addTab("Prova Lineare",provaLineare.get());
 			PannelloProvaRipetibile provaRipetibile = new PannelloProvaRipetibile();
-			tabbedPane.addTab("Prova Ripetibilità",provaRipetibile.get());
+			tabbedPane.addTab("Prova RipetibilitÃ ",provaRipetibile.get());
 
 			PannelloGrafico provaGrafico = new PannelloGrafico();
 			tabbedPane.addTab("Grafico Scostamenti",provaGrafico.get());
@@ -203,14 +208,14 @@ public class PannelloLivellaElettronica extends JPanel  {
 			comboBox_cmpRif = new JComboBox(GestioneCampioneBO.getListaCampioniCompleta());
 			semInc.add(comboBox_cmpRif, "cell 1 1 2 1,growx,aligny top");
 
-			JLabel lblCampoMisura = new JLabel("Campo Misura (Strumento) ±");
+			JLabel lblCampoMisura = new JLabel("Campo Misura (Strumento) Â±");
 			semInc.add(lblCampoMisura, "cell 0 2,alignx trailing,aligny top");
 
 			campo_misura = new JTextField();
 			campo_misura.setColumns(10);
 			semInc.add(campo_misura, "flowx,cell 1 2,growx,aligny top");
 
-			JLabel lblUnitaFormato = new JLabel("Unità Formato (Strumento)");
+			JLabel lblUnitaFormato = new JLabel("UnitÃ  Formato (Strumento)");
 			semInc.add(lblUnitaFormato, "cell 0 3,alignx trailing,aligny top");
 
 			unita_formato = new JTextField();
@@ -408,7 +413,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 			}
 			catch (Exception e) 
 			{
-				JOptionPane.showMessageDialog(null,"Probabilemnte il file utilizzato non è aggiornato, riscaricarlo dall'intervento e riprovare","Errore File",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
+				JOptionPane.showMessageDialog(null,"Probabilemnte il file utilizzato non ï¿½ aggiornato, riscaricarlo dall'intervento e riprovare","Errore File",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
 			 
 			}
 			/*Riempo pannello se il campo riferimenti_incertezza !=null*/
@@ -416,7 +421,10 @@ public class PannelloLivellaElettronica extends JPanel  {
 			{
 				comboBox_cmpRif.setSelectedItem(misura.getRif_campione());
 				campo_misura.setText(misura.getCampo_misura().toPlainString());
-				unita_formato.setText(misura.getUnita_formato().toPlainString());
+				if(misura.getUnita_formato()!=null) 
+				{
+					unita_formato.setText(misura.getUnita_formato().toPlainString());
+				}
 				sensibilita.setText(misura.getSensibilita().toPlainString());
 
 				listaParametri=GestioneCampioneBO.getParametriTaratura(comboBox_cmpRif.getSelectedItem().toString());
@@ -480,12 +488,12 @@ public class PannelloLivellaElettronica extends JPanel  {
 							}
 							if(unita_formato.getText().length()<=0)
 							{
-								sb.append("Indicare Unità formato (strumento) \n");
+								sb.append("Indicare UnitÃ  formato (strumento) \n");
 								check=false;
 							}
 							if(sensibilita.getText().length()<=0)
 							{
-								sb.append("Indicare Sensibilità (strumento)  \n");
+								sb.append("Indicare SensibilitÃ  (strumento)  \n");
 								check=false;
 							}
 							if(ind_iniz_camp.getText().length()<=0)
@@ -889,14 +897,63 @@ public class PannelloLivellaElettronica extends JPanel  {
 			tableProvaLineare.removeColumn(column);
 
 			JScrollPane scrollTab = new JScrollPane(tableProvaLineare);
-			semDex.add(scrollTab, "cell 0 0 ,grow,height :450:500");
+			
+			JButton ricalcola = new JButton("Ricalcola");
+			ricalcola.setIcon(new ImageIcon(PannelloLivellaElettronica.class.getResource("/image/calcola.png")));
+			ricalcola.setFont(new Font("Arial", Font.BOLD, 12));
+			
+			semDex.add(ricalcola, "cell 0 0 ,grow,height ::50");
+			
+			semDex.add(scrollTab, "cell 0 1 ,grow,height :450:500");
 
 
 
+			
+			ricalcola.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+				d =	 new Splash(me);
+				d.execute();
+		 			
+				Thread thread = new Thread(new ValidateThread());
+	 			thread.start();
 
+				}
+			});
+			
+			
+			ricalcola.doClick();
 		}
-
-
+		
+		class ValidateThread implements Runnable {
+			public void run() {
+				
+				try
+				{
+					for(int i =0; i<tableProvaLineare.getRowCount();i++) 
+					{
+			 			int column=5;
+						
+			 			if(modelLin.getValueAt(i, column)!=null && modelLin.getValueAt(i, column).toString().length()>0)
+						{
+			 				
+			 				System.out.println(modelLin.getValueAt(i, column));
+							modelLin.setValueAt(modelLin.getValueAt(i, column),i, column);
+						}
+					}
+		        	d.close();
+				}
+				catch (Exception er) 
+					{
+						d.close();
+						er.printStackTrace();
+					}
+					
+				}
+				
+			}
+		
 		public JPanel get() {
 			return semDex;
 		}
@@ -1549,6 +1606,8 @@ public class PannelloLivellaElettronica extends JPanel  {
 
 			lat.setCampo_misura(new BigDecimal(campo_misura.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
 
+			lat.setUnita_formato(new BigDecimal(unita_formato.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
+			
 			lat.setSensibilita(new BigDecimal(sensibilita.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
 
 			lat.setIncertezza_estesa(ex.setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA-1,RoundingMode.HALF_UP));
@@ -1594,7 +1653,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 
 			}catch (NumberFormatException e) {
 
-				JOptionPane.showMessageDialog(null,"Il campo risoluzione non è settato correttamente", "Attenzione",JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null,"Il campo risoluzione non ï¿½ settato correttamente", "Attenzione",JOptionPane.ERROR_MESSAGE);
 			}
 
 			return ris;
@@ -1860,7 +1919,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 			addColumn("Punto");
 			addColumn("Valore nominale");
 			addColumn("Inc. Risoluzione");
-			addColumn("Inc. Ripetibilità");
+			addColumn("Inc. Ripetibilitï¿½");
 			addColumn("Inc. Campione");
 			addColumn("Inc. Stab");
 			addColumn("Inc. Estesa");
