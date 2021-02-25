@@ -380,7 +380,7 @@ public class PannelloLivellaBolla extends JPanel  {
 						
 						LatMisuraDTO lat = new LatMisuraDTO();
 						lat.setId(SessionBO.idMisura);
-						if(comboBox_cmpRif.getSelectedIndex()<0 || comboBox_cmpLav.getSelectedIndex()<0)
+						if(comboBox_cmpRif.getSelectedIndex()<1 || comboBox_cmpLav.getSelectedIndex()<1)
 						{
 							sb.append("* Selezionare Campioni riferimento/lavoro \n");
 							check=false;
@@ -703,6 +703,12 @@ public void actionPerformed(ActionEvent event) {
 						model.setValueAt(bd1.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP).toPlainString(), row, 5);
 
 						/*Tratto 0*/
+						
+						if(model.getValueAt(0,5)==null ) 
+						{
+							JOptionPane.showMessageDialog(null,"Indicare il punto a 0, completare l'intera riga","Attenzione",JOptionPane.WARNING_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
+							return;
+						}
 
 						BigDecimal pivot= new BigDecimal( model.getValueAt(0,5).toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP);
 
@@ -1070,6 +1076,10 @@ public void actionPerformed(ActionEvent event) {
 
 			JScrollPane scrollTab = new JScrollPane(tableSX);
 			semSX.add(scrollTab, "cell 0 1 3 1,growx,height :350:400");
+			
+			JLabel didascalia= new JLabel("Note: indicare i valori con il segno negativo (-)");
+			didascalia.setFont(new Font("Arial", Font.BOLD, 12));
+			semSX.add(didascalia,"cell 0 2 3 1 ,growx");
 
 			JPopupMenu popupMenu= new JPopupMenu();
 			jmit= new JMenuItem("Elimina Riga");
@@ -1225,6 +1235,11 @@ public void actionPerformed(ActionEvent event) {
 
 						/*Tratto 0*/
 
+						if(model.getValueAt(0,5)==null ) 
+						{
+							JOptionPane.showMessageDialog(null,"Indicare il punto a 0, completare l'intera riga","Attenzione",JOptionPane.WARNING_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
+							return;
+						}
 						BigDecimal pivot= new BigDecimal( model.getValueAt(0,5).toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP);
 
 						for (int i = 0; i <= 11; i++) 
