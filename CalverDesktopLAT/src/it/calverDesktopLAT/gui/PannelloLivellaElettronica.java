@@ -466,7 +466,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 
 					try 
 					{
-						int scelta=	JOptionPane.showConfirmDialog(null,"Vuoi Salvare i dati ?","Salva",JOptionPane.YES_NO_OPTION,JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/question.png")));
+						int scelta=	JOptionPane.showConfirmDialog(null,"Vuoi Salvare i dati ? \n RICALOLARE LA MISURA PRIMA DI PROCEDERE AL SALVATAGGIO ","Salva",JOptionPane.YES_NO_OPTION,JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/question.png")));
 
 						if(scelta==0) 
 
