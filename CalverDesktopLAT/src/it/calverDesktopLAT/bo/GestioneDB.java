@@ -35,6 +35,7 @@ public class GestioneDB {
 	public static boolean controlloMisuraCertificato() throws Exception {
 		
 		return SQLiteDAO.controllaMisuraCertificato();
+		
 	}
 
 }
