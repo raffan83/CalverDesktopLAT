@@ -780,7 +780,7 @@ public void actionPerformed(ActionEvent event) {
 					
 					if(err_cum!=null) 
 					{
-						model.setValueAt(err_cum.toPlainString(), row, 12);
+						model.setValueAt(err_cum.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1,RoundingMode.HALF_UP).toPlainString(), row, 12);
 					}
 					}
 					if(model.getValueAt(row,12)!=null) 
@@ -795,15 +795,15 @@ public void actionPerformed(ActionEvent event) {
 
 					if(col12!=null) 
 					{
-						BigDecimal erroreCum= new BigDecimal(col12.toString()).setScale(20);
+						BigDecimal erroreCum= new BigDecimal(col12.toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1,RoundingMode.HALF_UP);
 
 						Object obj =model.getValueAt(row, 11);
 						if(obj!=null) 
 						{
-							BigDecimal due=new BigDecimal(2).setScale(20);
+							BigDecimal due=new BigDecimal(2).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1,RoundingMode.HALF_UP);
 							
-							BigDecimal m1=new BigDecimal(model.getValueAt(row, 6).toString()).setScale(20);
-							BigDecimal m2=new BigDecimal(model.getValueAt(row, 10).toString()).setScale(20);
+							BigDecimal m1=new BigDecimal(model.getValueAt(row, 6).toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1,RoundingMode.HALF_UP);
+							BigDecimal m2=new BigDecimal(model.getValueAt(row, 10).toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1,RoundingMode.HALF_UP);
 							BigDecimal mediaTratto=m1.add(m2).divide(due,RoundingMode.HALF_UP);
 							
 
@@ -1311,7 +1311,7 @@ public void actionPerformed(ActionEvent event) {
 					
 						if(err_cum!=null) 
 						{
-							model.setValueAt(err_cum.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP).toPlainString(), row, 12);
+							model.setValueAt(err_cum.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1,RoundingMode.HALF_UP).toPlainString(), row, 12);
 						}
 					}
 					if(model.getValueAt(row,12)!=null) 
