@@ -36,6 +36,7 @@ import it.calverDesktopLAT.dto.LatMisuraDTO;
 import it.calverDesktopLAT.dto.PuntoLivellaBollaDTO;
 import it.calverDesktopLAT.utl.Costanti;
 import net.miginfocom.swing.MigLayout;
+import javax.swing.DefaultComboBoxModel;
 
 public class PannelloLivellaBolla extends JPanel  {
 
@@ -43,11 +44,6 @@ public class PannelloLivellaBolla extends JPanel  {
 	private JTextField textField_media_totale;
 	private JTextField textField_dev_std_totale;
 	private JTextField textField_scmax;
-	private JTextField stato;
-	private JTextField ammaccature;
-	private JTextField bolla_trasversale;
-	private JTextField regolazione;
-	private JTextField centraggio;
 	private JTextField incertezza_um;
 	private JTextField incertezza_er;
 	private JTextField incertezza_em;
@@ -58,6 +54,12 @@ public class PannelloLivellaBolla extends JPanel  {
 	private JTextField campo_misura_sec;
 	private JComboBox comboBox_cmpRif;
 	private JComboBox comboBox_cmpLav;
+	private JComboBox comboBox_ammaccature;
+	private JComboBox comboBox_bolla_trasversale;
+	private JComboBox comboBox_regolazione;
+	private JComboBox comboBox_centraggio;
+	private JComboBox comboBox_stato;
+	private JTextArea textArea;
 	
 	public PannelloLivellaBolla(int index) {
 
@@ -118,7 +120,7 @@ public class PannelloLivellaBolla extends JPanel  {
 		    	textField_dev_std_totale.setBackground(Color.YELLOW);
 		    	textField_dev_std_totale.setEditable(false);
 		    	textField_dev_std_totale.setFont(new Font("Arial", Font.BOLD, 14));
-		    	textField_dev_std_totale.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,2).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
+		    	textField_dev_std_totale.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,2).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString());
 		    	add(textField_dev_std_totale, "cell 2 0");
 		    	textField_dev_std_totale.setColumns(10);
 		    }
@@ -151,61 +153,69 @@ public class PannelloLivellaBolla extends JPanel  {
 				lblVerifichePreliminari.setFont(new Font("Arial", Font.BOLD | Font.ITALIC, 14));
 				semInc.add(lblVerifichePreliminari, "cell 0 0");
 
-				JLabel lblCampioneDiRiferimento = new JLabel("Campione di Riferimento");
+				JLabel lblCampioneDiRiferimento = new JLabel("Campione di Riferimento:");
 				semInc.add(lblCampioneDiRiferimento, "cell 0 1,alignx trailing");
 
 
 				comboBox_cmpRif = new JComboBox(GestioneCampioneBO.getListaCampioniCompleta());
-				semInc.add(comboBox_cmpRif, "cell 1 1 2 1,growx");
+				comboBox_cmpRif.setEnabled(false);
+				semInc.add(comboBox_cmpRif, "cell 1 1 2 1");
 
-				JLabel lblCampioneDiLavoro = new JLabel("Campione di lavoro");
+				JLabel lblCampioneDiLavoro = new JLabel("Campione di lavoro:");
 				semInc.add(lblCampioneDiLavoro, "cell 0 2,alignx trailing");
 
 
 				comboBox_cmpLav = new JComboBox(GestioneCampioneBO.getListaCampioniCompleta());
-				semInc.add(comboBox_cmpLav, "cell 1 2 2 1,growx");
+				comboBox_cmpLav.setEnabled(false);
+				semInc.add(comboBox_cmpLav, "cell 1 2 2 1");
 
 
 				JLabel lblStatoDiConservazione = new JLabel("Stato di conservazione e pulizia:");
 				lblStatoDiConservazione.setFont(new Font("Arial", Font.PLAIN, 12));
 				semInc.add(lblStatoDiConservazione, "cell 0 3,alignx trailing");
+				
+				
+				comboBox_stato = new JComboBox();
+				comboBox_stato.setModel(new DefaultComboBoxModel(new String[] {"Buono", "Sufficiente"}));
+				comboBox_stato.setEditable(true);
+				semInc.add(comboBox_stato, "cell 1 3 2 1");
 
-				stato = new JTextField();
-				semInc.add(stato, "cell 1 3 2 1,width :150:");
-				stato.setColumns(10);
-
-				JLabel lblPresenzeDiFitte = new JLabel("Presenze di fitte e ammaccature");
+				JLabel lblPresenzeDiFitte = new JLabel("Presenze di fitte e ammaccature:");
 				lblPresenzeDiFitte.setFont(new Font("Arial", Font.PLAIN, 12));
 				semInc.add(lblPresenzeDiFitte, "cell 0 4,alignx trailing");
+				
+				comboBox_ammaccature = new JComboBox();
+				comboBox_ammaccature.setModel(new DefaultComboBoxModel(new String[] {"Non presenti", "Tali da non pregiudicare la stabilità e affidabilità della livella"}));
+				comboBox_ammaccature.setEditable(true);
+				semInc.add(comboBox_ammaccature, "cell 1 4 2 1");
 
-				ammaccature = new JTextField();
-				ammaccature.setColumns(10);
-				semInc.add(ammaccature, "cell 1 4 2 1,growx");
-
-				JLabel lblPresenzaDiBolla = new JLabel("Presenza di Bolla trasversale");
+				JLabel lblPresenzaDiBolla = new JLabel("Presenza di Bolla trasversale:");
 				lblPresenzaDiBolla.setFont(new Font("Arial", Font.PLAIN, 12));
 				semInc.add(lblPresenzaDiBolla, "cell 0 5,alignx trailing");
+				
+				comboBox_bolla_trasversale = new JComboBox();
+				comboBox_bolla_trasversale.setModel(new DefaultComboBoxModel(new String[] {"Sì", "No"}));
+				comboBox_bolla_trasversale.setEditable(true);
+				semInc.add(comboBox_bolla_trasversale, "cell 1 5 2 1");
 
-				bolla_trasversale = new JTextField();
-				bolla_trasversale.setColumns(10);
-				semInc.add(bolla_trasversale, "cell 1 5 2 1,growx");
-
-				JLabel lblRegolazioneESigilli = new JLabel("Regolazione e Sigilli");
+				JLabel lblRegolazioneESigilli = new JLabel("Regolazione e Sigilli:");
 				lblRegolazioneESigilli.setFont(new Font("Arial", Font.PLAIN, 12));
 				semInc.add(lblRegolazioneESigilli, "cell 0 6,alignx trailing");
+				
+				comboBox_regolazione = new JComboBox();
+				comboBox_regolazione.setModel(new DefaultComboBoxModel(new String[] {"In ordine", "Non applicabile"}));
+				comboBox_regolazione.setEditable(true);
+				semInc.add(comboBox_regolazione, "cell 1 6,growx");
 
-				regolazione = new JTextField();
-				regolazione.setColumns(10);
-				semInc.add(regolazione, "cell 1 6 2 1,growx");
-
-				JLabel lblCentraggioRispettoAllasse = new JLabel("Centraggio rispetto all'asse di gravita");
+				JLabel lblCentraggioRispettoAllasse = new JLabel("Centraggio rispetto all'asse di gravita:");
 				semInc.add(lblCentraggioRispettoAllasse, "cell 0 7,alignx trailing");
+				
+				comboBox_centraggio = new JComboBox();
+				comboBox_centraggio.setModel(new DefaultComboBoxModel(new String[] {"Eseguito", "Non necessario bolla centrata"}));
+				comboBox_centraggio.setEditable(true);
+				semInc.add(comboBox_centraggio, "cell 1 7 2 1");
 
-				centraggio = new JTextField();
-				centraggio.setColumns(10);
-				semInc.add(centraggio, "cell 1 7 2 1,growx");
-
-				JLabel lblCampoMisura = new JLabel("Campo Misura ±");
+				JLabel lblCampoMisura = new JLabel("Campo Misura: ±");
 				semInc.add(lblCampoMisura, "cell 0 9,alignx trailing");
 
 				campo_misura = new JTextField();
@@ -213,12 +223,7 @@ public class PannelloLivellaBolla extends JPanel  {
 				semInc.add(campo_misura, "flowx,cell 1 9,growx");
 				
 				JLabel lblNewLabel = new JLabel(" \u00B1");
-				semInc.add(lblNewLabel, "cell 2 9,alignx trailing");
-
-				campo_misura_sec = new JTextField();
-				campo_misura_sec.setEditable(false);
-				campo_misura_sec.setColumns(10);
-				semInc.add(campo_misura_sec, "flowx,cell 3 9,alignx left");
+				semInc.add(lblNewLabel, "flowx,cell 2 9,alignx left");
 
 				JLabel lblSensibilit = new JLabel("Sensibilit\u00E0:");
 				semInc.add(lblSensibilit, "cell 0 11,alignx trailing");
@@ -227,7 +232,7 @@ public class PannelloLivellaBolla extends JPanel  {
 				sensibilita.setColumns(10);
 				semInc.add(sensibilita, "flowx,cell 1 11,growx");
 
-				JLabel lblIncertezzaAssociataAl = new JLabel("Incertezza associata al riferimento U(Er)");
+				JLabel lblIncertezzaAssociataAl = new JLabel("Incertezza associata al riferimento U(Er):");
 				lblIncertezzaAssociataAl.setFont(new Font("Arial", Font.PLAIN, 12));
 				semInc.add(lblIncertezzaAssociataAl, "cell 0 13,alignx trailing");
 
@@ -235,13 +240,13 @@ public class PannelloLivellaBolla extends JPanel  {
 				incertezza_er.setEditable(false);
 				incertezza_er.setColumns(10);
 				semInc.add(incertezza_er, "flowx,cell 1 13,growx");
+				
+								incertezza_er_sec = new JTextField();
+								incertezza_er_sec.setEditable(false);
+								incertezza_er_sec.setColumns(10);
+								semInc.add(incertezza_er_sec, "flowx,cell 2 13,alignx left");
 
-				incertezza_er_sec = new JTextField();
-				incertezza_er_sec.setEditable(true);
-				incertezza_er_sec.setColumns(10);
-				semInc.add(incertezza_er_sec, "flowx,cell 3 13,alignx left");
-
-				JLabel lblIncertezzaEstesaUem = new JLabel("Incertezza Estesa U(Em)");
+				JLabel lblIncertezzaEstesaUem = new JLabel("Incertezza Estesa U(Em):");
 				lblIncertezzaEstesaUem.setFont(new Font("Arial", Font.PLAIN, 12));
 				semInc.add(lblIncertezzaEstesaUem, "cell 0 15,alignx trailing");
 
@@ -249,11 +254,11 @@ public class PannelloLivellaBolla extends JPanel  {
 				incertezza_em.setEditable(false);
 				incertezza_em.setColumns(10);
 				semInc.add(incertezza_em, "flowx,cell 1 15,growx");
-
-				incertezza_em_sec = new JTextField();
-				incertezza_em_sec.setEditable(false);
-				incertezza_em_sec.setColumns(10);
-				semInc.add(incertezza_em_sec, "flowx,cell 3 15,alignx left");
+				
+								incertezza_em_sec = new JTextField();
+								incertezza_em_sec.setEditable(false);
+								incertezza_em_sec.setColumns(10);
+								semInc.add(incertezza_em_sec, "flowx,cell 2 15,alignx left");
 
 				JLabel lblIncertezzaDaAssociare = new JLabel("Incertezza da associare al valore medio di");
 				lblIncertezzaDaAssociare.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -263,29 +268,21 @@ public class PannelloLivellaBolla extends JPanel  {
 				incertezza_um.setEditable(false);
 				incertezza_um.setColumns(10);
 				semInc.add(incertezza_um, "flowx,cell 1 17,growx");
-
-				JButton btnSalva = new JButton("Salva");
 				
-				btnSalva.setIcon(new ImageIcon(PannelloLivellaBolla.class.getResource("/image/save.png")));
-				btnSalva.setFont(new Font("Arial", Font.BOLD, 12));
-				semInc.add(btnSalva, "cell 3 20");
+								JLabel lblNote = new JLabel("Note:");
+								lblNote.setFont(new Font("Arial", Font.PLAIN, 12));
+								semInc.add(lblNote, "cell 0 19,alignx right");
 
-				JLabel lblNote = new JLabel("Note:");
-				lblNote.setFont(new Font("Arial", Font.PLAIN, 12));
-				semInc.add(lblNote, "cell 0 20,alignx right");
-
-				final JTextArea textArea = new JTextArea();
+				textArea = new JTextArea();
+				
+				
+				campo_misura_sec = new JTextField();
+				campo_misura_sec.setEditable(false);
+				campo_misura_sec.setColumns(10);
+				semInc.add(campo_misura_sec, "cell 2 9,alignx left");
+				
 				JScrollPane scrollPaneNote = new JScrollPane(textArea);
 				semInc.add(scrollPaneNote, "cell 1 19 3 1,grow");
-
-				JLabel label_1 = new JLabel("''");
-				semInc.add(label_1, "cell 3 13");
-
-				JLabel label_2 = new JLabel("''");
-				semInc.add(label_2, "cell 3 15");
-
-				JLabel label_3 = new JLabel("''");
-				semInc.add(label_3, "cell 3 9");
 
 				JLabel lblMmm_2 = new JLabel("mm/m");
 				semInc.add(lblMmm_2, "cell 1 9");
@@ -303,7 +300,7 @@ public class PannelloLivellaBolla extends JPanel  {
 				JLabel label_7 = new JLabel("mm/m");
 				semInc.add(label_7, "cell 1 17");
 
-				JLabel lblUnaDivisioneDella = new JLabel("una divisione della scala graduata Um");
+				JLabel lblUnaDivisioneDella = new JLabel("una divisione della scala graduata Um:");
 				lblUnaDivisioneDella.setFont(new Font("Arial", Font.PLAIN, 12));
 				semInc.add(lblUnaDivisioneDella, "cell 0 18");
 
@@ -315,11 +312,11 @@ public class PannelloLivellaBolla extends JPanel  {
 					comboBox_cmpRif.setSelectedItem(misura.getRif_campione());
 					comboBox_cmpLav.setSelectedItem(misura.getRif_campione_lavoro());
 					
-					stato.setText(misura.getStato());
-					ammaccature.setText(misura.getAmmaccature());
-					bolla_trasversale.setText(misura.getBolla_trasversale());
-					regolazione.setText(misura.getRegolazione());
-					centraggio.setText(misura.getCentraggio());
+					comboBox_stato.setSelectedItem(misura.getStato());
+					comboBox_ammaccature.setSelectedItem(misura.getAmmaccature());
+					comboBox_bolla_trasversale.setSelectedItem(misura.getBolla_trasversale());
+					comboBox_regolazione.setSelectedItem(misura.getRegolazione());
+					comboBox_centraggio.setSelectedItem(misura.getCentraggio());
 					
 					campo_misura.setText(misura.getCampo_misura().toPlainString());
 					campo_misura_sec.setText(misura.getCampo_misura_sec().toPlainString());
@@ -333,7 +330,11 @@ public class PannelloLivellaBolla extends JPanel  {
 					
 					textArea.setText(misura.getNote());
 				}
-				
+				else 
+				{
+					comboBox_cmpRif.setSelectedItem("CDT054");
+					comboBox_cmpLav.setSelectedItem("CDT001/2");
+				}
 				
 				JButton btnNewButton = new JButton("Calcola");
 				btnNewButton.addActionListener(new ActionListener() {
@@ -365,83 +366,102 @@ public class PannelloLivellaBolla extends JPanel  {
 					}
 				});
 				
-				btnSalva.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						
-						try 
-						{
-						int scelta=	JOptionPane.showConfirmDialog(null,"Vuoi Salvare i dati ?","Salva",JOptionPane.YES_NO_OPTION,JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/question.png")));
-						
-						if(scelta==0) {
-							
-						
-						boolean check=true;
-						StringBuffer sb = new StringBuffer();
-						
-						LatMisuraDTO lat = new LatMisuraDTO();
-						lat.setId(SessionBO.idMisura);
-						if(comboBox_cmpRif.getSelectedIndex()<1 || comboBox_cmpLav.getSelectedIndex()<1)
-						{
-							sb.append("* Selezionare Campioni riferimento/lavoro \n");
-							check=false;
-						}
-						
-						if(stato.getText().length()<=0)
-						{
-							sb.append("* Indicare lo stato dello strumento \n");
-							check=false;
-						}
-						if(incertezza_er.getText().length()<=0)
-						{
-							sb.append("* Calcolare l'incertezza");
-							check=false;
-						}
-						
-						if(check) 
-						{
-							lat.setId(SessionBO.idMisura);
-							lat.setRif_campione(comboBox_cmpRif.getSelectedItem().toString());
-							lat.setRif_campione_lavoro(comboBox_cmpLav.getSelectedItem().toString());
-							
-							lat.setStato(stato.getText());
-							lat.setAmmaccature(ammaccature.getText());
-							lat.setBolla_trasversale(bolla_trasversale.getText());
-							lat.setRegolazione(regolazione.getText());
-							lat.setCentraggio(centraggio.getText());
-							
-							lat.setCampo_misura(new BigDecimal(campo_misura.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
-							lat.setCampo_misura_sec(new BigDecimal(campo_misura_sec.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
-						
-							lat.setSensibilita(new BigDecimal(sensibilita.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
-							
-							lat.setIncertezza_rif(new BigDecimal(incertezza_er.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
-							lat.setIncertezza_sec(new BigDecimal(incertezza_er_sec.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
-						
-							lat.setIncertezza_estesa(new BigDecimal(incertezza_em.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
-							lat.setIncertezza_estesa_sec(new BigDecimal(incertezza_em_sec.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
-						
-							lat.setIncertezza_media(new BigDecimal(incertezza_um.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
-						
-							lat.setNote(textArea.getText());
-							
-							GestioneMisuraBO.updateRecordMisuraLAT(lat);
-							
-							JOptionPane.showMessageDialog(null,"Salvataggio Completato","Salva",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/confirm.png")));
-						}
-						else 
-						{
-							JOptionPane.showMessageDialog(null,sb,"Attenzione",JOptionPane.WARNING_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
-						}
-					  }
-					}catch (Exception e1) {
-						e1.printStackTrace();
-					}}
-				});
-				
 				btnNewButton.setFont(new Font("Arial", Font.BOLD, 12));
 				btnNewButton.setIcon(new ImageIcon(PannelloLivellaBolla.class.getResource("/image/calcola.png")));
 				semInc.add(btnNewButton, "cell 1 20,alignx left");
 			}
+											
+										
+			
+							
+							
+											JLabel label_3 = new JLabel("''");
+											semInc.add(label_3, "cell 2 9");
+											
+															JLabel label_1 = new JLabel("''");
+															semInc.add(label_1, "cell 2 13");
+															
+																			JLabel label_2 = new JLabel("''");
+																			semInc.add(label_2, "cell 2 15");
+																			
+																							JButton btnSalva = new JButton("Salva");
+																							
+																							btnSalva.setIcon(new ImageIcon(PannelloLivellaBolla.class.getResource("/image/save.png")));
+																							btnSalva.setFont(new Font("Arial", Font.BOLD, 12));
+																							semInc.add(btnSalva, "cell 2 20,growy");
+																							
+																							btnSalva.addActionListener(new ActionListener() {
+																								public void actionPerformed(ActionEvent e) {
+																									
+																									try 
+																									{
+																									int scelta=	JOptionPane.showConfirmDialog(null,"Vuoi Salvare i dati ?","Salva",JOptionPane.YES_NO_OPTION,JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/question.png")));
+																									
+																									if(scelta==0) {
+																										
+																									
+																									boolean check=true;
+																									StringBuffer sb = new StringBuffer();
+																									
+																									LatMisuraDTO lat = new LatMisuraDTO();
+																									lat.setId(SessionBO.idMisura);
+																									if(comboBox_cmpRif.getSelectedIndex()<1 || comboBox_cmpLav.getSelectedIndex()<1)
+																									{
+																										sb.append("* Selezionare Campioni riferimento/lavoro \n");
+																										check=false;
+																									}
+																									
+																								/*	if(stato.getText().length()<=0)
+																									{
+																										sb.append("* Indicare lo stato dello strumento \n");
+																										check=false;
+																									}*/
+																									if(incertezza_er.getText().length()<=0)
+																									{
+																										sb.append("* Calcolare l'incertezza");
+																										check=false;
+																									}
+																									
+																									if(check) 
+																									{
+																										lat.setId(SessionBO.idMisura);
+																										lat.setRif_campione(comboBox_cmpRif.getSelectedItem().toString());
+																										lat.setRif_campione_lavoro(comboBox_cmpLav.getSelectedItem().toString());
+																										
+																										lat.setStato(comboBox_stato.getSelectedItem().toString());
+																										lat.setAmmaccature(comboBox_ammaccature.getSelectedItem().toString());
+																										lat.setBolla_trasversale(comboBox_bolla_trasversale.getSelectedItem().toString());
+																										lat.setRegolazione(comboBox_regolazione.getSelectedItem().toString());
+																										lat.setCentraggio(comboBox_centraggio.getSelectedItem().toString());
+																										
+																										lat.setCampo_misura(new BigDecimal(campo_misura.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
+																										lat.setCampo_misura_sec(new BigDecimal(campo_misura_sec.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
+																									
+																										lat.setSensibilita(new BigDecimal(sensibilita.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
+																										
+																										lat.setIncertezza_rif(new BigDecimal(incertezza_er.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
+																										lat.setIncertezza_sec(new BigDecimal(incertezza_er_sec.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
+																									
+																										lat.setIncertezza_estesa(new BigDecimal(incertezza_em.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
+																										lat.setIncertezza_estesa_sec(new BigDecimal(incertezza_em_sec.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP));
+																									
+																										lat.setIncertezza_media(new BigDecimal(incertezza_um.getText()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP));
+																									
+																										lat.setNote(textArea.getText());
+																										
+																										GestioneMisuraBO.updateRecordMisuraLAT(lat);
+																										
+																										JOptionPane.showMessageDialog(null,"Salvataggio Completato","Salva",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/confirm.png")));
+																									}
+																									else 
+																									{
+																										JOptionPane.showMessageDialog(null,sb,"Attenzione",JOptionPane.WARNING_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
+																									}
+																								  }
+																								}catch (Exception e1) {
+																									e1.printStackTrace();
+																								}}
+																							});
 
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -458,7 +478,7 @@ public class PannelloLivellaBolla extends JPanel  {
 			final java.awt.Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
 
-			if (column  == 1 ||column  == 3 ||column  == 4 ||column  == 7 ||column  ==8  ||column  == 12 ) 
+			if (column  == 1 ||column  == 3 ||column  == 4 ||column  == 7 ||column  ==8  ) 
 			{
 				cellComponent.setBackground(new Color(224,224,224));
 				cellComponent.setForeground(Color.BLACK);
@@ -515,23 +535,33 @@ public class PannelloLivellaBolla extends JPanel  {
 				punto= listaPuntiDX.get(i);
 				model.addRow(new Object[0]);
 				model.setValueAt(punto.getRif_tacca(), i, 0);
-				model.setValueAt(punto.getValore_nominale_tratto(), i, 1);
-				model.setValueAt(punto.getValore_nominale_tratto_sec(), i, 2);
-				model.setValueAt(punto.getP1_andata(), i, 3);
-				model.setValueAt(punto.getP1_ritorno(), i, 4);
-				model.setValueAt(punto.getP1_media(), i, 5);
-				model.setValueAt(punto.getP1_diff(), i, 6);
-				model.setValueAt(punto.getP2_andata(), i, 7);
-				model.setValueAt(punto.getP2_ritorno(), i, 8);
-				model.setValueAt(punto.getP2_media(), i, 9);
-				model.setValueAt(punto.getP2_diff(), i, 10);
-				model.setValueAt(punto.getMedia(), i, 11);
-				model.setValueAt(punto.getErrore_cum(), i, 12);
-				model.setValueAt(punto.getMedia_corr_sec(), i, 13);
-				model.setValueAt(punto.getMedia_corr_mm(), i, 14);
-				model.setValueAt(punto.getDiv_dex(), i, 15);
-				model.setValueAt(punto.getCorr_boll_mm(),i,16);
-				model.setValueAt(punto.getCorr_boll_sec(),i,17);
+				if( valutaConsistenzaPunto(punto)) 
+				{
+				model.setValueAt(punto.getValore_nominale_tratto().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 1);
+				model.setValueAt(punto.getValore_nominale_tratto_sec().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 2);
+				model.setValueAt(punto.getP1_andata().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 3);
+				model.setValueAt(punto.getP1_ritorno().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 4);
+				model.setValueAt(punto.getP1_media().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 5);
+				model.setValueAt(punto.getP1_diff().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 6);
+				model.setValueAt(punto.getP2_andata().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 7);
+				model.setValueAt(punto.getP2_ritorno().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 8);
+				model.setValueAt(punto.getP2_media().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 9);
+				model.setValueAt(punto.getP2_diff().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 10);
+				model.setValueAt(punto.getMedia().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 11);
+				model.setValueAt(punto.getErrore_cum().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP), i, 12);
+				model.setValueAt(punto.getMedia_corr_sec().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP), i, 13);
+				model.setValueAt(punto.getMedia_corr_mm().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP), i, 14);
+				model.setValueAt(punto.getDiv_dex().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP), i, 15);
+				if(punto.getCorr_boll_mm()!=null) 
+				{
+					model.setValueAt(punto.getCorr_boll_mm().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP),i,16);
+					model.setValueAt(punto.getCorr_boll_sec().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP),i,17);
+				}else 
+				{
+					model.setValueAt(BigDecimal.ZERO.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP),i,16);
+					model.setValueAt(BigDecimal.ZERO.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP),i,17);
+				}
+				}
 				model.setValueAt(punto.getId(), i, 18);
 				
 			}
@@ -552,12 +582,32 @@ public class PannelloLivellaBolla extends JPanel  {
 			JScrollPane scrollTab = new JScrollPane(tableDX);
 			semDex.add(scrollTab, "cell 0 1 3 1,growx,height :350:400");
 
+			JButton button = new JButton("Ricalcola");
+			semDex.add(button, "cell 0 0");
 			
 			JPopupMenu popupMenu= new JPopupMenu();
 			jmit= new JMenuItem("Elimina Riga");
 			jmit.addActionListener(this);
 			popupMenu.add(jmit);
 			tableDX.setComponentPopupMenu(popupMenu);
+			
+			
+			button.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+				
+					for(int i=0;i<model.getRowCount();i++) 
+					{
+						if(model.getValueAt(i, 8)!=null) 
+						{
+							model.setValueAt(model.getValueAt(i, 8), i, 8);
+						}
+					}
+					
+				}
+			});
+			
 			
 			/*Tabella Tratto*/
 
@@ -572,8 +622,8 @@ public class PannelloLivellaBolla extends JPanel  {
 
 				if( punto.getDiv_dex()!=null && punto.getDiv_dex().abs().compareTo(BigDecimal.ZERO)==1) 
 				{
-					modelTratto.setValueAt(punto.getDiv_dex().abs().toPlainString(), i, 1);
-					modelTratto.setValueAt(punto.getDiv_dex().abs().subtract(s_mediaTotale),i,2);
+					modelTratto.setValueAt(punto.getDiv_dex().abs().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString(), i, 1);
+					modelTratto.setValueAt(punto.getDiv_dex().abs().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).subtract(s_mediaTotale.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP)),i,2);
 				}else 
 				{
 					modelTratto.setValueAt("", i, 2);
@@ -604,7 +654,7 @@ public class PannelloLivellaBolla extends JPanel  {
 			s_media_field = new JTextField();
 			s_media_field.setFont(new Font("Arial", Font.BOLD, 12));
 			s_media_field.setEditable(false);
-			s_media_field.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,0).toPlainString());
+			s_media_field.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,0).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString());
 			semDex.add(s_media_field, "cell 1 3");
 			s_media_field.setColumns(10);
 
@@ -619,7 +669,7 @@ public class PannelloLivellaBolla extends JPanel  {
 			dev_st_field = new JTextField();
 			dev_st_field.setEditable(false);
 			dev_st_field.setFont(new Font("Arial", Font.BOLD, 12));
-			dev_st_field.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,0).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
+			dev_st_field.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,0).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString());
 			semDex.add(dev_st_field, "cell 1 4");
 			dev_st_field.setColumns(10);
 
@@ -634,6 +684,8 @@ public class PannelloLivellaBolla extends JPanel  {
 			
 		}
 		
+
+
 public void actionPerformed(ActionEvent event) {
 			
 			JMenuItem menu = (JMenuItem) event.getSource();
@@ -706,7 +758,7 @@ public void actionPerformed(ActionEvent event) {
 						
 						if(model.getValueAt(0,5)==null ) 
 						{
-							JOptionPane.showMessageDialog(null,"Indicare il punto a 0, completare l'intera riga","Attenzione",JOptionPane.WARNING_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
+						//	JOptionPane.showMessageDialog(null,"Indicare il punto a 0, completare l'intera riga","Attenzione",JOptionPane.WARNING_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
 							return;
 						}
 
@@ -751,8 +803,12 @@ public void actionPerformed(ActionEvent event) {
 
 						/*Tratto 0*/
 
+						
+						if( model.getValueAt(0,9)!=null) {
+						
 						BigDecimal pivot= new BigDecimal( model.getValueAt(0,9).toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP);
 
+						
 						for (int i = 0; i < 11; i++) 
 						{
 							Object obj =model.getValueAt(i,9);
@@ -764,6 +820,7 @@ public void actionPerformed(ActionEvent event) {
 							}
 						}
 					}
+						}
 
 					/*Medie*/
 					Object m1=model.getValueAt(row, 6);
@@ -776,11 +833,11 @@ public void actionPerformed(ActionEvent event) {
 					 */
 					if(mediaTratto!=null) 
 					{
-						BigDecimal err_cum=GestioneMisuraBO.getErroreCumulativo(mediaTratto,comboBox_cmpRif.getSelectedItem().toString());
+						BigDecimal err_cum=GestioneMisuraBO.getErroreCumulativo(mediaTratto,comboBox_cmpLav.getSelectedItem().toString());
 					
 					if(err_cum!=null) 
 					{
-						model.setValueAt(err_cum.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1,RoundingMode.HALF_UP).toPlainString(), row, 12);
+						model.setValueAt(err_cum.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString(), row, 12);
 					}
 					}
 					if(model.getValueAt(row,12)!=null) 
@@ -795,7 +852,7 @@ public void actionPerformed(ActionEvent event) {
 
 					if(col12!=null) 
 					{
-						BigDecimal erroreCum= new BigDecimal(col12.toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1,RoundingMode.HALF_UP);
+						BigDecimal erroreCum= new BigDecimal(col12.toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP);
 
 						Object obj =model.getValueAt(row, 11);
 						if(obj!=null) 
@@ -807,10 +864,10 @@ public void actionPerformed(ActionEvent event) {
 							BigDecimal mediaTratto=m1.add(m2).divide(due,RoundingMode.HALF_UP);
 							
 
-							model.setValueAt(mediaTratto.subtract(erroreCum).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), row,13);
+							model.setValueAt(mediaTratto.subtract(erroreCum).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP), row,13);
 
 							BigDecimal avgArcsecInv=GestioneMisuraBO.getArcosecInv(mediaTratto.subtract(erroreCum).toPlainString());
-							model.setValueAt(avgArcsecInv.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString(), row,14);
+							model.setValueAt(avgArcsecInv.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString(), row,14);
 
 							if(row==0) 
 							{
@@ -823,28 +880,28 @@ public void actionPerformed(ActionEvent event) {
 								{
 								
 									
-									model.setValueAt(avgArcsecInv.subtract(new BigDecimal(obj1.toString())).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP), row, 15);
+									model.setValueAt(avgArcsecInv.subtract(new BigDecimal(obj1.toString())).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP), row, 15);
 									
-									model.setValueAt((avgArcsecInv.subtract(new BigDecimal(model.getValueAt(row, 1).toString())).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1,RoundingMode.HALF_UP)), row, 16);
+									model.setValueAt((avgArcsecInv.subtract(new BigDecimal(model.getValueAt(row, 1).toString())).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP)), row, 16);
 									
 									
 									BigDecimal indicazione_bolla=GestioneMisuraBO.getArcosec(model.getValueAt(row, 1).toString());								
 									
-									model.setValueAt((mediaTratto.subtract(erroreCum)).subtract(indicazione_bolla).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1,RoundingMode.HALF_UP), row, 17);
+									model.setValueAt((mediaTratto.subtract(erroreCum)).subtract(indicazione_bolla).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP), row, 17);
 									
 
 									/*Gestione Model Tratto e Medie*/
 
 									BigDecimal val_1_div=avgArcsecInv.subtract(new BigDecimal(obj1.toString()));
 									
-									val_1_div=val_1_div.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP);
+									val_1_div=val_1_div.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP);
 									
 									modelTratto.setValueAt(val_1_div, row, 1);
 								
 									listaPuntiDX.get(row).setDiv_dex( avgArcsecInv.subtract(new BigDecimal(obj1.toString())));
 									
-									s_media_field.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,0).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
-									dev_st_field.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,0).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
+									s_media_field.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,0).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString());
+									dev_st_field.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,0).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString());
 									
 									BigDecimal s_mediaTotale = GestioneMisuraBO.getAverageLivella(listaPuntiDX,listaPuntiSX,2);
 
@@ -852,8 +909,8 @@ public void actionPerformed(ActionEvent event) {
 										PuntoLivellaBollaDTO punto= listaPuntiDX.get(i);
 										if( punto.getDiv_dex()!=null && punto.getDiv_dex().abs().compareTo(BigDecimal.ZERO)==1) 
 										{
-											modelTratto.setValueAt((punto.getDiv_dex().abs()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString(), i, 1);
-											modelTratto.setValueAt((punto.getDiv_dex().abs()).subtract(s_mediaTotale).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP),i,2);
+											modelTratto.setValueAt((punto.getDiv_dex().abs()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString(), i, 1);
+											modelTratto.setValueAt((punto.getDiv_dex().abs().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP)).subtract(s_mediaTotale).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP),i,2);
 										}else 
 										{
 											modelTratto.setValueAt("", i, 2);
@@ -867,9 +924,9 @@ public void actionPerformed(ActionEvent event) {
 					
 								/*aggiorna s media e devstd*/
 								
-								textField_media_totale.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,2).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
-								textField_dev_std_totale.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,2).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
-								textField_scmax.setText(GestioneMisuraBO.getScMaxLivella(listaPuntiDX, listaPuntiSX).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
+								textField_media_totale.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,2).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString());
+								textField_dev_std_totale.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,2).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString());
+								textField_scmax.setText(GestioneMisuraBO.getScMaxLivella(listaPuntiDX, listaPuntiSX).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString());
 								
 						
 							}
@@ -896,10 +953,10 @@ public void actionPerformed(ActionEvent event) {
 				punto.setP2_media(checkField(model.getValueAt(row, 9),Costanti.RISOLUZIONE_LIVELLA_BOLLA));
 				punto.setP2_diff(checkField(model.getValueAt(row, 10),Costanti.RISOLUZIONE_LIVELLA_BOLLA));
 				punto.setMedia(checkField(model.getValueAt(row, 11),Costanti.RISOLUZIONE_LIVELLA_BOLLA));
-				punto.setErrore_cum(checkField(model.getValueAt(row, 12),Costanti.RISOLUZIONE_LIVELLA_BOLLA));
-				punto.setMedia_corr_sec(checkField(model.getValueAt(row, 13),Costanti.RISOLUZIONE_LIVELLA_BOLLA));
-				punto.setMedia_corr_mm(checkField(model.getValueAt(row, 14),Costanti.RISOLUZIONE_LIVELLA_BOLLA+2));
-				punto.setDiv_dex(checkField(model.getValueAt(row, 15),Costanti.RISOLUZIONE_LIVELLA_BOLLA+2));
+				punto.setErrore_cum(checkField(model.getValueAt(row, 12),Costanti.RISOLUZIONE_LIVELLA_BOLLA+2));
+				punto.setMedia_corr_sec(checkField(model.getValueAt(row, 13),Costanti.RISOLUZIONE_LIVELLA_BOLLA+3));
+				punto.setMedia_corr_mm(checkField(model.getValueAt(row, 14),Costanti.RISOLUZIONE_LIVELLA_BOLLA+3));
+				punto.setDiv_dex(checkField(model.getValueAt(row, 15),Costanti.RISOLUZIONE_LIVELLA_BOLLA+3));
 				punto.setCorr_boll_mm(checkField(model.getValueAt(row, 16),Costanti.RISOLUZIONE_LIVELLA_BOLLA+3));
 				punto.setCorr_boll_sec(checkField(model.getValueAt(row, 17),Costanti.RISOLUZIONE_LIVELLA_BOLLA+3));
 
@@ -1036,29 +1093,41 @@ public void actionPerformed(ActionEvent event) {
 
 			PuntoLivellaBollaDTO punto =null;
 			for (int i = 0; i <listaPuntiSX.size(); i++) {
-
+				
 				punto= listaPuntiSX.get(i);
 				model.addRow(new Object[0]);
+				
 				model.setValueAt(punto.getRif_tacca(), i, 0);
-				model.setValueAt(punto.getValore_nominale_tratto(), i, 1);
-				model.setValueAt(punto.getValore_nominale_tratto_sec(), i, 2);
-				model.setValueAt(punto.getP1_andata(), i, 3);
-				model.setValueAt(punto.getP1_ritorno(), i, 4);
-				model.setValueAt(punto.getP1_media(), i, 5);
-				model.setValueAt(punto.getP1_diff(), i, 6);
-				model.setValueAt(punto.getP2_andata(), i, 7);
-				model.setValueAt(punto.getP2_ritorno(), i, 8);
-				model.setValueAt(punto.getP2_media(), i, 9);
-				model.setValueAt(punto.getP2_diff(), i, 10);
-				model.setValueAt(punto.getMedia(), i, 11);
-				model.setValueAt(punto.getErrore_cum(), i, 12);
-				model.setValueAt(punto.getMedia_corr_sec(), i, 13);
-				model.setValueAt(punto.getMedia_corr_mm(), i, 14);
-				model.setValueAt(punto.getDiv_dex(), i, 15);
-				model.setValueAt(punto.getCorr_boll_mm(),i,16);
-				model.setValueAt(punto.getCorr_boll_sec(),i,17);
-				model.setValueAt(punto.getId(), i, 18);
-
+				if(valutaConsistenzaPunto(punto)) 
+				{
+					model.setValueAt(punto.getValore_nominale_tratto().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 1);
+				
+					model.setValueAt(punto.getValore_nominale_tratto_sec().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 2);
+				
+				model.setValueAt(punto.getP1_andata().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 3);
+				model.setValueAt(punto.getP1_ritorno().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 4);
+				model.setValueAt(punto.getP1_media().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 5);
+				model.setValueAt(punto.getP1_diff().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 6);
+				model.setValueAt(punto.getP2_andata().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 7);
+				model.setValueAt(punto.getP2_ritorno().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 8);
+				model.setValueAt(punto.getP2_media().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 9);
+				model.setValueAt(punto.getP2_diff().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 10);
+				model.setValueAt(punto.getMedia().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), i, 11);
+				model.setValueAt(punto.getErrore_cum().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP), i, 12);
+				model.setValueAt(punto.getMedia_corr_sec().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP), i, 13);
+				model.setValueAt(punto.getMedia_corr_mm().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP), i, 14);
+				model.setValueAt(punto.getDiv_dex().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP), i, 15);
+				if(punto.getCorr_boll_mm()!=null) 
+				{
+					model.setValueAt(punto.getCorr_boll_mm().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP),i,16);
+					model.setValueAt(punto.getCorr_boll_sec().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP),i,17);
+				}else 
+				{
+					model.setValueAt(BigDecimal.ZERO.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP),i,16);
+					model.setValueAt(BigDecimal.ZERO.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP),i,17);
+				}
+				}
+					model.setValueAt(punto.getId(), i, 18);
 			}
 
 			model.addTableModelListener(this);
@@ -1077,6 +1146,10 @@ public void actionPerformed(ActionEvent event) {
 			JScrollPane scrollTab = new JScrollPane(tableSX);
 			semSX.add(scrollTab, "cell 0 1 3 1,growx,height :350:400");
 			
+			
+			JButton button = new JButton("Ricalcola");
+			semSX.add(button, "cell 0 0");
+			
 			JLabel didascalia= new JLabel("Note: indicare i valori con il segno negativo (-)");
 			didascalia.setFont(new Font("Arial", Font.BOLD, 12));
 			semSX.add(didascalia,"cell 0 2 3 1 ,growx");
@@ -1087,7 +1160,21 @@ public void actionPerformed(ActionEvent event) {
 			popupMenu.add(jmit);
 			tableSX.setComponentPopupMenu(popupMenu);
 			
-			
+			button.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+				
+					for(int i=0;i<model.getRowCount();i++) 
+					{
+						if(model.getValueAt(i, 8)!=null) 
+						{
+							model.setValueAt(model.getValueAt(i, 8), i, 8);
+						}
+					}
+					
+				}
+			});
 			
 			/*Tabella Tratto*/
 
@@ -1102,11 +1189,12 @@ public void actionPerformed(ActionEvent event) {
 
 				if( punto.getDiv_dex()!=null && punto.getDiv_dex().abs().compareTo(BigDecimal.ZERO)==1) 
 				{
-					modelTratto.setValueAt(punto.getDiv_dex().abs().toPlainString(), i, 1);
-					modelTratto.setValueAt(punto.getDiv_dex().abs().subtract(s_mediaTotale),i,2);
+					modelTratto.setValueAt(punto.getDiv_dex().abs().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString(), i, 1);
+					modelTratto.setValueAt(punto.getDiv_dex().abs().setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).subtract(s_mediaTotale.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP)),i,2);
 				}else 
 				{
-					modelTratto.setValueAt("", i, 2);
+				//	modelTratto.setValueAt("   -   ", i, 1);
+				//	modelTratto.setValueAt("   -   ", i, 2);
 				}
 
 
@@ -1134,7 +1222,7 @@ public void actionPerformed(ActionEvent event) {
 			s_media_field = new JTextField();
 			s_media_field.setFont(new Font("Arial", Font.BOLD, 12));
 			s_media_field.setEditable(false);
-			s_media_field.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,1).toPlainString());
+			s_media_field.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,1).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString());
 			semSX.add(s_media_field, "cell 1 3");
 			s_media_field.setColumns(10);
 
@@ -1149,7 +1237,7 @@ public void actionPerformed(ActionEvent event) {
 			dev_st_field = new JTextField();
 			dev_st_field.setEditable(false);
 			dev_st_field.setFont(new Font("Arial", Font.BOLD, 12));
-			dev_st_field.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,1).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
+			dev_st_field.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,1).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString());
 			semSX.add(dev_st_field, "cell 1 4");
 			dev_st_field.setColumns(10);
 
@@ -1163,6 +1251,7 @@ public void actionPerformed(ActionEvent event) {
 			
 		}
 
+		
 		
 		public void actionPerformed(ActionEvent event) {
 			
@@ -1237,7 +1326,7 @@ public void actionPerformed(ActionEvent event) {
 
 						if(model.getValueAt(0,5)==null ) 
 						{
-							JOptionPane.showMessageDialog(null,"Indicare il punto a 0, completare l'intera riga","Attenzione",JOptionPane.WARNING_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
+						//	JOptionPane.showMessageDialog(null,"Indicare il punto a 0, completare l'intera riga","Attenzione",JOptionPane.WARNING_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/attention.png")));
 							return;
 						}
 						BigDecimal pivot= new BigDecimal( model.getValueAt(0,5).toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP);
@@ -1281,6 +1370,9 @@ public void actionPerformed(ActionEvent event) {
 
 						/*Tratto 0*/
 
+						if( model.getValueAt(0,9)!=null) {
+							
+						
 						BigDecimal pivot= new BigDecimal( model.getValueAt(0,9).toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP);
 
 						for (int i = 0; i <= 11; i++) 
@@ -1292,6 +1384,7 @@ public void actionPerformed(ActionEvent event) {
 								BigDecimal bd_tratto= new BigDecimal(obj.toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA);
 								model.setValueAt(bd_tratto.subtract(pivot).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA), i, 10);
 							}
+						}
 						}
 					}
 
@@ -1307,11 +1400,11 @@ public void actionPerformed(ActionEvent event) {
 					 */
 					if(mediaTratto!=null) 
 					{
-					BigDecimal err_cum=GestioneMisuraBO.getErroreCumulativo(mediaTratto,comboBox_cmpRif.getSelectedItem().toString());
+					BigDecimal err_cum=GestioneMisuraBO.getErroreCumulativo(mediaTratto,comboBox_cmpLav.getSelectedItem().toString());
 					
 						if(err_cum!=null) 
 						{
-							model.setValueAt(err_cum.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1,RoundingMode.HALF_UP).toPlainString(), row, 12);
+							model.setValueAt(err_cum.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString(), row, 12);
 						}
 					}
 					if(model.getValueAt(row,12)!=null) 
@@ -1326,7 +1419,7 @@ public void actionPerformed(ActionEvent event) {
 
 					if(col12!=null) 
 					{
-						BigDecimal erroreCum= new BigDecimal(col12.toString()).setScale(20);
+						BigDecimal erroreCum= new BigDecimal(col12.toString()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP);
 
 						Object obj =model.getValueAt(row, 11);
 						if(obj!=null) 
@@ -1340,10 +1433,10 @@ public void actionPerformed(ActionEvent event) {
 							BigDecimal mediaTratto=m1.add(m2).divide(due,RoundingMode.HALF_UP);
 							
 
-							model.setValueAt(mediaTratto.subtract(erroreCum).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA,RoundingMode.HALF_UP), row,13);
+							model.setValueAt(mediaTratto.subtract(erroreCum).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP), row,13);
 
 							BigDecimal avgArcsecInv=GestioneMisuraBO.getArcosecInv(mediaTratto.subtract(erroreCum).toPlainString());
-							model.setValueAt(avgArcsecInv.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString(), row,14);
+							model.setValueAt(avgArcsecInv.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString(), row,14);
 
 							if(row==0) 
 							{
@@ -1355,28 +1448,28 @@ public void actionPerformed(ActionEvent event) {
 								if(obj1!=null)
 								{
 									
-									model.setValueAt(avgArcsecInv.subtract(new BigDecimal(obj1.toString())).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP), row, 15);
+									model.setValueAt(avgArcsecInv.subtract(new BigDecimal(obj1.toString())).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP), row, 15);
 									
-									model.setValueAt((avgArcsecInv.subtract(new BigDecimal(model.getValueAt(row, 1).toString())).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1,RoundingMode.HALF_UP)), row, 16);
+									model.setValueAt((avgArcsecInv.subtract(new BigDecimal(model.getValueAt(row, 1).toString())).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP)), row, 16);
 									
 									
 									BigDecimal indicazione_bolla=GestioneMisuraBO.getArcosec(model.getValueAt(row, 1).toString());								
 									
-									model.setValueAt((mediaTratto.subtract(erroreCum)).subtract(indicazione_bolla).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+1,RoundingMode.HALF_UP), row, 17);
+									model.setValueAt((mediaTratto.subtract(erroreCum)).subtract(indicazione_bolla).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP), row, 17);
 									
 									
 									/*Gestione Model Tratto e Medie*/
 
 									BigDecimal val_1_div=avgArcsecInv.subtract(new BigDecimal(obj1.toString()));
 									
-									val_1_div=val_1_div.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP);
+									val_1_div=val_1_div.setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP);
 									
 									modelTratto.setValueAt(val_1_div, row, 1);
 									
 							
 									listaPuntiSX.get(row).setDiv_dex( avgArcsecInv.subtract(new BigDecimal(obj1.toString())));
-									s_media_field.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,1).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
-									dev_st_field.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,1).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
+									s_media_field.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,1).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString());
+									dev_st_field.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,1).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString());
 
 									BigDecimal s_mediaTotale = GestioneMisuraBO.getAverageLivella(listaPuntiDX,listaPuntiSX,2);
 									
@@ -1385,8 +1478,8 @@ public void actionPerformed(ActionEvent event) {
 										PuntoLivellaBollaDTO punto= listaPuntiSX.get(i);
 										if( punto.getDiv_dex()!=null && punto.getDiv_dex().abs().compareTo(BigDecimal.ZERO)==1) 
 										{
-											modelTratto.setValueAt((punto.getDiv_dex().abs()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString(), i, 1);
-											modelTratto.setValueAt((punto.getDiv_dex().abs().subtract(s_mediaTotale)).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP),i,2);
+											modelTratto.setValueAt((punto.getDiv_dex().abs()).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString(), i, 1);
+											modelTratto.setValueAt((punto.getDiv_dex().abs().subtract(s_mediaTotale)).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP),i,2);
 										}else 
 										{
 											modelTratto.setValueAt("", i, 2);
@@ -1398,9 +1491,9 @@ public void actionPerformed(ActionEvent event) {
 								
 								/*aggiorna s media e devstd*/
 								
-								textField_media_totale.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,2).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
-								textField_dev_std_totale.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,2).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
-								textField_scmax.setText(GestioneMisuraBO.getScMaxLivella(listaPuntiDX, listaPuntiSX).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+2,RoundingMode.HALF_UP).toPlainString());
+								textField_media_totale.setText(GestioneMisuraBO.getAverageLivella(listaPuntiDX, listaPuntiSX,2).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString());
+								textField_dev_std_totale.setText(GestioneMisuraBO.getDevStdLivella(listaPuntiDX, listaPuntiSX,2).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString());
+								textField_scmax.setText(GestioneMisuraBO.getScMaxLivella(listaPuntiDX, listaPuntiSX).setScale(Costanti.RISOLUZIONE_LIVELLA_BOLLA+3,RoundingMode.HALF_UP).toPlainString());
 							}
 
 
@@ -1425,10 +1518,10 @@ public void actionPerformed(ActionEvent event) {
 				punto.setP2_media(checkField(model.getValueAt(row, 9),Costanti.RISOLUZIONE_LIVELLA_BOLLA));
 				punto.setP2_diff(checkField(model.getValueAt(row, 10),Costanti.RISOLUZIONE_LIVELLA_BOLLA));
 				punto.setMedia(checkField(model.getValueAt(row, 11),Costanti.RISOLUZIONE_LIVELLA_BOLLA));
-				punto.setErrore_cum(checkField(model.getValueAt(row, 12),Costanti.RISOLUZIONE_LIVELLA_BOLLA));
-				punto.setMedia_corr_sec(checkField(model.getValueAt(row, 13),Costanti.RISOLUZIONE_LIVELLA_BOLLA));
+				punto.setErrore_cum(checkField(model.getValueAt(row, 12),Costanti.RISOLUZIONE_LIVELLA_BOLLA+1));
+				punto.setMedia_corr_sec(checkField(model.getValueAt(row, 13),Costanti.RISOLUZIONE_LIVELLA_BOLLA+2));
 				punto.setMedia_corr_mm(checkField(model.getValueAt(row, 14),Costanti.RISOLUZIONE_LIVELLA_BOLLA+2));
-				punto.setDiv_dex(checkField(model.getValueAt(row, 15),Costanti.RISOLUZIONE_LIVELLA_BOLLA+2));
+				punto.setDiv_dex(checkField(model.getValueAt(row, 15),Costanti.RISOLUZIONE_LIVELLA_BOLLA+3));
 				punto.setCorr_boll_mm(checkField(model.getValueAt(row, 16),Costanti.RISOLUZIONE_LIVELLA_BOLLA+3));
 				punto.setCorr_boll_sec(checkField(model.getValueAt(row, 17),Costanti.RISOLUZIONE_LIVELLA_BOLLA+3));
 
@@ -1536,8 +1629,30 @@ public void actionPerformed(ActionEvent event) {
 
 		}
 
+		
 	}
 
+	private boolean valutaConsistenzaPunto(PuntoLivellaBollaDTO punto) {
+		
+		if(punto.getValore_nominale_tratto()==null)return false;
+		if(punto.getValore_nominale_tratto_sec()==null)return false;
+		if(punto.getP1_andata()==null)return false;
+		if(punto.getP1_ritorno()==null)return false;
+		if(punto.getP1_media()==null)return false;
+		if(punto.getP1_diff()==null)return false;
+		if(punto.getP2_andata()==null)return false;
+		if(punto.getP2_ritorno()==null)return false;
+		if(punto.getP2_media()==null)return false;
+		if(punto.getP2_diff()==null)return false;
+		if(punto.getMedia()==null)return false;
+		if(punto.getErrore_cum()==null)return false;
+		if(punto.getMedia_corr_sec()==null)return false;
+		if(punto.getMedia_corr_mm()==null)return false;
+		if(punto.getDiv_dex()==null)return false;
+				
+		return true;
+			}
+	
 	class ModelSemisc extends DefaultTableModel {
 
 
@@ -1610,8 +1725,8 @@ public void actionPerformed(ActionEvent event) {
 
 		@Override
 		public boolean isCellEditable(int row, int column) {
-			if(column==0 || column==2|| column==5|| column==6|| column==9|| column==10|| column==11
-					|| column==13|| column==14|| column==15)
+			if(column==0 || column==2|| column==5|| column==6|| column==9|| column==10|| column==11 || column==12
+					|| column==13|| column==14|| column==15 ||  column==16 || column==17 )
 			{
 				return false;
 			}else

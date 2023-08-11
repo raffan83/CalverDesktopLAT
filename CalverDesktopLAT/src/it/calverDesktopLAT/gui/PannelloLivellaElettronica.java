@@ -206,8 +206,11 @@ public class PannelloLivellaElettronica extends JPanel  {
 
 
 			comboBox_cmpRif = new JComboBox(GestioneCampioneBO.getListaCampioniCompleta());
+			comboBox_cmpRif.setEnabled(false);
+			comboBox_cmpRif.setSelectedItem("CDT054");
 			semInc.add(comboBox_cmpRif, "cell 1 1 2 1,growx,aligny top");
 
+			
 			JLabel lblCampoMisura = new JLabel("Campo Misura (Strumento) ±");
 			semInc.add(lblCampoMisura, "cell 0 2,alignx trailing,aligny top");
 
@@ -293,11 +296,41 @@ public class PannelloLivellaElettronica extends JPanel  {
 			semInc.add(ind_iniz_camp_corr, "flowx,cell 1 6,growx,aligny top");
 
 
+			
+			ind_iniz_camp_corr.addFocusListener(new FocusListener() {
+
+				@Override
+				public void focusLost(FocusEvent e) {
+
+					try {
+						 BigDecimal db = new BigDecimal(ind_iniz_camp_corr.getText());
+						 textField_indicazione_corretta.setText(ind_iniz_camp_corr.getText());
+						
+					} catch (Exception e2) {
+						JOptionPane.showMessageDialog(null,"Il campo accetta solo numeri","Attenzione",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
+						e2.printStackTrace();
+						textField_indicazione_corretta.setText("0");
+					}
+				}
+
+				@Override
+				public void focusGained(FocusEvent e) {
+					// TODO Auto-generated method stub
+
+				}
+			});
+			
+			
 			JLabel lblInc_tipo_comp = new JLabel("Incertezza tipo composta");
 			semInc.add(lblInc_tipo_comp, "cell 0 7,alignx trailing,aligny top");
 
 			inc_tipo_comp = new JTextField();
 			inc_tipo_comp.setColumns(10);
+			
+			BigDecimal incertezza_tipo_composta= getInceretzza_tipoComposta();
+			
+			inc_tipo_comp.setText(""+incertezza_tipo_composta.setScale(2).toPlainString());
+			
 			semInc.add(inc_tipo_comp, "flowx,cell 1 7,growx,aligny top");
 
 			JLabel lblIncertezzaEstesaUem = new JLabel("Incertezza Estesa U(Em)");
@@ -379,15 +412,19 @@ public class PannelloLivellaElettronica extends JPanel  {
 			for (int i = 0; i <listaIncertezze.size(); i++) {
 
 				punto= listaIncertezze.get(i);
-				model_incertezze.addRow(new Object[0]);
-				model_incertezze.setValueAt(punto.getPunto(), i, 0);
-				model_incertezze.setValueAt(punto.getValore_nominale(), i, 1);
-				model_incertezze.setValueAt(punto.getInc_ris(), i, 2);
-				model_incertezze.setValueAt(punto.getInc_rip(), i, 3);
-				model_incertezze.setValueAt(punto.getInc_cmp(), i, 4);
-				model_incertezze.setValueAt(punto.getInc_stab(), i, 5);
-				model_incertezze.setValueAt(punto.getInc_est(), i, 6);
-				model_incertezze.setValueAt(punto.getId(), i,7);
+				
+					model_incertezze.addRow(new Object[0]);
+					model_incertezze.setValueAt(punto.getPunto(), i, 0);
+					if(punto.getValore_nominale()!=null) 
+					{
+					model_incertezze.setValueAt(punto.getValore_nominale(), i, 1);
+					model_incertezze.setValueAt(punto.getInc_ris().setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3), i, 2);
+					model_incertezze.setValueAt(punto.getInc_rip().setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3), i, 3);
+					model_incertezze.setValueAt(punto.getInc_cmp().setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3), i, 4);
+					model_incertezze.setValueAt(punto.getInc_stab().setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3), i, 5);
+					model_incertezze.setValueAt(punto.getInc_est().setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3), i, 6);
+					model_incertezze.setValueAt(punto.getId(), i,7);
+				}
 
 			}
 
@@ -413,7 +450,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 			}
 			catch (Exception e) 
 			{
-				JOptionPane.showMessageDialog(null,"Probabilemnte il file utilizzato non � aggiornato, riscaricarlo dall'intervento e riprovare","Errore File",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
+				JOptionPane.showMessageDialog(null,"Probabilemnte il file utilizzato non è aggiornato, riscaricarlo dall'intervento e riprovare","Errore File",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
 			 
 			}
 			/*Riempo pannello se il campo riferimenti_incertezza !=null*/
@@ -466,7 +503,11 @@ public class PannelloLivellaElettronica extends JPanel  {
 
 					try 
 					{
-						int scelta=	JOptionPane.showConfirmDialog(null,"Vuoi Salvare i dati ? \n RICALOLARE LA MISURA PRIMA DI PROCEDERE AL SALVATAGGIO ","Salva",JOptionPane.YES_NO_OPTION,JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/question.png")));
+						listaParametri=GestioneCampioneBO.getParametriTaratura(comboBox_cmpRif.getSelectedItem().toString());
+
+						regressioneLineare= GestioneMisuraBO.getListaRegressioneLineare(listaParametri);
+						
+						int scelta=	JOptionPane.showConfirmDialog(null,"Vuoi Salvare i dati ? \n RICALCOLARE LA MISURA PRIMA DI PROCEDERE AL SALVATAGGIO ","Salva",JOptionPane.YES_NO_OPTION,JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/question.png")));
 
 						if(scelta==0) 
 
@@ -554,6 +595,33 @@ public class PannelloLivellaElettronica extends JPanel  {
 
 
 
+		private BigDecimal getInceretzza_tipoComposta() {
+		
+			BigDecimal inc =BigDecimal.ZERO;
+			try {
+				
+				
+				listaParametri=GestioneCampioneBO.getParametriTaratura("CDT054");
+				
+				if(listaParametri.size()>0) 
+				{
+					ParametroTaraturaDTO param = listaParametri.get(0);
+					
+					if(param.getIncertezzaAssoluta()!=null && param.getIncertezzaAssoluta().doubleValue()>0) 
+					{
+						inc=param.getIncertezzaAssoluta().divide(new BigDecimal("2"),RoundingMode.HALF_UP);
+					}
+					
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return inc;
+		}
+
+
+
 		public Component get() {
 			return semInc;
 		}
@@ -579,12 +647,12 @@ public class PannelloLivellaElettronica extends JPanel  {
 
 				LatPuntoLivellaElettronicaDTO punto = new LatPuntoLivellaElettronicaDTO();
 				punto.setId(indexPoint);
-				punto.setValore_nominale(checkField(model.getValueAt(row, 1),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+1));
-				punto.setInc_ris(checkField(model.getValueAt(row, 2),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+1));
-				punto.setInc_rip(checkField(model.getValueAt(row, 3),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+1));
-				punto.setInc_cmp(checkField(model.getValueAt(row, 4),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+1));
-				punto.setInc_stab(checkField(model.getValueAt(row, 5),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+1));
-				punto.setInc_est(checkField(model.getValueAt(row, 6),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+1));
+				punto.setValore_nominale(checkField(model.getValueAt(row, 1),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3));
+				punto.setInc_ris(checkField(model.getValueAt(row, 2),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3));
+				punto.setInc_rip(checkField(model.getValueAt(row, 3),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3));
+				punto.setInc_cmp(checkField(model.getValueAt(row, 4),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3));
+				punto.setInc_stab(checkField(model.getValueAt(row, 5),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3));
+				punto.setInc_est(checkField(model.getValueAt(row, 6),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3));
 
 				GestioneMisuraBO.updateRecordPuntoLivellaElettronica(punto);
 
@@ -846,10 +914,22 @@ public class PannelloLivellaElettronica extends JPanel  {
 					modelLin.setValueAt("11 (ZERO)", i, 0);
 				}
 				modelLin.setValueAt(punto.getValore_nominale(), i, 1);
-				modelLin.setValueAt(punto.getValore_andata_taratura(), i, 2);
-				modelLin.setValueAt(punto.getValore_andata_campione(), i, 3);
-				modelLin.setValueAt(punto.getValore_ritorno_taratura(), i, 4);
-				modelLin.setValueAt(punto.getValore_ritorno_campione(), i, 5);
+				if(punto.getValore_andata_taratura()!=null) 
+				{
+					modelLin.setValueAt(punto.getValore_andata_taratura().setScale(1,RoundingMode.HALF_UP), i, 2);
+				}
+				if(punto.getValore_andata_campione()!=null) 
+				{
+					modelLin.setValueAt(punto.getValore_andata_campione().setScale(1,RoundingMode.HALF_UP), i, 3);
+				}
+				if(punto.getValore_ritorno_taratura()!=null) 
+				{
+					modelLin.setValueAt(punto.getValore_ritorno_taratura().setScale(1,RoundingMode.HALF_UP), i, 4);
+				}
+				if(punto.getValore_ritorno_campione()!=null) 
+				{
+					modelLin.setValueAt(punto.getValore_ritorno_campione().setScale(1,RoundingMode.HALF_UP), i, 5);
+				}
 				modelLin.setValueAt(punto.getAndata_scostamento_campione(), i, 6);
 				modelLin.setValueAt(punto.getAndata_correzione_campione(), i, 7);
 				modelLin.setValueAt(punto.getRitorno_scostamento_campione(), i, 8);
@@ -1438,11 +1518,14 @@ public class PannelloLivellaElettronica extends JPanel  {
 						model.setValueAt(punto.getValore_nominale(), j, 1);
 						model.setValueAt(punto.getScarto_tipo(), j, 22);
 					}
-					model.setValueAt(punto.getValore_andata_taratura(), j, 2+index_column);
-					model.setValueAt(punto.getValore_andata_campione(), j, 3+index_column);
-					model.setValueAt(punto.getValore_ritorno_taratura(), j, 4+index_column);
-					model.setValueAt(punto.getValore_ritorno_campione(), j, 5+index_column);
-
+					
+					if(punto.getValore_andata_taratura()!=null) 
+					{
+						model.setValueAt(checkField(punto.getValore_andata_taratura(),1).setScale(1), j, 2+index_column);
+						model.setValueAt(checkField(punto.getValore_andata_campione(),1).setScale(1), j, 3+index_column);
+						model.setValueAt(checkField(punto.getValore_ritorno_taratura(),1).setScale(1), j, 4+index_column);
+						model.setValueAt(checkField(punto.getValore_ritorno_campione(),1).setScale(1), j, 5+index_column);
+					}
 					//model.setValueAt(punto.getId(), i, 22);
 
 					if(indexL[j]!=null) 
@@ -1538,15 +1621,15 @@ public class PannelloLivellaElettronica extends JPanel  {
 										BigDecimal inc_stab=getIncStab();
 										model_incertezze.setValueAt(new BigDecimal(model.getValueAt(row, 1).toString()), row, 1);
 										model_incertezze.setValueAt(inc_ris.setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3, RoundingMode.HALF_UP).toPlainString(), row, 2);
-										model_incertezze.setValueAt(inc_rip.setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+2, RoundingMode.HALF_UP).toPlainString(), row, 3);
-										model_incertezze.setValueAt(inc_cmp.setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+1, RoundingMode.HALF_UP).toPlainString(), row, 4);
-										model_incertezze.setValueAt(inc_stab.setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+1, RoundingMode.HALF_UP).toPlainString(), row, 5);
+										model_incertezze.setValueAt(inc_rip.setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3, RoundingMode.HALF_UP).toPlainString(), row, 3);
+										model_incertezze.setValueAt(inc_cmp.setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3, RoundingMode.HALF_UP).toPlainString(), row, 4);
+										model_incertezze.setValueAt(inc_stab.setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3, RoundingMode.HALF_UP).toPlainString(), row, 5);
 
 										BigDecimal sumContrib=inc_ris.pow(2).add(inc_rip.pow(2)).add(inc_cmp.pow(2)).add(inc_stab.pow(2));
 
 										BigDecimal em= new BigDecimal(2).multiply(new BigDecimal(Math.sqrt(sumContrib.doubleValue())));
 
-										model_incertezze.setValueAt(em.setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+1, RoundingMode.HALF_UP).toPlainString(), row, 6);
+										model_incertezze.setValueAt(em.setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3, RoundingMode.HALF_UP).toPlainString(), row, 6);
 
 										setEmMax(model_incertezze);
 									}
@@ -1653,7 +1736,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 
 			}catch (NumberFormatException e) {
 
-				JOptionPane.showMessageDialog(null,"Il campo risoluzione non � settato correttamente", "Attenzione",JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null,"Il campo risoluzione non è settato correttamente", "Attenzione",JOptionPane.ERROR_MESSAGE);
 			}
 
 			return ris;
@@ -1919,7 +2002,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 			addColumn("Punto");
 			addColumn("Valore nominale");
 			addColumn("Inc. Risoluzione");
-			addColumn("Inc. Ripetibilit�");
+			addColumn("Inc. Ripetibilità");
 			addColumn("Inc. Campione");
 			addColumn("Inc. Stab");
 			addColumn("Inc. Estesa");

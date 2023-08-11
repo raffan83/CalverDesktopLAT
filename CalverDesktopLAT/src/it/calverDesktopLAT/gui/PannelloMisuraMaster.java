@@ -160,9 +160,10 @@ public class PannelloMisuraMaster extends JPanel
 
 		JPanel masterPanel = new JPanel();
 
+		misura= SQLiteDAO.getInfoMisura(id);
 
 
-		masterPanel.setLayout(new MigLayout("", "[70%][20%][10%]", "[12%][73%][15%]"));
+		masterPanel.setLayout(new MigLayout("", "[70%][19.22%][10%]", "[12%][73%][15%]"));
 
 		panel_header = costruisciPanelHeader();	
 		panel_dati_str = costruisciPanelDatiStr(id,misura);
@@ -174,7 +175,7 @@ public class PannelloMisuraMaster extends JPanel
 		masterPanel.add(panel_header,"cell 0 0,grow");
 		masterPanel.add(panel_dati_str,"cell 0 1,grow");
 		masterPanel.add(panel_struttura,"cell 0 2,grow");
-		masterPanel.add(panel_avvio,"cell 1 0 1 3 ,grow");
+		masterPanel.add(panel_avvio,"cell 1 0 2 3,grow");
 		masterPanel.add(panel_stampa, "cell 0 2,width : 150:300");
 
 
@@ -320,7 +321,7 @@ public class PannelloMisuraMaster extends JPanel
 				DefaultCategoryDataset dataset =getDataSetChart1();// new DefaultCategoryDataset()
 
 				JFreeChart chart = ChartFactory.createBarChart3D(
-						"Performance: Incertezza - Accetabilità",null, 
+						"Performance: Incertezza - Accetabilitï¿½",null, 
 						null, dataset  ,PlotOrientation.VERTICAL,
 						true,                     // include legend
 						true,                     // tooltips?
@@ -451,7 +452,7 @@ public class PannelloMisuraMaster extends JPanel
 
 						if(SessionBO.tipoRapporto.equals(Costanti.SVT))
 						{
-							dataset.addValue(puntoMisura.getAccettabilita(), "Accettabilità", puntoMisura.getTipoVerifica());
+							dataset.addValue(puntoMisura.getAccettabilita(), "Accettabilitï¿½", puntoMisura.getTipoVerifica());
 						}
 					}	
 				}
@@ -466,7 +467,7 @@ public class PannelloMisuraMaster extends JPanel
 
 						if(SessionBO.tipoRapporto.equals(Costanti.SVT))
 						{
-							dataset.addValue(puntoMisura.getAccettabilita(), "Accettabilità", puntoMisura.getTipoVerifica());
+							dataset.addValue(puntoMisura.getAccettabilita(), "Accettabilitï¿½", puntoMisura.getTipoVerifica());
 						}
 					}
 				}
@@ -482,8 +483,8 @@ public class PannelloMisuraMaster extends JPanel
 
 		XYSeriesCollection series = new XYSeriesCollection();
 
-		final XYSeries accPos = new XYSeries( "Accettabilità +" );
-		final XYSeries accNeg = new XYSeries( "Accettabilità -" );
+		final XYSeries accPos = new XYSeries( "Accettabilitï¿½ +" );
+		final XYSeries accNeg = new XYSeries( "Accettabilitï¿½ -" );
 
 		final XYSeries misura_inc_pos = new XYSeries( "Punto + U" );
 		final XYSeries misura_inc_neg = new XYSeries( "Punto - U" );
@@ -715,14 +716,14 @@ public class PannelloMisuraMaster extends JPanel
 		JLabel lblFreqTar = new JLabel("Frequenza");
 		lblFreqTar.setFont(new Font("Arial", Font.BOLD, 14));
 		//	lblFreqTar.setBounds(275, 110, 57, 14);
-		panel_dati_str.add(lblFreqTar, "cell 3 0");
+	//	panel_dati_str.add(lblFreqTar, "cell 3 0");
 
 		freq_field = new JTextField();
 		freq_field.setFont(new Font("Arial", Font.PLAIN, 16));
 		freq_field.setEditable(false);
 		freq_field.setColumns(10);
 		//	freq_field.setBounds(349, 109, 180, 17);
-		panel_dati_str.add(freq_field,"cell 4 0,width :50:");
+	//	panel_dati_str.add(freq_field,"cell 4 0,width :50:");
 		freq_field.setText(""+strumento.getFreq_taratura());
 
 		JLabel lblCodiceInterno = new JLabel("Codice interno");
@@ -1058,7 +1059,7 @@ public class PannelloMisuraMaster extends JPanel
 						}
 						catch (NumberFormatException nfe) 
 						{
-							JOptionPane.showMessageDialog(null,"La frequenza può essere solo numerica","Errore",JOptionPane.ERROR_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
+							JOptionPane.showMessageDialog(null,"La frequenza puï¿½ essere solo numerica","Errore",JOptionPane.ERROR_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
 						}
 						catch (Exception e) 
 						{
@@ -1088,7 +1089,7 @@ public class PannelloMisuraMaster extends JPanel
 		final JPanel panel_m_build = new JPanel();
 		panel_m_build.setBorder(new TitledBorder(new LineBorder(Costanti.COLOR_RED, 2, true), "Termina Misura", TitledBorder.LEADING, TitledBorder.TOP, null, Costanti.COLOR_RED));
 		panel_m_build.setBackground(Color.white);
-		panel_m_build.setLayout(new MigLayout("", "[]15[]15[][][][grow]", "[][]"));
+		panel_m_build.setLayout(new MigLayout("", "[]15[]15[]15[]15[]15[][][][grow]", "[][]"));
 
 		JLabel lblTemperatura = new JLabel("Temperatura");
 		lblTemperatura.setFont(new Font("Arial", Font.BOLD, 14));
@@ -1105,11 +1106,19 @@ public class PannelloMisuraMaster extends JPanel
 
 		JLabel lblRicevuto = new JLabel("Ricevuto");
 		lblRicevuto.setFont(new Font("Arial", Font.BOLD, 14));
-		panel_m_build.add(lblRicevuto, "cell 3 0");
+	//	panel_m_build.add(lblRicevuto, "cell 3 0");
 
 		comboRicevuto = new JComboBox(Costanti.TIPO_SATORICEZIONE);
 		comboRicevuto.setFont(new Font("Arial", Font.PLAIN, 16));
-		panel_m_build.add(comboRicevuto, "cell 4 0,growx");
+		
+		JLabel label = new JLabel("Â± 1 CÂ°");
+		label.setFont(new Font("Arial", Font.BOLD, 14));
+		
+		JLabel lblC = new JLabel("Â°C");
+		lblC.setFont(new Font("Arial", Font.BOLD, 14));
+		panel_m_build.add(lblC, "cell 2 0");
+	//	panel_m_build.add(label, "cell 2 0");
+	//	panel_m_build.add(comboRicevuto, "cell 4 0,growx");
 
 
 		JLabel lblUmidit = new JLabel("Umidit\u00E0");
@@ -1125,17 +1134,44 @@ public class PannelloMisuraMaster extends JPanel
 
 		JLabel lblFirme = new JLabel("Firme");
 		lblFirme.setFont(new Font("Arial", Font.BOLD, 14));
-		panel_m_build.add(lblFirme, "cell 3 1");
+	//	panel_m_build.add(lblFirme, "cell 3 1");
 
 		final JComboBox comboBox_firme = new JComboBox(Costanti.LISTA_FIRME);
 		comboBox_firme.setFont(new Font("Arial", Font.PLAIN, 16));
-		panel_m_build.add(comboBox_firme, "cell 4 1,growx");
+	//	panel_m_build.add(comboBox_firme, "cell 4 1,growx");
 
 		final JButton btnChiudiMisura = new JButton("Termina Misura");
 		btnChiudiMisura.setIcon(new ImageIcon(PannelloTOP.class.getResource("/image/insert.png")));
 		btnChiudiMisura.setFont(new Font("Arial", Font.BOLD, 16));
-		panel_m_build.add(btnChiudiMisura, "cell 5 0 1 2,gapx 30,grow");
+		panel_m_build.add(btnChiudiMisura, "cell 5 0 4 2,gapx 30,grow");
+		
+		JLabel label_2 = new JLabel(" %");
+		label_2.setHorizontalAlignment(SwingConstants.CENTER);
+		label_2.setFont(new Font("Arial", Font.BOLD, 16));
+		panel_m_build.add(label_2, "cell 2 1");
+		
+		JLabel label_1 = new JLabel("Â± 10 %");
+		label_1.setFont(new Font("Arial", Font.BOLD, 14));
+	//	panel_m_build.add(label_1, "cell 2 1");
 
+		
+		if(misura.getTemperatura()!=null)
+		{
+			temp_field.setText(""+misura.getTemperatura().setScale(2,RoundingMode.HALF_UP));
+		}else 
+		{
+			temp_field.setText("20.00");
+		}
+		
+		if(misura.getUmidita()!=null)
+		{
+			umiditaField.setText(""+misura.getUmidita().setScale(2,RoundingMode.HALF_UP));
+		}
+		else 
+		{
+			umiditaField.setText("50.00");
+		}
+		
 		btnChiudiMisura.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 
@@ -1177,7 +1213,7 @@ public class PannelloMisuraMaster extends JPanel
 							JOptionPane.showMessageDialog(null,"Salvataggio effettuato","Salvataggio",JOptionPane.INFORMATION_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/confirm.png")));
 						
 					} catch (NumberFormatException e) {
-						JOptionPane.showMessageDialog(null,"I campi temperatura e umidità accettano solo valori numerici","Salvataggio",JOptionPane.ERROR_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
+						JOptionPane.showMessageDialog(null,"I campi temperatura e umiditÃ  accettano solo valori numerici","Salvataggio",JOptionPane.ERROR_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
 					}
 					catch (Exception e) {
 						// TODO Auto-generated catch block

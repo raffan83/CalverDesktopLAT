@@ -101,7 +101,7 @@ button.addActionListener(new ActionListener() {
 		 				
 	    		}else
 	    		{
-	    			JOptionPane.showMessageDialog(null,"File già chiuso - non utilizzabile","File chiuso",JOptionPane.ERROR_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
+	    			JOptionPane.showMessageDialog(null,"File Ã¨ chiuso - non utilizzabile","File chiuso",JOptionPane.ERROR_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
 	    		}
  		}else
  		{
@@ -263,7 +263,7 @@ button.addActionListener(new ActionListener() {
 //					 				
 //				    		}else
 //				    		{
-//				    			JOptionPane.showMessageDialog(null,"File già chiuso - non utilizzabile","File chiuso",JOptionPane.ERROR_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
+//				    			JOptionPane.showMessageDialog(null,"File giï¿½ chiuso - non utilizzabile","File chiuso",JOptionPane.ERROR_MESSAGE,new ImageIcon(PannelloTOP.class.getResource("/image/error.png")));
 //				    		}
 //			    		}else
 //			    		{

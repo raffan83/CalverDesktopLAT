@@ -1,5 +1,6 @@
 package it.calverDesktopLAT.dto;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -7,6 +8,8 @@ public class ProvaMisuraDTO {
 	public int idStrumento;
 	public Date dataMisura;
 	public int idMisura;
+	public BigDecimal temperatura;
+	public BigDecimal umidita;
 	
 	public ArrayList<TabellaMisureDTO> listaTabelle=new ArrayList<>();
 	
@@ -48,6 +51,18 @@ public class ProvaMisuraDTO {
 	public String toString() {
 		// TODO Auto-generated method stub
 		return "MISURA " +idMisura;
+	}
+	public BigDecimal getTemperatura() {
+		return temperatura;
+	}
+	public void setTemperatura(BigDecimal temperatura) {
+		this.temperatura = temperatura;
+	}
+	public BigDecimal getUmidita() {
+		return umidita;
+	}
+	public void setUmidita(BigDecimal umidita) {
+		this.umidita = umidita;
 	}
 	
 

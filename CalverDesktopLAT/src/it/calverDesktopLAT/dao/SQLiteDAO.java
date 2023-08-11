@@ -741,6 +741,9 @@ public static void updateMisuraRDP(int idRecord, String descrizioneCampione, Str
 	                    prova.setDataMisura(new Date());
 	                }
 	                
+					prova.setTemperatura(rs.getBigDecimal("temperatura"));
+					prova.setUmidita(rs.getBigDecimal("umidita"));
+	                
 				prova.setIdMisura(rs.getInt("id"));
 			}
 			

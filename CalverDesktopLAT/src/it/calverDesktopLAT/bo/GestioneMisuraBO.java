@@ -932,7 +932,7 @@ public class GestioneMisuraBO
 			{
 				ex.printStackTrace();
 			}
-			return errore_cumulativo;
+			return errore_cumulativo.multiply(new BigDecimal("-1"));
 		
 	}
 
