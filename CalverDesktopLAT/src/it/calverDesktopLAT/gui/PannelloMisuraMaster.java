@@ -898,7 +898,7 @@ public class PannelloMisuraMaster extends JPanel
 			lblTipoStrumento = new JLabel("Tipo Strumento");
 			lblTipoStrumento.setFont(new Font("Arial", Font.BOLD, 14));
 			panel_dati_str.add(lblTipoStrumento, "cell 3 6");
-			lblTipoStrumento.setVisible(false);
+		//	lblTipoStrumento.setVisible(false);
 
 			comboBox_tipo_strumento = new JComboBox<TipoStrumentoDTO>(vectorTipoStrumento);
 			comboBox_tipo_strumento.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -906,7 +906,7 @@ public class PannelloMisuraMaster extends JPanel
 			panel_dati_str.add(comboBox_tipo_strumento, "cell 4 6,width 100:180:200");
 
 			comboBox_tipo_strumento.setSelectedIndex(indiceTipoStrumento);
-			comboBox_tipo_strumento.setVisible(false);
+		//	comboBox_tipo_strumento.setVisible(false);
 
 			JLabel lblProcedura = new JLabel("Procedura");
 			lblProcedura.setFont(new Font("Arial", Font.BOLD, 14));
@@ -1018,8 +1018,8 @@ public class PannelloMisuraMaster extends JPanel
 
 							textAreaNote.setEditable(false);
 							btnSalva.setVisible(false);
-							lblTipoStrumento.setVisible(false);
-							comboBox_tipo_strumento.setVisible(false);
+						//	lblTipoStrumento.setVisible(false);
+							comboBox_tipo_strumento.setEnabled(false);
 							comboBox_luogoVerifica.setEnabled(false);
 							proc_field.setEditable(false);
 

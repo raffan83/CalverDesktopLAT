@@ -23,7 +23,7 @@ public class Costanti {
 	public static final Color backgroundGreyLight = new Color(204, 204, 204);
 	public static final String SYSROOT = System.getenv("ProgramData")+"\\Calver";
 	public static final String DEPLOY_HOST = "http://www.calver.it";
-	public static final String VERSION = "1.0.6";
+	public static final String VERSION = "1.0.7";
 	public static final String REGISTER_KEY = "Software\\Calver";
 	public static final String COD_OPT = "CL_OPR";
 	public static final String COD_CNT ="CL_CNT";

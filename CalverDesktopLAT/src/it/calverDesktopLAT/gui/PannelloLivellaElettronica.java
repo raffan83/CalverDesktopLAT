@@ -423,9 +423,9 @@ public class PannelloLivellaElettronica extends JPanel  {
 					model_incertezze.setValueAt(punto.getInc_cmp().setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3), i, 4);
 					model_incertezze.setValueAt(punto.getInc_stab().setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3), i, 5);
 					model_incertezze.setValueAt(punto.getInc_est().setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3), i, 6);
-					model_incertezze.setValueAt(punto.getId(), i,7);
+					
 				}
-
+					model_incertezze.setValueAt(punto.getId(), i,7);
 			}
 
 			tabellaIncertezze.setModel(model_incertezze);
@@ -1632,6 +1632,20 @@ public class PannelloLivellaElettronica extends JPanel  {
 										model_incertezze.setValueAt(em.setScale(Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA+3, RoundingMode.HALF_UP).toPlainString(), row, 6);
 
 										setEmMax(model_incertezze);
+									/*	
+										int index = Integer.parseInt(model_incertezze.getValueAt(row, 7).toString());
+										
+										LatPuntoLivellaElettronicaDTO punto = new LatPuntoLivellaElettronicaDTO();
+										punto.setId(index);
+										punto.setValore_nominale(checkField(model.getValueAt(row, 1),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA));
+										punto.setInc_ris(checkField(model_incertezze.getValueAt(row, 2),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA));
+										punto.setInc_rip(checkField(model_incertezze.getValueAt(row, 3),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA));
+										punto.setInc_cmp(checkField(model_incertezze.getValueAt(row, 4),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA));
+										punto.setInc_stab(checkField(model_incertezze.getValueAt(row, 5),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA));
+										punto.setInc_est(checkField(model_incertezze.getValueAt(row, 6),Costanti.RISOLUZIONE_LIVELLA_ELETTRONICA));
+
+								*/
+										
 									}
 								}
 							}
@@ -1713,6 +1727,7 @@ public class PannelloLivellaElettronica extends JPanel  {
 
 					BigDecimal val=(sc1.subtract(listaParam.getScostamentoPrecedente()).abs()).divide(new BigDecimal("3.46410161513775"),RoundingMode.HALF_UP);
 
+					System.out.println("Valore- Inc STB: "+val);
 
 					if(val.compareTo(inc_stab)>0)
 					{
